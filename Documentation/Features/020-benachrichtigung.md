@@ -6,6 +6,12 @@ Ereignisse irgendeiner Form werden dem Benutzer mitgeteilt.
 
 ### Aufwand
 
-### Unsicherheit
+Gering
 
 ### Akzeptanz
+
+Sehr hoch, da essenzielles Feature
+
+### Unsicherheit
+
+Sehr gering, da essenzielles Feature

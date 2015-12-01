@@ -1,11 +1,19 @@
 ## Wäsche Trocken
 
-Das Gerät gibt dem Nutzer eine Rückmeldung irgendeiner Form, sobald die Wäsche trocken ist.
+Das Gerät gibt dem Benutzer eine Benachrichtigung, sobald die Wäsche trocken ist.
 
 ### Abhängigkeiten
 
+- 020
+
+### Akzeptanz
+
+Sehr hoch, da essenzielles Feature
+
 ### Aufwand
+
+Gering
 
 ### Unsicherheit
 
-### Akzeptanz
+Sehr gering, da essenzielles Feature

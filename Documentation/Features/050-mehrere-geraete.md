@@ -6,6 +6,12 @@ Es ist möglich, mehrere Geräte mit der App zu verbinden und zu bedienen.
 
 ### Aufwand
 
-### Unsicherheit
+Mittel, beschränkt sich im Mehraufwand jedoch nur auf die APP
 
 ### Akzeptanz
+
+Hoch, da Benutzer möglicherweise mehrere Geräte besitzt
+
+### Unsicherheit
+
+Gering
