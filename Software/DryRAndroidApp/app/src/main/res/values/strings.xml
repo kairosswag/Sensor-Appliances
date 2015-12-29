@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">DryR</string>
+
+    <string name="action_settings">Einstellungen</string>
+
+    <!-- Navigation drawer !-->
+    <string name="navigation_drawer_open">Navigationsleitste öffnen</string>
+    <string name="navigation_drawer_close">Navigationsleitste schließen</string>
+
+    <string name="navigation_drawer_item_laundry_status">Wäschestatus</string>
+    <string name="navigation_drawer_item_sensor_status">Sensorstatus</string>
+    <string name="navigation_drawer_item_settings">Einstellungen</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
