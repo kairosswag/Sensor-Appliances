@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_baseStation_title">
+        <dryr.android.dialogs.ConnectBaseStationDialogPreference
+            android:key="@string/pref_baseStation_connect_key"
+            android:summary="@string/pref_baseStation_connect_summary"
+            android:title="@string/pref_baseStation_connect_title" />
+        <dryr.android.dialogs.PairSensorDialogPreference
+            android:key="@string/pref_sensor_pair_key"
+            android:summary="@string/pref_sensor_pair_summary"
+            android:title="@string/pref_sensor_pair_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_notification_title">
+        <CheckBoxPreference
+            android:key="@string/pref_notification_push_key"
+            android:summary="@string/pref_notification_push_summary"
+            android:title="@string/pref_notification_push_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

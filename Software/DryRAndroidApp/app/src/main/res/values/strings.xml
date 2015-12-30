@@ -11,6 +11,21 @@
     <string name="navigation_drawer_item_sensor_status">Sensorstatus</string>
     <string name="navigation_drawer_item_settings">Einstellungen</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Preferences !-->
+    <string name="pref_baseStation_title">Basisstation</string>
+
+    <string name="pref_baseStation_connect_title">Basisstation verbinden</string>
+    <string name="pref_baseStation_connect_summary">Verbindet eine neue Basisstation mit der App</string>
+    <string name="pref_baseStation_connect_key">baseStation</string>
+
+    <string name="pref_sensor_pair_title">Sensor pairen</string>
+    <string name="pref_sensor_pair_summary">Verbindet einen neuen Sensor mit der Basisstation</string>
+    <string name="pref_sensor_pair_key">sensorPair</string>
+
+    <string name="pref_notification_title">Benachrichtigungen</string>
+
+    <string name="pref_notification_push_title">Push Benachrichtigungen</string>
+    <string name="pref_notification_push_summary">Push Benachrichtigung über trockene Wäsche ein oder ausschalten</string>
+    <string name="pref_notification_push_key">notifications_push</string>
 </resources>

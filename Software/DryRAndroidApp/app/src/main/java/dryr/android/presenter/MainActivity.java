@@ -1,5 +1,6 @@
 package dryr.android.presenter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_laundry_status) {
+            // Show LaundryStatusFragment
             LaundryStatusFragment laundryStatusFragment = (LaundryStatusFragment) getSupportFragmentManager().findFragmentByTag(LaundryStatusFragment.TAG);
             if (laundryStatusFragment == null) {
                 laundryStatusFragment = new LaundryStatusFragment();
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_fragment_container, laundryStatusFragment, LaundryStatusFragment.TAG).commit();
         } else if (id == R.id.nav_sensor_status) {
+            // SHow SensorStatusFragment
             SensorStatusFragment sensorStatusFragment = (SensorStatusFragment) getSupportFragmentManager().findFragmentByTag(SensorStatusFragment.TAG);
             if (sensorStatusFragment == null) {
                 sensorStatusFragment = new SensorStatusFragment();
@@ -90,7 +93,8 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_fragment_container, sensorStatusFragment, SensorStatusFragment.TAG).commit();
         } else if (id == R.id.nav_settings) {
-
+            Intent i = new Intent(this, DryRPreferenceActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
