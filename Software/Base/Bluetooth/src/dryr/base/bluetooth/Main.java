@@ -3,12 +3,14 @@
  */
 package dryr.base.bluetooth;
 
+import org.freedesktop.dbus.exceptions.DBusException;
+
 /**
  * @author addis
  *
  */
 public class Main {
-
+	
 	/**
 	 * 
 	 */
@@ -18,9 +20,10 @@ public class Main {
 
 	/**
 	 * @param args
+	 * @throws DBusException 
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws DBusException {
+		DBusBluetooth dbusbluetooth = new DBusBluetooth();
 
 	}
 
