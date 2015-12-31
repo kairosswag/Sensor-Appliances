@@ -7,7 +7,7 @@ import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-@DBusInterfaceName("dryr.org.freedesktop.DBus.Introspectable")
+@DBusInterfaceName("org.freedesktop.DBus.Properties")
 public interface Properties extends DBusInterface
 {
    public static class PropertiesChanged extends DBusSignal
