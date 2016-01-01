@@ -1,4 +1,14 @@
 module DryR.Main where
 
+import DBus.Client
+import DryR.DBus.SignalHandler
+import DryR.InterruptHandler
+
 defaultMain = do
-  print "Hello World"
+  client <- connectSystem
+  handlers <- registerHandlers client
+
+  waitForInterrupt
+
+  unregisterHandlers client handlers
+  disconnect client
