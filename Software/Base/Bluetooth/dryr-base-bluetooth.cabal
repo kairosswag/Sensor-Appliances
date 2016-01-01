@@ -21,7 +21,8 @@ executable dryr-base-bluetooth
   -- other-extensions:
   build-depends:
     base >=4.7 && <4.8,
-    dbus >=0.10.0
+    dbus >=0.10.0,
+    unix >=2.7.0.0
   hs-source-dirs:
     Src
   default-language:    Haskell2010
