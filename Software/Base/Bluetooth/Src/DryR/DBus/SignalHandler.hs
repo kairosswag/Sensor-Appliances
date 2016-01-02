@@ -3,9 +3,13 @@ module DryR.DBus.SignalHandler (registerHandlers, unregisterHandlers) where
 import DBus
 import DBus.Client
 
-handleOrgFreedesktopDBusProperties :: Signal -> IO ()
-handleOrgFreedesktopDBusProperties signal = do
-  print "OrgFreedesktopDBusProperties"
+import DryR.DBus.PropertiesChanged
+import DryR.DBus.PropertiesChangedHandler
+
+handleOrgFreedesktopDBusProperties :: Client -> Signal -> IO ()
+handleOrgFreedesktopDBusProperties client s = case (parseSignalToPropertiesChanged s) of
+  Just pC -> propertiesChangedHandler pC client
+  Nothing -> return ()
 
 matchInterfaceOnly interface = matchAny { matchInterface = Just $ interfaceName_ interface }
 interfaces = [
@@ -16,7 +20,7 @@ handlers = [
   handleOrgFreedesktopDBusProperties]
 
 registerHandlers :: Client -> IO ([SignalHandler])
-registerHandlers client = mapM (\(match, handler) -> addMatch client match handler) $ zip matchHandlers handlers
+registerHandlers client = mapM (\(match, handler) -> addMatch client match (handler client)) $ zip matchHandlers handlers
 
 unregisterHandlers :: Client -> [SignalHandler] -> IO ()
 unregisterHandlers client signalHandlers = mapM_ (\signalHandler -> removeMatch client signalHandler) signalHandlers
