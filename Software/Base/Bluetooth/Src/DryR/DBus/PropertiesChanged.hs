@@ -5,10 +5,10 @@ import Data.Maybe
 import DBus
 
 data PropertiesChanged = PropertiesChanged  {
-  objectPath :: ObjectPath,
-  interfaceName :: InterfaceName,
-  changedProperties :: Dictionary,
-  invalidatedProperties :: [String]}
+  pCObjectPath :: ObjectPath,
+  pCInterfaceName :: InterfaceName,
+  pCChangedProperties :: Dictionary,
+  pCInvalidatedProperties :: [String]}
 
 parseSignalToPropertiesChanged :: Signal -> Maybe PropertiesChanged
 parseSignalToPropertiesChanged s =
