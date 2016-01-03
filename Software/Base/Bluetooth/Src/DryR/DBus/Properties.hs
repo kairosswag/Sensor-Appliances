@@ -4,8 +4,9 @@ module DryR.DBus.Properties where
 
 import DBus
 import DBus.Client
+import Control.Error.Util
 
-get :: Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> IO (Maybe Variant)
+get :: (IsVariant a) => Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> IO (Maybe a)
 get client bN oP iN mN = do
   let mc = (methodCall oP ("org.freedesktop.DBus.Properties") ("Get")) {
     methodCallDestination = Just bN,
@@ -13,18 +14,14 @@ get client bN oP iN mN = do
   }
 
   mr <- call client mc
-  case (mr) of
-    Left _ -> return Nothing
-    Right mr -> return $ Just $ (methodReturnBody mr)!!0
+  return $ hush mr >>= (\r -> fromVariant $ (methodReturnBody r)!!0)
 
-set :: Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> Variant -> IO (Maybe ())
+set :: (IsVariant a) => Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> a -> IO (Maybe ())
 set client bN oP iN mN value = do
   let mc = (methodCall oP ("org.freedesktop.DBus.Properties") ("Set")) {
     methodCallDestination = Just bN,
-    methodCallBody = [toVariant $ iN, toVariant $ mN, value]
+    methodCallBody = [toVariant iN, toVariant mN, toVariant value]
   }
 
   mr <- call client mc
-  case (mr) of
-    Left _ -> return Nothing
-    Right _ -> return $ Just ()
+  return $ fmap (const ()) $ Just $ hush mr
