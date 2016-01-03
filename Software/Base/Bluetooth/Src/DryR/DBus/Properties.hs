@@ -5,10 +5,10 @@ module DryR.DBus.Properties where
 import DBus
 import DBus.Client
 
-get :: Client -> ObjectPath -> InterfaceName -> MemberName -> IO (Maybe Variant)
-get client oP iN mN = do
+get :: Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> IO (Maybe Variant)
+get client bN oP iN mN = do
   let mc = (methodCall oP ("org.freedesktop.DBus.Properties") ("Get")) {
-    methodCallDestination = Just "org.bluez",
+    methodCallDestination = Just bN,
     methodCallBody = [toVariant $ iN, toVariant $ mN]
   }
 
@@ -17,10 +17,10 @@ get client oP iN mN = do
     Left _ -> return Nothing
     Right mr -> return $ Just $ (methodReturnBody mr)!!0
 
-set :: Client -> ObjectPath -> InterfaceName -> MemberName -> Variant -> IO (Maybe ())
-set client oP iN mN value = do
+set :: Client -> BusName -> ObjectPath -> InterfaceName -> MemberName -> Variant -> IO (Maybe ())
+set client bN oP iN mN value = do
   let mc = (methodCall oP ("org.freedesktop.DBus.Properties") ("Set")) {
-    methodCallDestination = Just "org.bluez",
+    methodCallDestination = Just bN,
     methodCallBody = [toVariant $ iN, toVariant $ mN, value]
   }
 

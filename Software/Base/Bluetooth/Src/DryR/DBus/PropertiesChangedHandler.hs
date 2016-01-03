@@ -32,7 +32,7 @@ gS1Handler pC client = print "GS1"
 gC1Handler pC client = do
   let oP = pCObjectPath pC
   print $ formatObjectPath oP
-  u <- get client oP (interfaceName_ "org.bluez.GattCharacteristic1") (memberName_ "UUID")
+  u <- get client (busName_ "org.bluez") oP (interfaceName_ "org.bluez.GattCharacteristic1") (memberName_ "UUID")
   let us :: String = fromJust $ fromVariant $ fromJust $ fromVariant $ fromJust u
 
   if us == ch_tmp
