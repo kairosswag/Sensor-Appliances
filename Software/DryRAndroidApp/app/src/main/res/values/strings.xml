@@ -35,4 +35,14 @@
     <string name="pref_notification_push_title">Push Benachrichtigungen</string>
     <string name="pref_notification_push_summary">Push Benachrichtigung über trockene Wäsche ein oder ausschalten</string>
     <string name="pref_notification_push_key">notifications_push</string>
+
+    <!-- ConnectBaseStationDialog !-->
+    <string name="pref_connected_base_station">Verbundene Basisstation:</string>
+    <string name="pref_no_connected_base_station">keine</string>
+    <string name="pref_bs_disconnect">Verbindung trennen</string>
+    <string name="pref_connect_new_bs">neue Basisstation verbinden</string>
+    <string name="pref_available_bs">Zur Verfügung stehende Basisstationen: </string>
+    <string name="pref_no_available_bs">keine</string>
+    <string name="pref_bs_connect">Verbinden</string>
+
 </resources>

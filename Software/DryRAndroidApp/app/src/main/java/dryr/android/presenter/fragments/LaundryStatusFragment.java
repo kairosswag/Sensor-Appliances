@@ -74,7 +74,7 @@ public class LaundryStatusFragment extends Fragment {
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
                 switch (error) {
-                    case NO_BASE_STATION:
+                    case NO_BASE_STATION_CONNECTED:
                         // TODO: Show settings activity with ConnectBaseStationDialog open
                         break;
 

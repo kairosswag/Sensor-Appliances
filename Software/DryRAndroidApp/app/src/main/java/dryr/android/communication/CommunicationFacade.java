@@ -2,6 +2,10 @@ package dryr.android.communication;
 
 import android.os.AsyncTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import dryr.android.model.BaseStation;
 import dryr.android.model.LaundryState;
 import dryr.android.model.SensorState;
 
@@ -13,7 +17,7 @@ public class CommunicationFacade {
         /**
          * No base station has been connected to this app
          */
-        NO_BASE_STATION,
+        NO_BASE_STATION_CONNECTED,
         /**
          * No sensor was paired to the base station
          */
@@ -39,6 +43,15 @@ public class CommunicationFacade {
         // TODO: connect / check connection / run in background / return result
         // TODO: regularly check this...
         callback.onResult(new SensorState(70,26));
+    }
+
+    public void getAvailableBaseStations(CommunicationCallback<List<BaseStation>> callback) {
+        // TODO: find base stations / run in background / return result
+        ArrayList<BaseStation> testStations = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            testStations.add(new BaseStation("test " + i));
+        }
+        callback.onResult(testStations);
     }
 
     /**

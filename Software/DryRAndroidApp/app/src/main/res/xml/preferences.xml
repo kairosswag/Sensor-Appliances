@@ -9,7 +9,7 @@
         <dryr.android.dialogs.PairSensorDialogPreference
             android:key="@string/pref_sensor_pair_key"
             android:summary="@string/pref_sensor_pair_summary"
-            android:title="@string/pref_sensor_pair_title" />
+            android:title="@string/pref_sensor_pair_title"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_notification_title">

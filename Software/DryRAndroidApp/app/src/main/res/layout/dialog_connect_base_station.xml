@@ -1,6 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp">
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/dialog_connect_base_station_connected_station_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_connected_base_station" />
+
+        <TextView
+            android:layout_margin="10dp"
+            android:id="@+id/dialog_connect_base_station_connected_station"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_no_connected_base_station"
+            style="@style/TextAppearance.AppCompat.Small"/>
+
+        <Button
+            android:id="@+id/dialog_connect_base_station_disconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="?attr/colorAccent"
+            android:text="@string/pref_bs_disconnect"/>
+
+        <Button
+            android:id="@+id/dialog_connect_base_station_new_bs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/pref_connect_new_bs"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dialog_connect_base_station_connect_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_available_bs" />
+
+        <TextView
+            android:layout_margin="10dp"
+            android:id="@+id/dialog_connect_base_station_available_none"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_no_available_bs"
+            style="@style/TextAppearance.AppCompat.Small"/>
+
+        <TextView
+            android:layout_margin="10dp"
+            android:id="@+id/dialog_connect_base_station_error_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:gravity="center"
+            android:textColor="@color/error_text_color"
+            android:visibility="gone"
+            style="@style/TextAppearance.AppCompat.Small"/>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_margin="10dp"
+            android:id="@+id/dialog_connect_base_station_available_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/dialog_connect_base_station_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>

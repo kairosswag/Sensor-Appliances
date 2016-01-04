@@ -1,7 +1,6 @@
 package dryr.android.presenter.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -73,7 +72,7 @@ public class SensorStatusFragment extends Fragment {
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
                 switch (error) {
-                    case NO_BASE_STATION:
+                    case NO_BASE_STATION_CONNECTED:
                         // TODO: Show settings activity with ConnectBaseStationDialog open
                         break;
 
