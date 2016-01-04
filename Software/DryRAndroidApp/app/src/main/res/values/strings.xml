@@ -11,6 +11,13 @@
     <string name="navigation_drawer_item_sensor_status">Sensorstatus</string>
     <string name="navigation_drawer_item_settings">Einstellungen</string>
 
+    <!-- LaundryStatus !-->
+    <string name="laundry_status_drying">Trocknet</string>
+    <string name="laundry_status_dry">Trocken</string>
+    
+    <!-- SensorStatus !-->
+    <string name="sensor_status_battery">Batteriestand</string>
+    <string name="sensor_status_connection">Verbindung</string>
 
     <!-- Preferences !-->
     <string name="pref_baseStation_title">Basisstation</string>

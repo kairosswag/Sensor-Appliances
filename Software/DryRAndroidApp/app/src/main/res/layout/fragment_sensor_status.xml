@@ -4,10 +4,52 @@
     android:layout_height="match_parent"
     tools:context="dryr.android.presenter.fragments.SensorStatusFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/sensor_status_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="fragment_sensor status" />
+        android:padding="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sensor_status_battery"/>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sensor_status_battery_bar"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+        <TextView
+            style="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sensor_status_connection"/>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sensor_status_connection_bar"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sensor_status_progress"
+        android:layout_gravity="center" />
 
 </FrameLayout>
