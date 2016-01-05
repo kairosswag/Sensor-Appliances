@@ -54,6 +54,19 @@ public class CommunicationFacade {
         callback.onResult(testStations);
     }
 
+    public void tryConnection(BaseStation station, CommunicationCallbackBinary callback) {
+        // TODO: connect to base station / run in background / return result
+        callback.onSuccess();
+    }
+
+    public void connectPermanently(BaseStation station) {
+
+    }
+
+    public void disconnectFromStation(String identifier) {
+
+    }
+
     /**
      * Callback to inform a caller over a finished communication action
      * @param <T> the type that is expected to be the result
@@ -64,6 +77,22 @@ public class CommunicationFacade {
          * @param result the result of the action (if there is one)
          */
         public void onResult(T result);
+
+        /**
+         * Called when an error occurred during the communication action
+         * @param error the error
+         */
+        public void onError(CommunicationError error);
+    }
+
+    /**
+     * Callback to inform a caller over a finished communication action
+     */
+    public interface CommunicationCallbackBinary {
+        /**
+         * Called when the action has been successfully executed
+         */
+        public void onSuccess();
 
         /**
          * Called when an error occurred during the communication action

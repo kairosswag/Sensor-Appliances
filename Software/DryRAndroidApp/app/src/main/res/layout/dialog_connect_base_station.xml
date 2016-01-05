@@ -74,12 +74,60 @@
             android:visibility="gone"
             style="@style/TextAppearance.AppCompat.Small"/>
 
+        <Button
+            android:id="@+id/dialog_connect_base_station_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/pref_bs_retry"
+            android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_margin="10dp"
             android:id="@+id/dialog_connect_base_station_available_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/dialog_connect_base_station_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/pref_bs_refresh"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/dialog_connect_base_station_connection_successful_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/pref_bs_connection_with"
+            android:textColor="@color/success_color"/>
+
+        <TextView
+            android:id="@+id/dialog_connect_base_station_success_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Medium"/>
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/pref_bs_successful"
+            android:textColor="@color/success_color"/>
     </LinearLayout>
 
     <ProgressBar

@@ -27,7 +27,6 @@ public class SensorStatusFragment extends Fragment {
 
     // UI
     private LinearLayout sensorStatusLayout;
-    private ProgressBar batteryBar;
     private ProgressBar connectionBar;
 
     private ProgressBar progressBar;
@@ -51,7 +50,6 @@ public class SensorStatusFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_sensor_status, container, false);
 
         sensorStatusLayout = (LinearLayout) v.findViewById(R.id.sensor_status_layout);
-        batteryBar = (ProgressBar) v.findViewById(R.id.sensor_status_battery_bar);
         connectionBar = (ProgressBar) v.findViewById(R.id.sensor_status_connection_bar);
 
         progressBar = (ProgressBar) v.findViewById(R.id.sensor_status_progress);
@@ -101,7 +99,6 @@ public class SensorStatusFragment extends Fragment {
     public void setSensorState(SensorState sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            batteryBar.setProgress(sensorState.getBatteryLevel());
             connectionBar.setProgress(sensorState.getConnectionLevel());
         }
     }

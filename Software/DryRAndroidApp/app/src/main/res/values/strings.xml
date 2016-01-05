@@ -44,5 +44,12 @@
     <string name="pref_available_bs">Zur Verfügung stehende Basisstationen: </string>
     <string name="pref_no_available_bs">keine</string>
     <string name="pref_bs_connect">Verbinden</string>
+    <string name="pref_bs_retry">Nochmal versuchen</string>
+    <string name="pref_bs_refresh">Neu laden</string>
+    <string name="pref_bs_connection_with">Verbindung mit</string>
+    <string name="pref_bs_successful">erfolgreich</string>
+
+    <!-- General errors !-->
+    <string name="error_connection_default">Bei der Verbindung ist ein Fehler aufgetreten, überprüfen Sie ihre Netzwerkverbindung und versuchen Sie es erneut.</string>
 
 </resources>

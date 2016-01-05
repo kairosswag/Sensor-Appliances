@@ -16,22 +16,6 @@
             android:textColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sensor_status_battery"/>
-
-        <ProgressBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/sensor_status_battery_bar"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
-
-        <TextView
-            style="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:textColor="@color/colorAccent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/sensor_status_connection"/>
 
         <ProgressBar
