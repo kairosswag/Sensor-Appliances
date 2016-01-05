@@ -26,6 +26,9 @@ executable dryr-base-bluetooth
     bytestring >= 0.10.0.0,
     dbus >=0.10.0,
     unix >=2.7.0.0,
+    HTTP >=4000.2.10,
+    HDBC >=2.4.0.0,
+    HDBC-odbc >=2.5.0.0,
     data-binary-ieee754 >= 0.4.0
   hs-source-dirs:
     Src
