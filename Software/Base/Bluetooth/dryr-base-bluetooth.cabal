@@ -23,13 +23,12 @@ executable dryr-base-bluetooth
     base >=4.7 && <4.8,
     MissingH >=1.3.0.0,
     errors >=1.4.0,
-    bytestring >= 0.10.0.0,
+    bytestring >=0.10.0.0,
     dbus >=0.10.0,
     unix >=2.7.0.0,
     HTTP >=4000.2.10,
-    HDBC >=2.4.0.0,
-    HDBC-odbc >=2.5.0.0,
-    data-binary-ieee754 >= 0.4.0
+    mysql-simple >=0.2.2.0,
+    data-binary-ieee754 >=0.4.0
   hs-source-dirs:
     Src
   default-language:    Haskell2010
