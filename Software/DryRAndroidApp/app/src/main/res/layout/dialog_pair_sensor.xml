@@ -1,6 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp">
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/dialog_pair_sensor_main_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/dialog_pair_sensor_paired_sensors_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_connected_sensors" />
+
+            <TextView
+                android:id="@+id/dialog_pair_sensor_paired_sensors_none"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/pref_no_connected_sensors" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/dialog_pair_sensor_paired_sensors_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:scrollbars="vertical"
+                android:scrollbarAlwaysDrawVerticalTrack="true"/>
+
+            <Button
+                android:id="@+id/dialog_pair_sensor_paired_sensors_delete"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_sensors_disconnect"
+                android:textColor="@drawable/accent_color_selector" />
+
+            <Button
+                android:id="@+id/dialog_pair_sensor_paired_sensors_pair_new"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_connect_new_sensor"
+                android:textColor="@drawable/primary_color_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dialog_pair_sensor_add_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_available_sensors" />
+
+            <TextView
+                android:id="@+id/dialog_pair_sensor_add_available_none"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/pref_no_available_sensors" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/dialog_pair_sensor_available_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_margin="10dp"
+                android:scrollbarAlwaysDrawVerticalTrack="true"/>
+
+            <Button
+                android:id="@+id/dialog_pair_sensor_add_refresh"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_sensors_refresh"
+                android:textColor="@drawable/primary_color_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dialog_pair_sensor_connection_q_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/dialog_pair_sensor_connection_q_connect_with_title"
+                style="@style/Base.TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/pref_sensors_connection_with" />
+
+            <LinearLayout
+                android:id="@+id/dialog_pair_sensor_connection_q_add_ids"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <TextView
+                android:id="@+id/dialog_pair_sensor_connection_q_remove_title"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pref_sensors_disconnection_of"/>
+
+            <LinearLayout
+                android:id="@+id/dialog_pair_sensor_connection_q_remove_ids"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+            <Button
+                android:id="@+id/dialog_pair_sensor_connection_q_add_another"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pref_sensors_connect_another"
+                android:textColor="@drawable/primary_color_selector" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dialog_pair_sensor_error_text"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@color/error_text_color"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/dialog_pair_sensor_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="@drawable/primary_color_selector"
+            android:text="@string/pref_sensors_retry"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/dialog_pair_sensor_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+</RelativeLayout>

@@ -59,7 +59,7 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
-        // Update view with preference values
+
         connectedLayout = (LinearLayout) view.findViewById(R.id.dialog_connect_base_station_connected_station_layout);
         connectedStationView = (TextView) view.findViewById(R.id.dialog_connect_base_station_connected_station);
         disconnectStation = (Button) view.findViewById(R.id.dialog_connect_base_station_disconnect);
@@ -104,22 +104,28 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
 
         progressBar = (ProgressBar) view.findViewById(R.id.dialog_connect_base_station_progress);
 
-
+        // Update view with preference values
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         String baseStation = sp.getString(getContext().getString(R.string.pref_baseStation_connect_key), null);
 
         if (baseStation != null) {
             connectedStation = baseStation;
             connectedStationView.setText(baseStation);
-            disconnectStation.setVisibility(View.VISIBLE);
+            disconnectStation.setEnabled(true);
+
+            connectNew.setEnabled(false);
         } else {
             connectedStation = null;
             connectedStationView.setText(R.string.pref_no_connected_base_station);
-            disconnectStation.setVisibility(View.GONE);
+            disconnectStation.setEnabled(false);
+
+            connectNew.setEnabled(true);
         }
     }
 
     private void searchForBaseStations() {
+        hideError();
+
         ViewUtil.fadeIn(progressBar, getContext());
         CommunicationFacade.getInstance().getAvailableBaseStations(new CommunicationFacade.CommunicationCallback<List<BaseStation>>() {
             @Override
@@ -135,7 +141,7 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
 
                     BaseStationAdapter adapter = new BaseStationAdapter(result, new BaseStationAdapter.BaseStationAdapterListener() {
                         @Override
-                        public void baseStationSelected(BaseStation station) {
+                        public void onBaseStationSelected(BaseStation station) {
                             ViewUtil.fadeOut(connectLayout, getContext());
                             connectToBaseStation(station);
                         }

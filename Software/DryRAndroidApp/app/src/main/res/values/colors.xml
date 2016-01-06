@@ -4,10 +4,13 @@
     <color name="colorPrimaryDark">#00838f</color>
     <color name="colorAccent">#d41f1f</color>
 
+    <color name="colorDisabled">#bfbfbf</color>
+
     <color name="laundry_status_dry_color">#2e7d32</color>
     <color name="laundry_status_drying_color">#424242</color>
 
     <color name="error_text_color">#5e0000</color>
 
     <color name="success_color">#2e7d32</color>
+    <color name="delete_mode_background">#ffab91</color>
 </resources>

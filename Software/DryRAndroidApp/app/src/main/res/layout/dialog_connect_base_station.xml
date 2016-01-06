@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/borderlessButtonStyle"
-            android:textColor="?attr/colorAccent"
+            android:textColor="@drawable/accent_color_selector"
             android:text="@string/pref_bs_disconnect"/>
 
         <Button
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/borderlessButtonStyle"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@drawable/primary_color_selector"
             android:text="@string/pref_connect_new_bs"/>
     </LinearLayout>
 
@@ -79,7 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/borderlessButtonStyle"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@drawable/primary_color_selector"
             android:text="@string/pref_bs_retry"
             android:visibility="gone"/>
 
@@ -87,14 +87,15 @@
             android:layout_margin="10dp"
             android:id="@+id/dialog_connect_base_station_available_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="100dp"
+            android:scrollbarAlwaysDrawVerticalTrack="true"/>
 
         <Button
             android:id="@+id/dialog_connect_base_station_refresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="?android:attr/borderlessButtonStyle"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@drawable/primary_color_selector"
             android:text="@string/pref_bs_refresh"/>
     </LinearLayout>
 

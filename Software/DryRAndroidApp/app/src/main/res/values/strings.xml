@@ -3,6 +3,7 @@
 
     <string name="action_settings">Einstellungen</string>
 
+
     <!-- Navigation drawer !-->
     <string name="navigation_drawer_open">Navigationsleitste öffnen</string>
     <string name="navigation_drawer_close">Navigationsleitste schließen</string>
@@ -11,13 +12,16 @@
     <string name="navigation_drawer_item_sensor_status">Sensorstatus</string>
     <string name="navigation_drawer_item_settings">Einstellungen</string>
 
+
     <!-- LaundryStatus !-->
     <string name="laundry_status_drying">Trocknet</string>
     <string name="laundry_status_dry">Trocken</string>
-    
+
+
     <!-- SensorStatus !-->
     <string name="sensor_status_battery">Batteriestand</string>
     <string name="sensor_status_connection">Verbindung</string>
+
 
     <!-- Preferences !-->
     <string name="pref_baseStation_title">Basisstation</string>
@@ -36,6 +40,7 @@
     <string name="pref_notification_push_summary">Push Benachrichtigung über trockene Wäsche ein oder ausschalten</string>
     <string name="pref_notification_push_key">notifications_push</string>
 
+
     <!-- ConnectBaseStationDialog !-->
     <string name="pref_connected_base_station">Verbundene Basisstation:</string>
     <string name="pref_no_connected_base_station">keine</string>
@@ -49,7 +54,26 @@
     <string name="pref_bs_connection_with">Verbindung mit</string>
     <string name="pref_bs_successful">erfolgreich</string>
 
+
+    <!-- PairSensorDialog !-->
+    <string name="pref_connected_sensors">Verbundene Sensoren:</string>
+    <string name="pref_no_connected_sensors">keine</string>
+    <string name="pref_sensors_disconnect">Sensor entfernen</string>
+    <string name="pref_sensors_disconnect_cancel">Sensor entfernen abbrechen</string>
+    <string name="pref_connect_new_sensor">Neuen Sensor hinzufügen</string>
+    <string name="pref_available_sensors">Zur Verfügung stehende Sensoren:</string>
+    <string name="pref_no_available_sensors">keine (außer den bereits hinzugefügten)</string>
+    <string name="pref_sensors_retry">Nochmal versuchen</string>
+    <string name="pref_sensors_refresh">Neu laden</string>
+    <string name="pref_sensors_connection_with">Zu verbindenede Sensoren:</string>
+    <string name="pref_sensors_disconnection_of">Zu löschende Sensoren:</string>
+    <string name="pref_sensors_successful">erfolgreich</string>
+    <string name="pref_sensors_connect_another">Weiteren Sensor hinzufügen</string>
+
+
     <!-- General errors !-->
-    <string name="error_connection_default">Bei der Verbindung ist ein Fehler aufgetreten, überprüfen Sie ihre Netzwerkverbindung und versuchen Sie es erneut.</string>
+    <string name="error_connection_default">Bei der Verbindung ist ein Fehler aufgetreten, überprüfen
+        Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie isch im gleichen Netz wie
+        Ihre Basisstation befinden.</string>
 
 </resources>

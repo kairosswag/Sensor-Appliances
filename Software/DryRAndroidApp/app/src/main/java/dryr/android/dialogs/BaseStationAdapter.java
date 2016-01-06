@@ -53,7 +53,7 @@ public class BaseStationAdapter extends RecyclerView.Adapter<BaseStationAdapter.
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.baseStationSelected(stations.get(getAdapterPosition()));
+                        listener.onBaseStationSelected(stations.get(getAdapterPosition()));
                     }
                 }
             });
@@ -65,7 +65,7 @@ public class BaseStationAdapter extends RecyclerView.Adapter<BaseStationAdapter.
          * Called when the users clicks a Base station from the displayed list
          * @param station the station
          */
-        public void baseStationSelected(BaseStation station);
+        public void onBaseStationSelected(BaseStation station);
     }
 
 }

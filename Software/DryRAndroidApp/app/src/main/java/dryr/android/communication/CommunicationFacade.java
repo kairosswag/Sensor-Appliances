@@ -1,12 +1,17 @@
 package dryr.android.communication;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import dryr.android.model.BaseStation;
 import dryr.android.model.LaundryState;
+import dryr.android.model.Sensor;
 import dryr.android.model.SensorState;
 
 /**
@@ -22,13 +27,15 @@ public class CommunicationFacade {
          * No sensor was paired to the base station
          */
         NO_SENSOR_PAIRED
-    };
+    }
 
     private static CommunicationFacade ourInstance = new CommunicationFacade();
 
     public static CommunicationFacade getInstance() {
         return ourInstance;
     }
+
+    private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(10);
 
     private CommunicationFacade() {
     }
@@ -65,6 +72,48 @@ public class CommunicationFacade {
 
     public void disconnectFromStation(String identifier) {
 
+    }
+
+    public void getPairedSensors(final CommunicationCallback<List<Sensor>> callback) {
+        // TODO: find base stations / run in background / return result
+
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Sensor> testSensors = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
+                }
+                callback.onResult(testSensors);
+            }
+        }, 1,  TimeUnit.SECONDS);
+    }
+
+    public void getAvailableSensors(final CommunicationCallback<List<Sensor>> callback) {
+        // TODO: find base stations / run in background / return result
+
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Sensor> testSensors = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
+                }
+                callback.onResult(testSensors);
+            }
+        }, 1,  TimeUnit.SECONDS);
+
+    }
+
+    public void pairAndRemove(List<Sensor> pair, List<Sensor> remove, final CommunicationCallbackBinary callback) {
+        // TODO
+
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                callback.onSuccess();
+            }
+        }, 1, TimeUnit.SECONDS);
     }
 
     /**
