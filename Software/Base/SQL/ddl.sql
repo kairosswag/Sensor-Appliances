@@ -9,6 +9,8 @@ CREATE TABLE Device (
   status_id INTEGER NOT NULL,
   PRIMARY KEY (mac),
   FOREIGN KEY (status_id) REFERENCES Status(id)
+  ON UPDATE CASCADE
+  ON DELETE RESTRICT
 );
 
 CREATE TABLE Humidity (
@@ -17,4 +19,6 @@ CREATE TABLE Humidity (
   value FLOAT(32) NOT NULL,
   PRIMARY KEY (sample_time, mac),
   FOREIGN KEY (mac) REFERENCES Device(mac)
+  ON UPDATE CASCADE
+  ON DELETE CASCADE
 );
