@@ -1,14 +1,36 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module DryR.Main where
+
+import Control.Concurrent
 
 import DBus.Client
 import DryR.DBus.SignalHandler
 import DryR.InterruptHandler
+import DryR.DBus.MethodHandler
+
+import Data.Maybe
+import DBus
+import DryR.DBus.Properties
+import DryR.Context
 
 defaultMain = do
-  client <- connectSystem
-  handlers <- registerHandlers client
+  vcontext <- newContext
 
+  handlers <- registerHandlers vcontext
+
+  -- Set up Devices
+
+  exportMethods vcontext
   waitForInterrupt
+  unexportMethods vcontext
 
-  unregisterHandlers client handlers
-  disconnect client
+  -- Tear Devices down
+
+  threadDelay 250000
+
+  unregisterHandlers (fromJust handlers) vcontext
+
+  context <- takeContext vcontext
+  deleteContext $ fromJust context

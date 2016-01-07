@@ -14,7 +14,7 @@ import DBus.Client
 import DryR.DBus.PropertiesChanged
 import DryR.Util
 
-temperatureHandler pC client = do
+temperatureHandler pC c = do
   let oP = pCObjectPath pC
   let cP = pCChangedProperties pC
 

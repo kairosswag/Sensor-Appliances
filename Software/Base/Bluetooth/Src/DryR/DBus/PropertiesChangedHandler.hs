@@ -5,6 +5,7 @@ module DryR.DBus.PropertiesChangedHandler (propertiesChangedHandler) where
 import DBus
 import DBus.Client
 
+import DryR.Context
 import DryR.DBus.PropertiesChanged
 
 import DryR.DBus.PropertiesChangedHandler.Adapter1
@@ -13,7 +14,7 @@ import DryR.DBus.PropertiesChangedHandler.GattCharacteristic1
 import DryR.DBus.PropertiesChangedHandler.GattDescriptor1
 import DryR.DBus.PropertiesChangedHandler.GattService1
 
-propertiesChangedHandler :: PropertiesChanged -> Client -> IO ()
+propertiesChangedHandler :: PropertiesChanged -> Context -> IO ()
 propertiesChangedHandler pC = case (formatInterfaceName $ pCInterfaceName pC) of
   "org.bluez.Adapter1" -> adapter1Handler pC
   "org.bluez.Device1" -> device1Handler pC

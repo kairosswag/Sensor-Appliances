@@ -3,12 +3,13 @@ module DryR.DBus.SignalHandler (registerHandlers, unregisterHandlers) where
 import DBus
 import DBus.Client
 
+import DryR.Context
 import DryR.DBus.PropertiesChanged
 import DryR.DBus.PropertiesChangedHandler
 
-handleOrgFreedesktopDBusProperties :: Client -> Signal -> IO ()
-handleOrgFreedesktopDBusProperties client s = case (parseSignalToPropertiesChanged s) of
-  Just pC -> propertiesChangedHandler pC client
+handleOrgFreedesktopDBusProperties :: Signal -> Context -> IO ()
+handleOrgFreedesktopDBusProperties s c = case (parseSignalToPropertiesChanged s) of
+  Just pC -> propertiesChangedHandler pC c
   Nothing -> return ()
 
 matchInterfaceOnly interface = matchAny { matchInterface = Just $ interfaceName_ interface }
@@ -19,8 +20,12 @@ matchHandlers = map matchInterfaceOnly interfaces
 handlers = [
   handleOrgFreedesktopDBusProperties]
 
-registerHandlers :: Client -> IO ([SignalHandler])
-registerHandlers client = mapM (\(match, handler) -> addMatch client match (handler client)) $ zip matchHandlers handlers
+zipHandlers = zip matchHandlers handlers
 
-unregisterHandlers :: Client -> [SignalHandler] -> IO ()
-unregisterHandlers client signalHandlers = mapM_ (\signalHandler -> removeMatch client signalHandler) signalHandlers
+registerHandlers :: InnerContext -> IO (Maybe [SignalHandler])
+registerHandlers = withContextAndInnerContext (\c i ->
+  mapM (\(match, handler) -> addMatch (contextDBus c) match (\s -> withContext (handler s) i >> return ())) zipHandlers)
+
+unregisterHandlers :: [SignalHandler] -> InnerContext -> IO (Maybe ())
+unregisterHandlers signalHandlers = withContextAndInnerContext (\c _ ->
+  mapM_ (\signalHandler -> removeMatch (contextDBus c) signalHandler) signalHandlers)
