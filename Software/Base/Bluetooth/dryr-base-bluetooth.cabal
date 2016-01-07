@@ -5,7 +5,7 @@ name:                dryr-base-bluetooth
 version:             0.1.0.0
 -- synopsis:
 -- description:
-license:             AllRightsReserved
+license:             MIT
 license-file:        LICENSE
 author:              Addis Dittebrandt
 maintainer:          addis.dittebrandt@gmail.com
