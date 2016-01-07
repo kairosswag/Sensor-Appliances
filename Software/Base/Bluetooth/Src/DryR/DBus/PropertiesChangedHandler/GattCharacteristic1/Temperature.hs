@@ -21,6 +21,6 @@ temperatureHandler pC c = do
   let i = head $ filter (\(k,_) -> (fromJust $ fromVariant k) == "Value") (dictionaryItems cP)
   let v :: BS.ByteString = fromJust $ fromVariant $ fromJust $ fromVariant $ snd i
 
-  let f = wordToFloat $ fromOctets $ reverse $ BS.unpack v
+  let f = fromJust $ word8ListToFloat $ reverse $ BS.unpack v
 
   print $ f
