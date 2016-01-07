@@ -40,3 +40,13 @@ withContext func vcontext  = do
 
 withContextAsync :: (Context -> IO ()) -> InnerContext-> IO (ThreadId)
 withContextAsync func vcontext = forkIO $ withContext func vcontext
+
+withContextAndInnerContext :: (Context -> InnerContext -> IO ()) -> InnerContext -> IO ()
+withContextAndInnerContext func icontext = do
+  mcontext <- takeMVar icontext
+
+  case (mcontext) of
+    Just context -> do
+      func context icontext
+      putMVar icontext mcontext
+    Nothing -> return ()
