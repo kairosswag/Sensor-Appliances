@@ -28,25 +28,27 @@ deleteContext (Context connDatabase connDBus) = do
   DB.close connDatabase
   DS.disconnect connDBus
 
-withContext :: (Context -> IO ()) -> InnerContext -> IO ()
+withContext :: (Context -> IO (a)) -> InnerContext -> IO (Maybe a)
 withContext func vcontext  = do
   mcontext <- takeMVar vcontext
 
   case (mcontext) of
     Just context -> do
-      func context
+      ret <- func context
       putMVar vcontext mcontext
-    Nothing -> return ()
+      return $ Just ret
+    Nothing -> return Nothing
 
 withContextAsync :: (Context -> IO ()) -> InnerContext-> IO (ThreadId)
-withContextAsync func vcontext = forkIO $ withContext func vcontext
+withContextAsync func vcontext = forkIO $ (withContext func vcontext) >> return ()
 
-withContextAndInnerContext :: (Context -> InnerContext -> IO ()) -> InnerContext -> IO ()
+withContextAndInnerContext :: (Context -> InnerContext -> IO (a)) -> InnerContext -> IO (Maybe a)
 withContextAndInnerContext func icontext = do
   mcontext <- takeMVar icontext
 
   case (mcontext) of
     Just context -> do
-      func context icontext
+      ret <- func context icontext
       putMVar icontext mcontext
-    Nothing -> return ()
+      return $ Just ret
+    Nothing -> return Nothing
