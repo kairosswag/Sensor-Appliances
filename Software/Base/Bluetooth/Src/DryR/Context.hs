@@ -6,9 +6,13 @@ import Control.Concurrent.MVar
 import qualified Database.MySQL.Simple as DB
 import qualified DBus.Client as DS
 
+import DryR.SQL.Query
+import DryR.SQL.Read
+
 data Context = Context {
   contextDatabase :: DB.Connection,
-  contextDBus :: DS.Client}
+  contextDBus :: DS.Client,
+  contextQueries :: [(Query, String)]}
 
 type InnerContext = MVar (Maybe Context)
 
@@ -16,7 +20,8 @@ newContext :: IO (InnerContext)
 newContext = do
   connDBus <- DS.connectSystem
   connDatabase <- DB.connect DB.defaultConnectInfo {DB.connectDatabase="dryr.base", DB.connectUser="dryr.base"}
-  newMVar $ Just $ Context connDatabase connDBus
+  querystrings <- readSQL
+  newMVar $ Just $ Context connDatabase connDBus querystrings
 
 takeContext :: InnerContext -> IO (Maybe Context)
 takeContext vcontext = do
@@ -24,7 +29,7 @@ takeContext vcontext = do
   return mcontext
 
 deleteContext :: Context -> IO ()
-deleteContext (Context connDatabase connDBus) = do
+deleteContext (Context connDatabase connDBus _) = do
   DB.close connDatabase
   DS.disconnect connDBus
 
