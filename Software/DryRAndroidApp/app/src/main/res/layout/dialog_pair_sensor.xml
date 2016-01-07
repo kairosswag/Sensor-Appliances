@@ -112,6 +112,7 @@
             <LinearLayout
                 android:id="@+id/dialog_pair_sensor_connection_q_add_ids"
                 android:layout_width="match_parent"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"/>
 
@@ -126,6 +127,7 @@
             <LinearLayout
                 android:id="@+id/dialog_pair_sensor_connection_q_remove_ids"
                 android:layout_width="match_parent"
+                android:layout_marginLeft="10dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"/>
 

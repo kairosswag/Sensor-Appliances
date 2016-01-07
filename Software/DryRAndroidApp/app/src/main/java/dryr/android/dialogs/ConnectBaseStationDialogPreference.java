@@ -59,7 +59,12 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
+        // Reset data
+        connectedStation = null;
+        deleteBaseStation = null;
+        connectTo = null;
 
+        // Setup UI
         connectedLayout = (LinearLayout) view.findViewById(R.id.dialog_connect_base_station_connected_station_layout);
         connectedStationView = (TextView) view.findViewById(R.id.dialog_connect_base_station_connected_station);
         disconnectStation = (Button) view.findViewById(R.id.dialog_connect_base_station_disconnect);
@@ -127,7 +132,7 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
         hideError();
 
         ViewUtil.fadeIn(progressBar, getContext());
-        CommunicationFacade.getInstance().getAvailableBaseStations(new CommunicationFacade.CommunicationCallback<List<BaseStation>>() {
+        CommunicationFacade.getInstance(getContext()).getAvailableBaseStations(new CommunicationFacade.CommunicationCallback<List<BaseStation>>() {
             @Override
             public void onResult(List<BaseStation> result) {
                 if (result.isEmpty()) {
@@ -181,7 +186,7 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
 
         hideError();
         ViewUtil.fadeIn(progressBar, getContext());
-        CommunicationFacade.getInstance().tryConnection(station, new CommunicationFacade.CommunicationCallbackBinary() {
+        CommunicationFacade.getInstance(getContext()).tryConnection(station, new CommunicationFacade.CommunicationCallbackBinary() {
             @Override
             public void onSuccess() {
                 successIdentifier.setText(connectTo.getIdentifier());
@@ -212,13 +217,13 @@ public class ConnectBaseStationDialogPreference extends DialogPreference {
         if (positiveResult) {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
             if (deleteBaseStation != null) {
-                sp.edit().remove(getContext().getString(R.string.pref_baseStation_connect_key)).commit();
-                CommunicationFacade.getInstance().disconnectFromStation(deleteBaseStation);
+                sp.edit().remove(getContext().getString(R.string.pref_baseStation_connect_key)).apply();
+                CommunicationFacade.getInstance(getContext()).disconnectFromStation(deleteBaseStation);
             }
 
             if (connectTo != null) {
-                sp.edit().putString(getContext().getString(R.string.pref_baseStation_connect_key), connectTo.getIdentifier()).commit();
-                CommunicationFacade.getInstance().connectPermanently(connectTo);
+                sp.edit().putString(getContext().getString(R.string.pref_baseStation_connect_key), connectTo.getIdentifier()).apply();
+                CommunicationFacade.getInstance(getContext()).connectPermanently(connectTo);
             }
         }
     }

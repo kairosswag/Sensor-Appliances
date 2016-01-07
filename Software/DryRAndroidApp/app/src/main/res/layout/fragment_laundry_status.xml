@@ -15,12 +15,36 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:layout_margin="20dp"
             android:gravity="center"
             android:text="@string/laundry_status_drying"
             android:textSize="40dp" />
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/laundry_status_message_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/laundry_status_no_sensor"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/laundry_status_message_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_sensor_pair_title"
+            android:textColor="@drawable/primary_color_selector"
+            android:visibility="gone"/>
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/laundry_status_progress"

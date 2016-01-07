@@ -1,16 +1,16 @@
 package dryr.android.dialogs;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
-import android.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,6 +27,7 @@ import dryr.android.model.Sensor;
 import dryr.android.utils.ViewUtil;
 
 // TODO: make dialogs stay one size (user friendliness)
+
 /**
  * Dialog to pair a sensor to the BaseStation
  */
@@ -74,27 +75,8 @@ public class PairSensorDialogPreference extends DialogPreference {
     @Override
     protected View onCreateView(ViewGroup parent) {
         final View v = super.onCreateView(parent);
-        // Get notified over sp changes
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-        sp.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                refreshEnabledState(sharedPreferences, v);
-            }
-        });
-        refreshEnabledState(sp, v);
 
         return v;
-    }
-
-    private void refreshEnabledState(SharedPreferences sp, View v) {
-        // Find out if a BaseStation is connected
-        if (sp.contains(getContext().getString(R.string.pref_baseStation_connect_key))) {
-            v.setEnabled(true);
-        } else {
-            v.setEnabled(false);
-        }
-
     }
 
     @Override
@@ -113,6 +95,11 @@ public class PairSensorDialogPreference extends DialogPreference {
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
+        // Reset data
+        paired = null;
+        available = null;
+        delete = new ArrayList<>();
+        added = new ArrayList<>();
 
         // Set up dialog ui
         mainContentLayout = (LinearLayout) view.findViewById(R.id.dialog_pair_sensor_main_content_layout);
@@ -211,64 +198,56 @@ public class PairSensorDialogPreference extends DialogPreference {
         hideError();
 
         ViewUtil.fadeIn(progressBar, getContext());
-        CommunicationFacade.getInstance().getPairedSensors(new CommunicationFacade.CommunicationCallback<List<Sensor>>() {
+        CommunicationFacade.getInstance(getContext()).getPairedSensors(new CommunicationFacade.CommunicationCallback<List<Sensor>>() {
             @Override
             public void onResult(final List<Sensor> result) {
-                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        paired = result;
-                        if (result.isEmpty()) {
-                            // No paired sensors
-                            nonePaired.setVisibility(View.VISIBLE);
-                            pairedRecycler.setVisibility(View.GONE);
+                paired = result;
+                if (result.isEmpty()) {
+                    // No paired sensors
+                    nonePaired.setVisibility(View.VISIBLE);
+                    pairedRecycler.setVisibility(View.GONE);
 
-                            pairNew.setEnabled(true); // Only allow one Sensor for now
-                            removeSensor.setEnabled(false);
-                        } else {
-                            // Display paired sensors
-                            nonePaired.setVisibility(View.GONE);
-                            pairedRecycler.setVisibility(View.VISIBLE);
-                            pairedAdapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
-                                @Override
-                                public void onSensorSelected(int pos) {
-                                    pairedSensorSelected(pos);
-                                }
-                            });
-                            pairedRecycler.setAdapter(pairedAdapter);
-
-                            removeSensor.setEnabled(true);
-                            pairNew.setEnabled(false); // Only allow one Sensor for now
+                    pairNew.setEnabled(true); // Only allow one Sensor for now
+                    removeSensor.setEnabled(false);
+                } else {
+                    // Display paired sensors
+                    nonePaired.setVisibility(View.GONE);
+                    pairedRecycler.setVisibility(View.VISIBLE);
+                    pairedAdapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
+                        @Override
+                        public void onSensorSelected(int pos) {
+                            pairedSensorSelected(pos);
                         }
-                        ViewUtil.fade(progressBar, pairedLayout, getContext());
-                    }
-                });
+                    });
+                    pairedRecycler.setAdapter(pairedAdapter);
+
+                    removeSensor.setEnabled(true);
+                    pairNew.setEnabled(false); // Only allow one Sensor for now
+                }
+                ViewUtil.fade(progressBar, pairedLayout, getContext());
+
             }
 
             @Override
             public void onError(final CommunicationFacade.CommunicationError error) {
-                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        switch (error) {
-                            default:
-                                errorText.setText(R.string.error_connection_default);
-                                retry.setVisibility(View.VISIBLE);
-                                retry.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        getPairedSensors();
-                                    }
-                                });
-                                errorText.setVisibility(View.VISIBLE);
-                        }
+                switch (error) {
+                    default:
+                        errorText.setText(R.string.error_connection_default);
+                        retry.setVisibility(View.VISIBLE);
+                        retry.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getPairedSensors();
+                            }
+                        });
+                        errorText.setVisibility(View.VISIBLE);
+                }
 
-                        pairNew.setEnabled(false);
-                        ViewUtil.fade(progressBar, pairedLayout, getContext());
-                    }
-                });
+                pairNew.setEnabled(false);
+                ViewUtil.fade(progressBar, pairedLayout, getContext());
+
             }
         });
     }
@@ -278,67 +257,61 @@ public class PairSensorDialogPreference extends DialogPreference {
 
         ViewUtil.fadeIn(progressBar, getContext());
 
-        CommunicationFacade.getInstance().
+        CommunicationFacade.getInstance(getContext()).
                 getAvailableSensors(
                         new CommunicationFacade.CommunicationCallback<List<Sensor>>() {
                             @Override
                             public void onResult(final List<Sensor> result) {
-                                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        available = result;
-                                        filterAvailable();
 
-                                        if (result.isEmpty()) {
-                                            // No available sensors
-                                            noneAvailable.setVisibility(View.VISIBLE);
-                                            availableRecycler.setVisibility(View.GONE);
-                                        } else {
-                                            // Display available sensors in a recycler react to onCLick
-                                            noneAvailable.setVisibility(View.GONE);
-                                            availableRecycler.setVisibility(View.VISIBLE);
+                                available = result;
+                                filterAvailable();
 
-                                            SensorAdapter adapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
-                                                @Override
-                                                public void onSensorSelected(int pos) {
-                                                    addSensor(pos);
-                                                }
-                                            });
-                                            availableRecycler.setAdapter(adapter);
+                                if (result.isEmpty()) {
+                                    // No available sensors
+                                    noneAvailable.setVisibility(View.VISIBLE);
+                                    availableRecycler.setVisibility(View.GONE);
+                                } else {
+                                    // Display available sensors in a recycler react to onCLick
+                                    noneAvailable.setVisibility(View.GONE);
+                                    availableRecycler.setVisibility(View.VISIBLE);
+
+                                    SensorAdapter adapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
+                                        @Override
+                                        public void onSensorSelected(int pos) {
+                                            addSensor(pos);
                                         }
+                                    });
+                                    availableRecycler.setAdapter(adapter);
+                                }
 
-                                        ViewUtil.fade(progressBar, addLayout, getContext());
-                                    }
-                                });
+                                ViewUtil.fade(progressBar, addLayout, getContext());
                             }
+
 
                             @Override
                             public void onError(final CommunicationFacade.CommunicationError error) {
-                                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        switch (error) {
-                                            default:
-                                                // Display error
-                                                ViewUtil.fade(progressBar, addLayout, getContext());
-                                                errorText.setText(R.string.error_connection_default);
-                                                errorText.setVisibility(View.VISIBLE);
-                                        }
 
-                                        // Give option to retry
-                                        retry.setVisibility(View.VISIBLE);
-                                        retry.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                searchForSensors();
-                                            }
-                                        });
-
+                                switch (error) {
+                                    default:
+                                        // Display error
                                         ViewUtil.fade(progressBar, addLayout, getContext());
-                                    }
+                                        errorText.setText(R.string.error_connection_default);
+                                        errorText.setVisibility(View.VISIBLE);
+                                }
 
+                                // Give option to retry
+                                retry.setVisibility(View.VISIBLE);
+                                retry.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        searchForSensors();
+                                    }
                                 });
+
+                                ViewUtil.fade(progressBar, addLayout, getContext());
                             }
+
+
                         }
 
                 );
@@ -408,40 +381,28 @@ public class PairSensorDialogPreference extends DialogPreference {
         connectionQLayout.setVisibility(View.GONE);
 
         // Remove sensors selected to be removed and pair sensors to be paired
-        // TODO: loading and error message here! maybe retry button!
-        CommunicationFacade.getInstance().pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallbackBinary() {
+        CommunicationFacade.getInstance(getContext()).pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallbackBinary() {
             @Override
             public void onSuccess() {
-                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getDialog().dismiss();
-                    }
-                });
+                getDialog().dismiss();
             }
 
             @Override
             public void onError(final CommunicationFacade.CommunicationError error) {
-                ((Activity) getContext()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // TODO: show error
-                        switch (error) {
-                            default:
-                                errorText.setText(R.string.error_connection_default);
-                                errorText.setVisibility(View.VISIBLE);
-                                retry.setVisibility(View.VISIBLE);
-                                retry.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        applyChanges();
-                                    }
-                                });
-                        }
-                        mainContentLayout.setVisibility(View.VISIBLE);
-                        ViewUtil.fade(progressBar, connectionQLayout, getContext());
-                    }
-                });
+                switch (error) {
+                    default:
+                        errorText.setText(R.string.error_connection_default);
+                        errorText.setVisibility(View.VISIBLE);
+                        retry.setVisibility(View.VISIBLE);
+                        retry.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                applyChanges();
+                            }
+                        });
+                }
+                mainContentLayout.setVisibility(View.VISIBLE);
+                ViewUtil.fade(progressBar, connectionQLayout, getContext());
             }
         });
     }
@@ -450,7 +411,6 @@ public class PairSensorDialogPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
         if (positiveResult) {
-
         }
     }
 }

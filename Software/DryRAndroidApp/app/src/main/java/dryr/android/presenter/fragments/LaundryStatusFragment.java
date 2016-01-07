@@ -1,11 +1,17 @@
 package dryr.android.presenter.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -13,6 +19,8 @@ import android.widget.TextView;
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.model.LaundryState;
+import dryr.android.presenter.DryRPreferenceActivity;
+import dryr.android.utils.DialogUtil;
 import dryr.android.utils.ViewUtil;
 
 /**
@@ -29,6 +37,9 @@ public class LaundryStatusFragment extends Fragment {
     private ProgressBar progressBar;
     private RelativeLayout laundryStateLayout;
     private TextView laundryStateText;
+
+    private TextView messageView;
+    private Button messageButton;
 
     // Data
     private LaundryState laundryState;
@@ -53,20 +64,51 @@ public class LaundryStatusFragment extends Fragment {
         laundryStateLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_layout);
         laundryStateText = (TextView) v.findViewById(R.id.laundry_status_displayText);
 
+        messageView = (TextView) v.findViewById(R.id.laundry_status_message_view);
+        messageView.setVisibility(View.GONE); // TODO: Show more messages about connection etc. in a future Sprint
+        messageButton = (Button) v.findViewById(R.id.laundry_status_message_button);
+
+        setHasOptionsMenu(true);
+
+
         if (laundryState != null) {
             setLaundryState(laundryState);
         }
 
-        refreshState();
-
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.laundry_state, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.laundry_status_refresh:
+                refreshState();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        // TODO: Keep it from refreshing two times in a row
+        super.onResume();
+        refreshState();
     }
 
     private void refreshState() {
         showProgress(true);
-        CommunicationFacade.getInstance().getLaundryState(new CommunicationFacade.CommunicationCallback<LaundryState>() {
+        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<LaundryState>() {
             @Override
             public void onResult(LaundryState result) {
+
                 setLaundryState(result);
                 showProgress(false);
             }
@@ -75,11 +117,35 @@ public class LaundryStatusFragment extends Fragment {
             public void onError(CommunicationFacade.CommunicationError error) {
                 switch (error) {
                     case NO_BASE_STATION_CONNECTED:
-                        // TODO: Show settings activity with ConnectBaseStationDialog open
+
+                        Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
+                        intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_baseStation_connect_key));
+                        getActivity().startActivity(intent);
+
+                        break;
+                    case NO_SENSOR_PAIRED:
+
+                        // Show message informing about the fact that there are no sensors paired and
+                        // display button to pair some
+                        messageView.setText(R.string.laundry_status_no_sensor);
+                        messageButton.setText(R.string.pref_sensor_pair_title);
+                        messageButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Show settings activity with PairSensorDialog open
+                                Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
+                                intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_sensor_pair_key));
+                                getActivity().startActivity(intent);
+                            }
+                        });
+                        ViewUtil.fadeIn(messageView, getActivity());
+                        ViewUtil.fadeIn(messageButton, getActivity());
+                        laundryStateLayout.setEnabled(false);
+
                         break;
 
                     default:
-                        // TODO: Show no network connection error
+                        DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
                         showProgress(false);
                 }
             }
@@ -104,6 +170,8 @@ public class LaundryStatusFragment extends Fragment {
             ViewUtil.fade(laundryStateLayout, progressBar, getActivity());
         } else {
             ViewUtil.fade(progressBar, laundryStateLayout, getActivity());
+            ViewUtil.fadeOut(messageView, getActivity());
+            ViewUtil.fadeOut(messageButton, getActivity());
         }
     }
 

@@ -3,6 +3,8 @@
 
     <string name="action_settings">Einstellungen</string>
 
+    <string name="refresh">Aktualisieren</string>
+
 
     <!-- Navigation drawer !-->
     <string name="navigation_drawer_open">Navigationsleitste öffnen</string>
@@ -16,6 +18,7 @@
     <!-- LaundryStatus !-->
     <string name="laundry_status_drying">Trocknet</string>
     <string name="laundry_status_dry">Trocken</string>
+    <string name="laundry_status_no_sensor">Es ist kein Sensor mit der Basistation verbunden</string>
 
 
     <!-- SensorStatus !-->
@@ -72,6 +75,7 @@
 
 
     <!-- General errors !-->
+    <string name="error_dialog_title">Ein Fehler ist aufgetreten</string>
     <string name="error_connection_default">Bei der Verbindung ist ein Fehler aufgetreten, überprüfen
         Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie isch im gleichen Netz wie
         Ihre Basisstation befinden.</string>

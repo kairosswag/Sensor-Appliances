@@ -1,7 +1,9 @@
 package dryr.android.communication;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import dryr.android.R;
 import dryr.android.model.BaseStation;
 import dryr.android.model.LaundryState;
 import dryr.android.model.Sensor;
@@ -26,44 +29,127 @@ public class CommunicationFacade {
         /**
          * No sensor was paired to the base station
          */
-        NO_SENSOR_PAIRED
+        NO_SENSOR_PAIRED,
+        UNKNOWN
     }
 
-    private static CommunicationFacade ourInstance = new CommunicationFacade();
+    private static CommunicationFacade ourInstance;
 
-    public static CommunicationFacade getInstance() {
+    public static CommunicationFacade getInstance(Context context) {
+        if (ourInstance == null) {
+            ourInstance = new CommunicationFacade(context);
+        }
         return ourInstance;
     }
 
-    private ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(10);
+    private Context context;
 
-    private CommunicationFacade() {
+    private CommunicationFacade(Context context) {
+        this.context = context;
     }
 
-    public void getLaundryState(CommunicationCallback<LaundryState> callback) {
+    public void getLaundryState(final CommunicationCallback<LaundryState> callback) {
         // TODO: connect / check connection / run in background / return result
         // TODO: regularly check this...
-        callback.onResult(new LaundryState(false));
-    }
 
-    public void getSensorState(CommunicationCallback<SensorState> callback) {
-        // TODO: connect / check connection / run in background / return result
-        // TODO: regularly check this...
-        callback.onResult(new SensorState(70,26));
-    }
+        AsyncTask asyncTask = new AsyncTask() {
 
-    public void getAvailableBaseStations(CommunicationCallback<List<BaseStation>> callback) {
-        // TODO: find base stations / run in background / return result
-        ArrayList<BaseStation> testStations = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            testStations.add(new BaseStation("test " + i));
+            @Override
+            protected Object doInBackground(Object[] params) {
+                // TODO
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                callback.onResult(new LaundryState(false));
+            }
+        };
+
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        if (sp.contains(context.getString(R.string.pref_baseStation_connect_key))) {
+            asyncTask.execute(null);
+        } else {
+            callback.onError(CommunicationError.NO_BASE_STATION_CONNECTED);
         }
-        callback.onResult(testStations);
     }
 
-    public void tryConnection(BaseStation station, CommunicationCallbackBinary callback) {
+    public void getSensorState(final CommunicationCallback<SensorState> callback) {
+        // TODO: connect / check connection / run in background / return result
+        // TODO: regularly check this...
+
+        AsyncTask asyncTask = new AsyncTask() {
+
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                // TODO
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                callback.onResult(new SensorState(70,26));
+            }
+        };
+
+        asyncTask.execute(null);
+
+    }
+
+    public void getAvailableBaseStations(final CommunicationCallback<List<BaseStation>> callback) {
+        // TODO: find base stations / run in background / return result
+
+        AsyncTask asyncTask = new AsyncTask() {
+
+            ArrayList<BaseStation> testStations;
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                // TODO
+                testStations = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    testStations.add(new BaseStation("test " + i));
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                callback.onResult(testStations);
+            }
+        };
+
+        asyncTask.execute(null);
+    }
+
+    public void tryConnection(BaseStation station, final CommunicationCallbackBinary callback) {
         // TODO: connect to base station / run in background / return result
-        callback.onSuccess();
+
+        AsyncTask asyncTask = new AsyncTask() {
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                // TODO
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                callback.onSuccess();
+            }
+        };
+
+        asyncTask.execute(null);
     }
 
     public void connectPermanently(BaseStation station) {
@@ -77,43 +163,75 @@ public class CommunicationFacade {
     public void getPairedSensors(final CommunicationCallback<List<Sensor>> callback) {
         // TODO: find base stations / run in background / return result
 
-        scheduledExecutorService.schedule(new Runnable() {
+        AsyncTask asyncTask = new AsyncTask() {
+
+            ArrayList<Sensor> testSensors;
+
             @Override
-            public void run() {
-                ArrayList<Sensor> testSensors = new ArrayList<>();
+            protected Object doInBackground(Object[] params) {
+                // TODO
+                testSensors = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
                     testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
                 }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
                 callback.onResult(testSensors);
             }
-        }, 1,  TimeUnit.SECONDS);
+        };
+
+        asyncTask.execute(null);
     }
 
     public void getAvailableSensors(final CommunicationCallback<List<Sensor>> callback) {
         // TODO: find base stations / run in background / return result
 
-        scheduledExecutorService.schedule(new Runnable() {
+        AsyncTask asyncTask = new AsyncTask() {
+
+            ArrayList<Sensor> testSensors;
+
             @Override
-            public void run() {
-                ArrayList<Sensor> testSensors = new ArrayList<>();
+            protected Object doInBackground(Object[] params) {
+                // TODO
+                testSensors = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
                     testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
                 }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
                 callback.onResult(testSensors);
             }
-        }, 1,  TimeUnit.SECONDS);
+        };
 
+        asyncTask.execute(null);
     }
 
     public void pairAndRemove(List<Sensor> pair, List<Sensor> remove, final CommunicationCallbackBinary callback) {
-        // TODO
-
-        scheduledExecutorService.schedule(new Runnable() {
+        AsyncTask asyncTask = new AsyncTask() {
             @Override
-            public void run() {
+            protected Object doInBackground(Object[] params) {
+                // TODO
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
                 callback.onSuccess();
             }
-        }, 1, TimeUnit.SECONDS);
+        };
+
+        asyncTask.execute(null);
     }
 
     /**
