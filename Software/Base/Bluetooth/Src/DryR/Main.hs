@@ -21,13 +21,13 @@ defaultMain = do
 
   handlers <- registerHandlers vcontext
 
-  initialize
+  initialize vcontext
 
   exportMethods vcontext
   waitForInterrupt
   unexportMethods vcontext
 
-  uninitialize
+  uninitialize vcontext
 
   threadDelay 250000
 
