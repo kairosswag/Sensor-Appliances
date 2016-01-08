@@ -1,2 +1,2 @@
-INSERT INTO Device
+INSERT IGNORE INTO Device
 VALUES (?, ?);
