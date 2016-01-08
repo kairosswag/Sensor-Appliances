@@ -12,7 +12,7 @@ import DryR.SQL.Read
 data Context = Context {
   contextDatabase :: DB.Connection,
   contextDBus :: DS.Client,
-  contextQueries :: [(Query, String)]}
+  contextQueries :: [(QueryIdentifier, String)]}
 
 type InnerContext = MVar (Maybe Context)
 

@@ -9,7 +9,7 @@ import DryR.SQL.Query
 
 import Paths_dryr_base_bluetooth
 
-readSQL :: IO ([(Query, String)])
+readSQL :: IO ([(QueryIdentifier, String)])
 readSQL = do
   execPath <- getExecutablePath
   let data_paths = map ("Res/SQL" </>) names
