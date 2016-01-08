@@ -6,6 +6,7 @@ module DryR.Main where
 import Control.Concurrent
 
 import DBus.Client
+import DryR.DBus.Init
 import DryR.DBus.SignalHandler
 import DryR.InterruptHandler
 import DryR.DBus.MethodHandler
@@ -20,13 +21,13 @@ defaultMain = do
 
   handlers <- registerHandlers vcontext
 
-  -- Set up Devices
+  initialize
 
   exportMethods vcontext
   waitForInterrupt
   unexportMethods vcontext
 
-  -- Tear Devices down
+  uninitialize
 
   threadDelay 250000
 
