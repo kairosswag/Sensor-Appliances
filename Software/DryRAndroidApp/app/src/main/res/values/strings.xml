@@ -80,4 +80,8 @@
         Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie isch im gleichen Netz wie
         Ihre Basisstation befinden.</string>
 
+    <!-- Notifications !-->
+    <string name="notification_laundry_dry_title">Wäsche trocken</string>
+    <string name="notification_laundry_dry_text">Ihre Wäsche ist nun trocken</string>
+
 </resources>

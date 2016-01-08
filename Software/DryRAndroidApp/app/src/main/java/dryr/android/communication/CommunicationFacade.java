@@ -50,7 +50,6 @@ public class CommunicationFacade {
 
     public void getLaundryState(final CommunicationCallback<LaundryState> callback) {
         // TODO: connect / check connection / run in background / return result
-        // TODO: regularly check this...
 
         AsyncTask asyncTask = new AsyncTask() {
 
@@ -79,7 +78,6 @@ public class CommunicationFacade {
 
     public void getSensorState(final CommunicationCallback<SensorState> callback) {
         // TODO: connect / check connection / run in background / return result
-        // TODO: regularly check this...
 
         AsyncTask asyncTask = new AsyncTask() {
 

@@ -14,4 +14,6 @@
 
     <color name="success_color">#2e7d32</color>
     <color name="delete_mode_background">#ffab91</color>
+
+    <color name="notification_icon_color">#e0e0e0</color>
 </resources>

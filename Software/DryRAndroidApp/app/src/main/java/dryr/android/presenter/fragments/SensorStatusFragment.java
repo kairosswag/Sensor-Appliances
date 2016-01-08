@@ -52,6 +52,8 @@ public class SensorStatusFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // TODO: regularly refresh (if running)
         refreshSensorState();
     }
 

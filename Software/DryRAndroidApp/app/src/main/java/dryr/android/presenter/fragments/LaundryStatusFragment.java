@@ -100,6 +100,8 @@ public class LaundryStatusFragment extends Fragment {
     public void onResume() {
         // TODO: Keep it from refreshing two times in a row
         super.onResume();
+
+        // TODO: regularly refresh
         refreshState();
     }
 

@@ -18,6 +18,7 @@
         <CheckBoxPreference
             android:key="@string/pref_notification_push_key"
             android:summary="@string/pref_notification_push_summary"
-            android:title="@string/pref_notification_push_title" />
+            android:title="@string/pref_notification_push_title"
+            android:defaultValue="true"/>
     </PreferenceCategory>
 </PreferenceScreen>

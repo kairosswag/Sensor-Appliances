@@ -3,6 +3,7 @@ package dryr.android.presenter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ServiceCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import dryr.android.R;
+import dryr.android.background.DryRBackgroundService;
+import dryr.android.background.DryRBackgroundServiceProvider;
 import dryr.android.presenter.fragments.LaundryStatusFragment;
 import dryr.android.presenter.fragments.SensorStatusFragment;
 
@@ -21,8 +24,29 @@ public class MainActivity extends AppCompatActivity
                 SensorStatusFragment.OnFragmentInteractionListener {
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        // Inform the BackgroundService about app status
+        if (DryRBackgroundService.isServiceRunning()) {
+            DryRBackgroundServiceProvider.getInstance().getService(this).setAppRunning(false);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (DryRBackgroundService.isServiceRunning()) {
+            DryRBackgroundServiceProvider.getInstance().getService(this).setAppRunning(true);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Start background service
+        DryRBackgroundServiceProvider.getInstance().startService(this, true);
+
+        // Setup toolbar and UI
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
