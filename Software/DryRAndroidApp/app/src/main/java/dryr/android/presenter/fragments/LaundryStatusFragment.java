@@ -16,6 +16,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.model.LaundryState;
@@ -44,16 +48,48 @@ public class LaundryStatusFragment extends Fragment {
     // Data
     private LaundryState laundryState;
 
+    // Regularly refresh state
+    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+    private boolean refreshingScheduled = false;
+    private ScheduledFuture<?> task;
+
     public LaundryStatusFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // refresh regularly
+        if (!refreshingScheduled) {
+            refreshState(false);
+            int period = getResources().getInteger(R.integer.sensor_fragment_status_refresh_frequency_period);
+
+            refreshingScheduled = true;
+            task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    // TODO: Show smaller progress bar for auto refresh (future sprint)
+                    refreshState(true);
+                }
+            }, period, period, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // stop refreshing
+        task.cancel(true);
+        refreshingScheduled = false;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,23 +125,18 @@ public class LaundryStatusFragment extends Fragment {
 
         switch (id) {
             case R.id.laundry_status_refresh:
-                refreshState();
+                refreshState(false);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume() {
-        // TODO: Keep it from refreshing two times in a row
-        super.onResume();
-
-        // TODO: regularly refresh
-        refreshState();
-    }
-
-    private void refreshState() {
+    /**
+     * Refresh laundry state
+     * @param silent don't display error messages
+     */
+    private void refreshState(final boolean silent) {
         showProgress(true);
         CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<LaundryState>() {
             @Override
@@ -117,6 +148,11 @@ public class LaundryStatusFragment extends Fragment {
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
+                if (silent) {
+                    showProgress(false);
+                    return;
+                }
+
                 switch (error) {
                     case NO_BASE_STATION_CONNECTED:
 
@@ -167,14 +203,19 @@ public class LaundryStatusFragment extends Fragment {
         }
     }
 
-    private void showProgress(boolean show) {
-        if (show) {
-            ViewUtil.fade(laundryStateLayout, progressBar, getActivity());
-        } else {
-            ViewUtil.fade(progressBar, laundryStateLayout, getActivity());
-            ViewUtil.fadeOut(messageView, getActivity());
-            ViewUtil.fadeOut(messageButton, getActivity());
-        }
+    private void showProgress(final boolean show) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (show) {
+                    ViewUtil.fade(laundryStateLayout, progressBar, getActivity());
+                } else {
+                    ViewUtil.fade(progressBar, laundryStateLayout, getActivity());
+                    ViewUtil.fadeOut(messageView, getActivity());
+                    ViewUtil.fadeOut(messageButton, getActivity());
+                }
+            }
+        });
     }
 
     @Override

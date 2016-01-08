@@ -13,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.model.SensorState;
@@ -40,6 +44,11 @@ public class SensorStatusFragment extends Fragment {
     // Data
     private SensorState sensorState;
 
+    // Regularly refresh state
+    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+    private boolean refreshingScheduled = false;
+    private ScheduledFuture<?> task;
+
     public SensorStatusFragment() {
         // Required empty public constructor
     }
@@ -53,8 +62,29 @@ public class SensorStatusFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        // TODO: regularly refresh (if running)
-        refreshSensorState();
+        // refresh regularly
+        if (!refreshingScheduled) {
+            refreshSensorState(false);
+            int period = getResources().getInteger(R.integer.sensor_fragment_status_refresh_frequency_period);
+
+            refreshingScheduled = true;
+            task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    // TODO: Show smaller progress bar for auto refresh (future sprint)
+                    refreshSensorState(true);
+                }
+            }, period, period, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // stop refreshing
+        task.cancel(true);
+        refreshingScheduled = false;
     }
 
     @Override
@@ -77,7 +107,7 @@ public class SensorStatusFragment extends Fragment {
         showProgress(true);
 
 
-        // TODO: Use tabs for multiple sensors
+        // TODO: Use tabs for multiple sensors (future sprint)
 
         return v;
     }
@@ -93,14 +123,18 @@ public class SensorStatusFragment extends Fragment {
 
         switch (id) {
             case R.id.sensor_state_refresh:
-                refreshSensorState();
+                refreshSensorState(false);
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void refreshSensorState() {
+    /**
+     * refresh the sensor state with data from the base station
+     * @param silent displays no error message on error
+     */
+    private void refreshSensorState(final boolean silent) {
         // Refresh Sensor state
         CommunicationFacade.getInstance(getContext()).getSensorState(new CommunicationFacade.CommunicationCallback<SensorState>() {
             @Override
@@ -111,6 +145,11 @@ public class SensorStatusFragment extends Fragment {
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
+                if (silent) {
+                    showProgress(false);
+                    return;
+                }
+
                 switch (error) {
                     case NO_BASE_STATION_CONNECTED:
                         // Show settings activity with ConnectBaseStationDialog open
@@ -136,12 +175,17 @@ public class SensorStatusFragment extends Fragment {
         });
     }
 
-    private void showProgress(boolean show) {
-        if (show) {
-            ViewUtil.fade(sensorStatusLayout, progressBar, getActivity());
-        } else {
-            ViewUtil.fade(progressBar, sensorStatusLayout, getActivity());
-        }
+    private void showProgress(final boolean show) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (show) {
+                    ViewUtil.fade(sensorStatusLayout, progressBar, getActivity());
+                } else {
+                    ViewUtil.fade(progressBar, sensorStatusLayout, getActivity());
+                }
+            }
+        });
     }
 
     public void setSensorState(SensorState sensorState) {

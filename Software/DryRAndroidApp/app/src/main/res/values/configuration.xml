@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Configuration data for the app !-->
+
+    <!-- refresh frequencies (in seconds) !-->
+    <integer name="sensor_fragment_status_refresh_frequency_period">10</integer>
+    <integer name="laundry_fragment_status_refresh_frequency_period">10</integer>
+
+</resources>

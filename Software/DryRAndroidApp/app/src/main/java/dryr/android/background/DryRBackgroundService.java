@@ -50,7 +50,11 @@ public class DryRBackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        appRunning = intent.getBooleanExtra(APP_RUNNING_KEY, false);
+        if (intent != null) {
+            appRunning = intent.getBooleanExtra(APP_RUNNING_KEY, false);
+        } else {
+            appRunning = false;
+        }
         serviceRunning = true;
 
         // Make service sticky, restart it whenever it is stopped
