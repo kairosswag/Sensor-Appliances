@@ -5,16 +5,18 @@ module DryR.Main where
 
 import Control.Concurrent
 
+import Data.Maybe
+
+import DBus
 import DBus.Client
+
+import DryR.Context
 import DryR.DBus.Init
+import DryR.DBus.MethodHandler
+import DryR.DBus.Poll
+import DryR.DBus.Properties
 import DryR.DBus.SignalHandler
 import DryR.InterruptHandler
-import DryR.DBus.MethodHandler
-
-import Data.Maybe
-import DBus
-import DryR.DBus.Properties
-import DryR.Context
 
 defaultMain = do
   vcontext <- newContext
@@ -22,6 +24,8 @@ defaultMain = do
   handlers <- registerHandlers vcontext
 
   initialize vcontext
+
+  poll vcontext
 
   exportMethods vcontext
   waitForInterrupt
