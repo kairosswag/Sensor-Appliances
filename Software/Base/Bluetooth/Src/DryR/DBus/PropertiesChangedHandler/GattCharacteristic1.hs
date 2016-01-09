@@ -16,12 +16,9 @@ import DryR.DBus.PropertiesChangedHandler.GattCharacteristic1.Humidity
 
 gattCharacteristic1Handler pC c = do
   let oP = pCObjectPath pC
-  print $ formatObjectPath oP
   u <- get c (busName_ "org.bluez") oP (interfaceName_ "org.bluez.GattCharacteristic1") (memberName_ "UUID")
   let us :: String = fromJust $ fromVariant $ fromJust u
 
   if us == ch_hum
     then humidityHandler pC c
     else return ()
-
-  print "GC1"
