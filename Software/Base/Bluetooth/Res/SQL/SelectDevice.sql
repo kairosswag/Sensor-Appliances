@@ -1,2 +1,2 @@
-SELECT mac, status_id
+SELECT mac
 FROM Device;
