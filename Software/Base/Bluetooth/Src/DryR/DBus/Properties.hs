@@ -22,7 +22,7 @@ set :: (IsVariant a) => Context -> BusName -> ObjectPath -> InterfaceName -> Mem
 set c bN oP iN mN value = do
   let mc = (methodCall oP ("org.freedesktop.DBus.Properties") ("Set")) {
     methodCallDestination = Just bN,
-    methodCallBody = [toVariant iN, toVariant mN, toVariant value]
+    methodCallBody = [toVariant iN, toVariant mN, toVariant $ toVariant value]
   }
 
   mr <- call (contextDBus c) mc
