@@ -1,3 +1,5 @@
 module DryR.DBus.PropertiesChangedHandler.Device1 where
 
-device1Handler pC c = print "D1"
+import DryR.DBus.PropertiesChangedHandler.Device1.Connected
+
+device1Handler = connectedHandler
