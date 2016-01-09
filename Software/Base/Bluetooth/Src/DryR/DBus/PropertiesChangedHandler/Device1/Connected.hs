@@ -11,6 +11,7 @@ import Database.MySQL.Simple
 import DBus
 
 import DryR.Context
+import DryR.DBus.MethodCall.Adapter1
 import DryR.DBus.MethodCall.GattCharacteristic1
 import DryR.DBus.PropertiesChanged
 import DryR.DBus.Util
@@ -39,6 +40,10 @@ connectedTrue pC c = do
   return ()
 
 connectedFalse pC c = do
-  let mac = objectPathToMac $ pCObjectPath pC
-  execute (contextDatabase c) (getQuery UpdateDevice $ contextQueries c) (2 :: Integer, mac)
+  let oP = pCObjectPath pC
+  let mac = objectPathToMac oP
+
+  removeDevice c "/org/bluez/hci0" oP
+
+  execute (contextDatabase c) (getQuery UpdateDevice $ contextQueries c) (0 :: Integer, mac)
   return ()
