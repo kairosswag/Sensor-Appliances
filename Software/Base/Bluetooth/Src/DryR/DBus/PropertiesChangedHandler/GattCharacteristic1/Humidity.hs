@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module DryR.DBus.PropertiesChangedHandler.GattCharacteristic1.Humidity where
@@ -18,21 +19,14 @@ import DryR.SQL.Query as SQL
 import DryR.Util
 
 humidityHandler pC c = do
-  print "Hum"
   let oP = pCObjectPath pC
   let cP = pCChangedProperties pC
+  case ((lookup (toVariant ("Value" :: MemberName)) $ dictionaryItems cP) >>= fromVariant >>= fromVariant) of
+    Just lookupValue -> do
+      let mac = fromJust $ objectPathToMac $ parent $ parent oP
+      let value = fromJust $ word8ListToFloat $ reverse $ BS.unpack lookupValue
 
-  let i = head $ filter (\(k,_) -> (fromJust $ fromVariant k) == "Value") (dictionaryItems cP)
-  let valueRaw :: BS.ByteString = fromJust $ fromVariant $ fromJust $ fromVariant $ snd i
+      execute (contextDatabase c) (getQuery InsertHumidity $ contextQueries c) (mac, value)
 
-  let mac = fromJust $ objectPathToMac $ parent $ parent oP
-  let value = fromJust $ word8ListToFloat $ reverse $ BS.unpack valueRaw
-
-  print mac
-  print value
-
-  res <- execute (contextDatabase c) (getQuery InsertHumidity $ contextQueries c) (mac, value)
-  --print res
-
-  --print value
-  return ()
+      return ()
+    Nothing -> return ()
