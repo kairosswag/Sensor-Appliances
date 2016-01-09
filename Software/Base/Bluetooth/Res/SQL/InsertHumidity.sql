@@ -1,0 +1,2 @@
+INSERT IGNORE INTO Humidity
+VALUES (NOW(), ?, ?);

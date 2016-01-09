@@ -1,0 +1,2 @@
+SELECT mac
+FROM Device;
