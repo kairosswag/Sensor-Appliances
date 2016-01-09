@@ -10,6 +10,7 @@ data QueryIdentifier =
   InsertDevice |
   InsertHumidity |
   SelectDevice |
+  SelectDeviceConnected |
   UpdateDevice
   deriving (Eq)
 
@@ -18,6 +19,7 @@ queries = [
   InsertDevice,
   InsertHumidity,
   SelectDevice,
+  SelectDeviceConnected,
   UpdateDevice]
 
 names = [
@@ -25,6 +27,7 @@ names = [
   "InsertDevice.sql",
   "InsertHumidity.sql",
   "SelectDevice.sql",
+  "SelectDeviceConnected.sql",
   "UpdateDevice.sql"]
 
 getQuery :: QueryIdentifier -> [(QueryIdentifier, String)] -> Query
