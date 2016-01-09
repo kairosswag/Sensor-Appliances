@@ -18,7 +18,7 @@ methods = [
 exportMethods :: InnerContext -> IO (Maybe ())
 exportMethods = withContextAndInnerContext (\c i -> do
   rNR <- requestName (contextDBus c) "dryr.base.bluetooth" [nameDoNotQueue]
-  autoMethods <- mapM (\(name, func) -> return $ autoMethod "dryr.base.bluetooth" name (\mac -> (withContextAsync (connectDevice mac) i) >> (return ()))) methods
+  autoMethods <- mapM (\(name, func) -> return $ autoMethod "dryr.base.bluetooth" name (\mac -> (withContextAsync (func mac) i) >> (return ()))) methods
   export (contextDBus c) "/" autoMethods
   return ())
 
