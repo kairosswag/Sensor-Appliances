@@ -10,6 +10,7 @@ package dryr.common.json.beans;
  */
 public class SensorDataPoint {
 	private String sensor;
+	private long sensorMac;
 	private long time;
 	private long humidity;
 	
@@ -22,6 +23,14 @@ public class SensorDataPoint {
 
 	public void setSensor(String sensor) {
 		this.sensor = sensor;
+	}
+
+	public long getSensorMac() {
+		return sensorMac;
+	}
+
+	public void setSensorMac(long sensorMac) {
+		this.sensorMac = sensorMac;
 	}
 
 	public long getTime() {
