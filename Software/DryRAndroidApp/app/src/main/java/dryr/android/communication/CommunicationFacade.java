@@ -4,6 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +45,8 @@ public class CommunicationFacade {
         UNKNOWN
     }
 
+    private static final String TAG = "CommunicationFacade";
+
     private static CommunicationFacade ourInstance;
 
     public static CommunicationFacade getInstance(Context context) {
@@ -45,32 +58,33 @@ public class CommunicationFacade {
 
     private Context context;
 
+    private String defaultUrl;
+
     private CommunicationFacade(Context context) {
         this.context = context;
+
+        String hostName = context.getString(R.string.default_base_station_host_name);
+        String port = context.getString(R.string.default_server_port);
+        defaultUrl = "http://" + hostName + ":" + port + context.getString(R.string.default_server_base_url);
     }
 
     public void getLaundryState(final CommunicationCallback<LaundryState> callback) {
         // TODO: connect / check connection / run in background / return result
 
-        AsyncTask asyncTask = new AsyncTask() {
-
+        String requestUrl =  "data/multiple?amount=1";
+        sendJSON(requestUrl, 5000, new Response.Listener<JSONObject>() {
             @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, "response received: " + response.toString());
                 callback.onResult(new LaundryState(false));
             }
-        };
-
-
-
-        asyncTask.execute(null);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "error received: " + error.toString());
+                callback.onError(CommunicationError.UNKNOWN);
+            }
+        });
 
     }
 
@@ -228,6 +242,13 @@ public class CommunicationFacade {
         };
 
         asyncTask.execute(null);
+    }
+
+    private void sendJSON(String restUrl, int timeout, Response.Listener listener, Response.ErrorListener errorListener) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, defaultUrl + restUrl, listener, errorListener);
+        // Set timeout
+        request.setRetryPolicy(new DefaultRetryPolicy(timeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        RequestQueueProvider.getInstance().getRequestQueue().add(request);
     }
 
     /**

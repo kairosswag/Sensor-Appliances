@@ -8,5 +8,8 @@
 
     <!-- Base station host name !-->
     <string name="default_base_station_host_name">PI</string>
+    <string name="default_server_port">8080</string>
+    <string name="default_server_base_url">/basestation-tomcat/</string>
+    <string name="default_server_test_request">TestDataHandler</string>
 
 </resources>

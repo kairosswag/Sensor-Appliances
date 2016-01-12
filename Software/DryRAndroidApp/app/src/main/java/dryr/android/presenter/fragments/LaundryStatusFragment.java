@@ -66,8 +66,10 @@ public class LaundryStatusFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+
         // refresh regularly
         if (!refreshingScheduled) {
+
             refreshState(false);
             int period = getResources().getInteger(R.integer.sensor_fragment_status_refresh_frequency_period);
 
@@ -75,7 +77,7 @@ public class LaundryStatusFragment extends Fragment {
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    // TODO: Show smaller progress bar for auto refresh (future sprint)
+                    // TODO: Show smaller progress bar for auto refresh (future sprint) + (show some kind of error (smaller?))
                     refreshState(true);
                 }
             }, period, period, TimeUnit.SECONDS);
