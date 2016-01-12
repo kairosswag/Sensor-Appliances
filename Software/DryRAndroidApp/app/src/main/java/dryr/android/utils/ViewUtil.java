@@ -16,8 +16,6 @@ public class ViewUtil {
      * @param in  view being faded in
      */
     public static final void fade(final View out, final View in, Context context) {
-        int shortAnimTime = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
-
         fadeOut(out, context);
         fadeIn(in, context);
     }
