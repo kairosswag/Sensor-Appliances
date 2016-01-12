@@ -6,4 +6,7 @@
     <integer name="sensor_fragment_status_refresh_frequency_period">10</integer>
     <integer name="laundry_fragment_status_refresh_frequency_period">10</integer>
 
+    <!-- Base station host name !-->
+    <string name="default_base_station_host_name">PI</string>
+
 </resources>

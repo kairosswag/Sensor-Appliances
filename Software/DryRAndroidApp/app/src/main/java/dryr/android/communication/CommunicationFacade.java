@@ -24,11 +24,12 @@ public class CommunicationFacade {
     public enum CommunicationError {
         /**
          * No base station has been connected to this app
-         */
-        NO_BASE_STATION_CONNECTED,
+         *
+        NO_BASE_STATION_CONNECTED,*/
         /**
          * No sensor was paired to the base station
          */
+        NO_BASE_STATION_FOUND,
         NO_SENSOR_PAIRED,
         UNKNOWN
     }
@@ -68,12 +69,9 @@ public class CommunicationFacade {
         };
 
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        if (sp.contains(context.getString(R.string.pref_baseStation_connect_key))) {
-            asyncTask.execute(null);
-        } else {
-            callback.onError(CommunicationError.NO_BASE_STATION_CONNECTED);
-        }
+
+        asyncTask.execute(null);
+
     }
 
     public void getSensorState(final CommunicationCallback<SensorState> callback) {

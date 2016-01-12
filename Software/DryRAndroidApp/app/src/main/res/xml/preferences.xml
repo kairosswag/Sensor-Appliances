@@ -4,10 +4,10 @@
     android:key="screen">
 
     <PreferenceCategory android:title="@string/pref_baseStation_title">
-        <dryr.android.dialogs.ConnectBaseStationDialogPreference
+ <!--       <dryr.android.dialogs.ConnectBaseStationDialogPreference
             android:key="@string/pref_baseStation_connect_key"
             android:summary="@string/pref_baseStation_connect_summary"
-            android:title="@string/pref_baseStation_connect_title" />
+            android:title="@string/pref_baseStation_connect_title" /> !-->
         <dryr.android.dialogs.PairSensorDialogPreference
             android:key="@string/pref_sensor_pair_key"
             android:summary="@string/pref_sensor_pair_summary"

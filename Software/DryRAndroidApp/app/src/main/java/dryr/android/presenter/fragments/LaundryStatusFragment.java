@@ -154,20 +154,30 @@ public class LaundryStatusFragment extends Fragment {
                 }
 
                 switch (error) {
-                    case NO_BASE_STATION_CONNECTED:
+                    /*case NO_BASE_STATION_CONNECTED:
 
                         Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
                         intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_baseStation_connect_key));
                         getActivity().startActivity(intent);
 
+                        break;*/
+                    case NO_BASE_STATION_FOUND:
+
+                        // Base station was not found in network
+                        showMessage(R.string.error_no_base_station_found, R.string.error_no_bs_retry, true, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refreshState(false);
+                            }
+                        });
+
                         break;
+
                     case NO_SENSOR_PAIRED:
 
                         // Show message informing about the fact that there are no sensors paired and
                         // display button to pair some
-                        messageView.setText(R.string.laundry_status_no_sensor);
-                        messageButton.setText(R.string.pref_sensor_pair_title);
-                        messageButton.setOnClickListener(new View.OnClickListener() {
+                        showMessage(R.string.laundry_status_no_sensor, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 // Show settings activity with PairSensorDialog open
@@ -176,18 +186,28 @@ public class LaundryStatusFragment extends Fragment {
                                 getActivity().startActivity(intent);
                             }
                         });
-                        ViewUtil.fadeIn(messageView, getActivity());
-                        ViewUtil.fadeIn(messageButton, getActivity());
-                        laundryStateLayout.setEnabled(false);
 
                         break;
 
                     default:
                         DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
-                        showProgress(false);
                 }
+
+                showProgress(false);
             }
         });
+    }
+
+    private void showMessage(int messageTextId, int buttonTextId, boolean showButton, View.OnClickListener clickListener) {
+        messageView.setText(messageTextId);
+        if (showButton) {
+            messageButton.setText(buttonTextId);
+            messageButton.setOnClickListener(clickListener);
+            ViewUtil.fadeIn(messageButton, getActivity());
+        }
+        ViewUtil.fadeIn(messageView, getActivity());
+        laundryStateLayout.setEnabled(false);
+
     }
 
     public void setLaundryState(LaundryState laundryState) {
@@ -213,6 +233,7 @@ public class LaundryStatusFragment extends Fragment {
                     ViewUtil.fade(progressBar, laundryStateLayout, getActivity());
                     ViewUtil.fadeOut(messageView, getActivity());
                     ViewUtil.fadeOut(messageButton, getActivity());
+                    laundryStateLayout.setEnabled(true);
                 }
             }
         });

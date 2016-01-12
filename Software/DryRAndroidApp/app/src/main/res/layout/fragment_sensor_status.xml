@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,6 +29,32 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/sensor_status_message_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/laundry_status_no_sensor"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/sensor_status_message_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_sensor_pair_title"
+            android:textColor="@drawable/primary_color_selector"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
     <ProgressBar
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
@@ -36,4 +62,4 @@
         android:id="@+id/sensor_status_progress"
         android:layout_gravity="center" />
 
-</FrameLayout>
+</RelativeLayout>

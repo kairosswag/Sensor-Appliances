@@ -77,8 +77,12 @@
     <!-- General errors !-->
     <string name="error_dialog_title">Ein Fehler ist aufgetreten</string>
     <string name="error_connection_default">Bei der Verbindung ist ein Fehler aufgetreten, überprüfen
-        Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie isch im gleichen Netz wie
+        Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie sich im gleichen Netz wie
         Ihre Basisstation befinden.</string>
+    <string name="error_no_base_station_found">Bei der Verbindung mit der Basistation ist ein Fehler aufgetreten, überprüfen
+        Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie sich im gleichen Netz wie
+        Ihre Basisstation befinden und, dass diese angeschaltet ist.</string>
+    <string name="error_no_bs_retry">Nochmal versuchen</string>
 
     <!-- Notifications !-->
     <string name="notification_laundry_dry_title">Wäsche trocken</string>

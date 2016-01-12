@@ -45,6 +45,10 @@ public class ViewUtil {
      * @param out view being faded out
      */
     public static final void fadeOut(final View out, Context context) {
+        if (out.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
         int shortAnimTime = context.getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         out.setVisibility(View.VISIBLE);
