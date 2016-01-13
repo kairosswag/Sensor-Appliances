@@ -48,10 +48,10 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>PredictionHandler</servlet-name>
-  	<url-pattern>/PredictionHandler</url-pattern>
+  	<url-pattern>/prediction</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>BluetoothUpdateHandler</servlet-name>
-  	<url-pattern>/BluetoothUpdateHandler</url-pattern>
+  	<url-pattern>/sensor-update</url-pattern>
   </servlet-mapping>
 </web-app>

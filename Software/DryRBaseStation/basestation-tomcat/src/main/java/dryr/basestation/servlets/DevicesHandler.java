@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dryr.basestation.database.BluetoothDeviceDB;
 import dryr.basestation.database.DatabaseHelper;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.BluetoothDevice;
@@ -31,8 +32,7 @@ public class DevicesHandler extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		DatabaseHelper dbhelp = new DatabaseHelper();
-		List<BluetoothDevice> resultList = dbhelp.getBluetoothDeviceList();
+		List<BluetoothDevice> resultList = (new BluetoothDeviceDB()).getBluetoothDeviceList();
 		// response.setContentType("application/json");
 		response.getWriter().append(ServletUtil.jsonize(resultList));
 	}

@@ -1,7 +1,7 @@
 package dryr.common.json.beans;
 
 /**
- * Resembles a bluetooth device.
+ * Resembles a Bluetooth device.
  * 
  * 
  * This follows the JavaBean conventions.
@@ -10,18 +10,18 @@ package dryr.common.json.beans;
  *
  */
 public class BluetoothDevice {
-	private long mac;
+	private String mac;
 	private int status;
 	
 	public BluetoothDevice() { 
 		
 	}
 
-	public long getMac() {
+	public String getMac() {
 		return mac;
 	}
 
-	public void setMac(long mac) {
+	public void setMac(String mac) {
 		this.mac = mac;
 	}
 
