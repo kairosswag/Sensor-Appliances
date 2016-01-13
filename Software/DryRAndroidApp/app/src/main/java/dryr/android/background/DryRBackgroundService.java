@@ -68,7 +68,13 @@ public class DryRBackgroundService extends Service {
                 CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(new CommunicationFacade.CommunicationCallback<SensorDataPoint>() {
                     @Override
                     public void onResult(SensorDataPoint result) {
-                        if (result.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                        if (result.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold) &&
+                                sp.getLong(getString(R.string.pref_notification_last_humidity_key), Long.MAX_VALUE) > getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
+                            // Make sure the user is only notified again if the laundry got (more) wet again -> new laundry
+                            sp.edit().putLong(getString(R.string.pref_notification_last_humidity_key), result.getHumidity()).apply();
+
                             // Show notification "dry"
                             showDryNotification();
                         }
@@ -114,6 +120,9 @@ public class DryRBackgroundService extends Service {
                     );
 
             builder.setContentIntent(resultPendingIntent);
+            builder.setAutoCancel(true);
+            builder.setOnlyAlertOnce(true);
+            builder.setVibrate(new long[] {0, 500, 200, 500});
 
             NotificationManager mNotifyMgr =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
