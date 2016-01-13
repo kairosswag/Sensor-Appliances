@@ -1,0 +1,4 @@
+mvn install:install-file -Dfile=<dbus jar> -DgroupId=org.freedesktop.dbus -DartifactId=org-freedesktop-dbus -Dversion=0.1.0 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=<matthew-unix jar> -DgroupId=matthew.unix -DartifactId=matthew-unix -Dversion=0.1.0 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=<matthew-io jar> -DgroupId=matthew.io -DartifactId=matthew-io -Dversion=0.1.0 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=<matthew-hexdump jar> -DgroupId=matthew.hexdump -DartifactId=matthew-hexdump -Dversion=0.1.0 -Dpackaging=jar -DgeneratePom=true

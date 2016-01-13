@@ -40,6 +40,26 @@
 			<version>5.1.38</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.freedesktop.dbus</groupId>
+			<artifactId>org-freedesktop-dbus</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>matthew.io</groupId>
+			<artifactId>matthew-io</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>matthew.unix</groupId>
+			<artifactId>matthew-unix</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>matthew.hexdump</groupId>
+			<artifactId>matthew-hexdump</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>basestation-tomcat</finalName>
