@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
-import dryr.android.model.SensorState;
 import dryr.android.presenter.DryRPreferenceActivity;
 import dryr.android.utils.DialogUtil;
 import dryr.android.utils.ViewUtil;
+import dryr.common.json.beans.BluetoothDevice;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,7 +47,7 @@ public class SensorStatusFragment extends Fragment {
     private ProgressBar progressBar;
 
     // Data
-    private SensorState sensorState;
+    private BluetoothDevice sensorState;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -144,9 +144,9 @@ public class SensorStatusFragment extends Fragment {
      */
     private void refreshSensorState(final boolean silent) {
         // Refresh Sensor state
-        CommunicationFacade.getInstance(getContext()).getSensorState(new CommunicationFacade.CommunicationCallback<SensorState>() {
+        CommunicationFacade.getInstance(getContext()).getSensorState(new CommunicationFacade.CommunicationCallback<BluetoothDevice>() {
             @Override
-            public void onResult(SensorState result) {
+            public void onResult(BluetoothDevice result) {
                 setSensorState(result);
                 showProgress(false);
             }
@@ -218,10 +218,10 @@ public class SensorStatusFragment extends Fragment {
         });
     }
 
-    public void setSensorState(SensorState sensorState) {
+    public void setSensorState(BluetoothDevice sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            connectionBar.setProgress(sensorState.getConnectionLevel());
+            connectionBar.setProgress(10); // TODO: Get connection level from bluetooth device
         }
     }
 

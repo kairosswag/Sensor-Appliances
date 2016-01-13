@@ -3,14 +3,11 @@ package dryr.android.dialogs;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.DialogPreference;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,8 +20,9 @@ import java.util.List;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
-import dryr.android.model.Sensor;
+import dryr.android.utils.FormatUtil;
 import dryr.android.utils.ViewUtil;
+import dryr.common.json.beans.BluetoothDevice;
 
 // TODO: make dialogs stay one size (user friendliness)
 
@@ -61,10 +59,10 @@ public class PairSensorDialogPreference extends DialogPreference {
 
     // Data
     private boolean pairedDeleteMode = false;
-    private List<Sensor> paired;
-    private List<Sensor> available;
-    private List<Sensor> delete = new ArrayList<>();
-    private List<Sensor> added = new ArrayList<>();
+    private List<BluetoothDevice> paired;
+    private List<BluetoothDevice> available;
+    private List<BluetoothDevice> delete = new ArrayList<>();
+    private List<BluetoothDevice> added = new ArrayList<>();
 
     public PairSensorDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -198,9 +196,9 @@ public class PairSensorDialogPreference extends DialogPreference {
         hideError();
 
         ViewUtil.fadeIn(progressBar, getContext());
-        CommunicationFacade.getInstance(getContext()).getPairedSensors(new CommunicationFacade.CommunicationCallback<List<Sensor>>() {
+        CommunicationFacade.getInstance(getContext()).getPairedSensors(new CommunicationFacade.CommunicationCallback<List<BluetoothDevice>>() {
             @Override
-            public void onResult(final List<Sensor> result) {
+            public void onResult(final List<BluetoothDevice> result) {
 
                 paired = result;
                 if (result.isEmpty()) {
@@ -259,9 +257,9 @@ public class PairSensorDialogPreference extends DialogPreference {
 
         CommunicationFacade.getInstance(getContext()).
                 getAvailableSensors(
-                        new CommunicationFacade.CommunicationCallback<List<Sensor>>() {
+                        new CommunicationFacade.CommunicationCallback<List<BluetoothDevice>>() {
                             @Override
-                            public void onResult(final List<Sensor> result) {
+                            public void onResult(final List<BluetoothDevice> result) {
 
                                 available = result;
                                 filterAvailable();
@@ -327,9 +325,9 @@ public class PairSensorDialogPreference extends DialogPreference {
             connectWithTitle.setVisibility(View.VISIBLE);
         }
         addLayout.removeAllViews();
-        for (Sensor a : added) {
+        for (BluetoothDevice a : added) {
             TextView t = new TextView(getContext());
-            t.setText(a.getIdentifier());
+            t.setText(FormatUtil.longToMacString(a.getMac()));
             connectWithLayout.addView(t);
         }
 
@@ -339,9 +337,9 @@ public class PairSensorDialogPreference extends DialogPreference {
             removeTitle.setVisibility(View.VISIBLE);
         }
         removeLayout.removeAllViews();
-        for (Sensor d : delete) {
+        for (BluetoothDevice d : delete) {
             TextView t = new TextView(getContext());
-            t.setText(d.getIdentifier());
+            t.setText(FormatUtil.longToMacString(d.getMac()));
             removeLayout.addView(t);
         }
         ViewUtil.fade(addLayout, connectionQLayout, getContext());
@@ -350,17 +348,17 @@ public class PairSensorDialogPreference extends DialogPreference {
     private void filterAvailable() {
         // Don't display already paired sensors as available
         // Not efficient but there is no use case with thousands of sensors in these lists
-        for (Sensor p : paired) {
+        for (BluetoothDevice p : paired) {
             for (int i = 0; i < available.size(); i++) {
-                if (p.getIdentifier().equals(available.get(i).getIdentifier())) {
+                if (p.getMac() == available.get(i).getMac()) {
                     available.remove(i);
                 }
             }
         }
 
-        for (Sensor p : added) {
+        for (BluetoothDevice p : added) {
             for (int i = 0; i < available.size(); i++) {
-                if (p.getIdentifier().equals(available.get(i).getIdentifier())) {
+                if (p.getMac() == available.get(i).getMac()) {
                     available.remove(i);
                 }
             }

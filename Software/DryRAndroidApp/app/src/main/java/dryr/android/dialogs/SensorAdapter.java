@@ -9,17 +9,18 @@ import android.widget.TextView;
 import java.util.List;
 
 import dryr.android.R;
-import dryr.android.model.Sensor;
+import dryr.android.utils.FormatUtil;
+import dryr.common.json.beans.BluetoothDevice;
 
 /**
  * Adapter to supply a RecyclerView with views representing a list of Sensors.
  */
 public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorViewHolder> {
 
-    private List<Sensor> sensors;
+    private List<BluetoothDevice> sensors;
     private SensorAdapterListener listener;
 
-    public SensorAdapter(List<Sensor> sensors, SensorAdapterListener listener) {
+    public SensorAdapter(List<BluetoothDevice> sensors, SensorAdapterListener listener) {
         this.sensors = sensors;
         this.listener = listener;
     }
@@ -33,10 +34,11 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
     @Override
     public void onBindViewHolder(SensorViewHolder holder, int position) {
-        Sensor sensor = sensors.get(position);
-        holder.title.setText(sensor.getIdentifier());
+        BluetoothDevice sensor = sensors.get(position);
+        holder.title.setText(FormatUtil.longToMacString(sensor.getMac()));
 
-        int reception = sensor.getReceptionLevel();
+        /*
+        int reception = sensor.getReceptionLevel(); // TODO: reception level
         int step = Sensor.MAX_RECEPTION / 5;
         if (reception < step) {
             holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_0_bar);
@@ -49,6 +51,9 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         } else {
             holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_4_bar);
         }
+        */
+
+        holder.icon.setVisibility(View.GONE);
     }
 
     @Override

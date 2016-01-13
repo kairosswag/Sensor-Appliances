@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
-import dryr.android.model.LaundryState;
 import dryr.android.presenter.DryRPreferenceActivity;
 import dryr.android.utils.DialogUtil;
 import dryr.android.utils.ViewUtil;
+import dryr.common.json.beans.SensorDataPoint;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +46,7 @@ public class LaundryStatusFragment extends Fragment {
     private Button messageButton;
 
     // Data
-    private LaundryState laundryState;
+    private SensorDataPoint laundryState;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -140,9 +140,9 @@ public class LaundryStatusFragment extends Fragment {
      */
     private void refreshState(final boolean silent) {
         showProgress(true);
-        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<LaundryState>() {
+        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<SensorDataPoint>() {
             @Override
-            public void onResult(LaundryState result) {
+            public void onResult(SensorDataPoint result) {
 
                 setLaundryState(result);
                 showProgress(false);
@@ -212,10 +212,10 @@ public class LaundryStatusFragment extends Fragment {
 
     }
 
-    public void setLaundryState(LaundryState laundryState) {
+    public void setLaundryState(SensorDataPoint laundryState) {
         this.laundryState = laundryState;
         if (laundryStateText != null) {
-            if (laundryState.isDry()) {
+            if (laundryState.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
                 laundryStateText.setText(R.string.laundry_status_dry);
                 laundryStateText.setTextColor(getResources().getColor(R.color.laundry_status_dry_color));
             } else {

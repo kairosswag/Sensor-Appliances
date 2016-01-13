@@ -1,32 +1,25 @@
 package dryr.android.communication;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.spothero.volley.JacksonRequest;
+import com.spothero.volley.JacksonRequestListener;
 
-import org.json.JSONObject;
-
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
-import dryr.android.model.BaseStation;
-import dryr.android.model.LaundryState;
-import dryr.android.model.Sensor;
-import dryr.android.model.SensorState;
+import dryr.common.json.beans.BluetoothDevice;
+import dryr.common.json.beans.SensorDataPoint;
 
 /**
  * Facade supposed to handle communication
@@ -36,12 +29,19 @@ public class CommunicationFacade {
         /**
          * No base station has been connected to this app
          *
-        NO_BASE_STATION_CONNECTED,*/
+         NO_BASE_STATION_CONNECTED,*/
+        /**
+         * The base station was not found in the network
+         */
+        NO_BASE_STATION_FOUND,
         /**
          * No sensor was paired to the base station
          */
-        NO_BASE_STATION_FOUND,
         NO_SENSOR_PAIRED,
+        /**
+         * There is no connection to any network
+         */
+        NO_NETWORK,
         UNKNOWN
     }
 
@@ -59,96 +59,128 @@ public class CommunicationFacade {
     private Context context;
 
     private String defaultUrl;
+    private int defaultTimeout;
 
     private CommunicationFacade(Context context) {
         this.context = context;
 
+        String protocol = context.getString(R.string.default_server_protocol);
         String hostName = context.getString(R.string.default_base_station_host_name);
         String port = context.getString(R.string.default_server_port);
-        defaultUrl = "http://" + hostName + ":" + port + context.getString(R.string.default_server_base_url);
+        defaultUrl = protocol + "://" + hostName + ":" + port + context.getString(R.string.default_server_base_url);
+        defaultTimeout = context.getResources().getInteger(R.integer.default_timeout_ms);
     }
 
-    public void getLaundryState(final CommunicationCallback<LaundryState> callback) {
-        // TODO: connect / check connection / run in background / return result
-
-        String requestUrl =  "data/multiple?amount=1";
-        sendJSON(requestUrl, 5000, new Response.Listener<JSONObject>() {
+    public void getLaundryState(final CommunicationCallback<SensorDataPoint> callback) {
+        sendJSON(context.getString(R.string.servlet_latest_dataPoint), new JacksonRequestListener<SensorDataPoint>() {
             @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, "response received: " + response.toString());
-                callback.onResult(new LaundryState(false));
+            public void onResponse(SensorDataPoint response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    callback.onResult(response);
+                } else {
+                    // TODO: no sensors connected error
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "error received: " + error.toString());
-                callback.onError(CommunicationError.UNKNOWN);
+            public JavaType getReturnType() {
+                return SimpleType.construct(SensorDataPoint.class);
             }
         });
 
     }
 
-    public void getSensorState(final CommunicationCallback<SensorState> callback) {
-        // TODO: connect / check connection / run in background / return result
-
-        AsyncTask asyncTask = new AsyncTask() {
-
-
+    public void getSensorState(final CommunicationCallback<BluetoothDevice> callback) {
+        sendJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
             @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                callback.onResult(new SensorState(70,26));
-            }
-        };
-
-        asyncTask.execute(null);
-
-    }
-
-    public void getAvailableBaseStations(final CommunicationCallback<List<BaseStation>> callback) {
-        // TODO: find base stations / run in background / return result
-
-        AsyncTask asyncTask = new AsyncTask() {
-
-            ArrayList<BaseStation> testStations;
-
-            @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-                testStations = new ArrayList<>();
-                for (int i = 0; i < 10; i++) {
-                    testStations.add(new BaseStation("test " + i));
+            public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    for (BluetoothDevice device : response) {
+                        if (device.getStatus() == 1) { // TODO: status connected and "paired" / in use for laundry status
+                            callback.onResult(device);
+                        }
+                    }
+                    callback.onError(CommunicationError.NO_SENSOR_PAIRED);
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
                 }
-
-                return null;
             }
 
             @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                callback.onResult(testStations);
+            public JavaType getReturnType() {
+                return SimpleType.construct(List.class);
             }
-        };
+        });
 
-        asyncTask.execute(null);
     }
 
-    public void tryConnection(BaseStation station, final CommunicationCallbackBinary callback) {
-        // TODO: connect to base station / run in background / return result
-
-        AsyncTask asyncTask = new AsyncTask() {
+    public void getPairedSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
+        sendJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
+            @Override
+            public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    List<BluetoothDevice> sensors = new ArrayList<>();
+                    Log.d(TAG, "response received: " + response.toString());
+                    for (BluetoothDevice device : response) {
+                        if (device.getStatus() == 1) { // TODO: status connected and "paired" / in use for laundry status
+                            sensors.add(device);
+                        }
+                    }
+                    if (sensors.size() > 0) {
+                        callback.onResult(sensors);
+                    } else {
+                        callback.onError(CommunicationError.NO_SENSOR_PAIRED);
+                    }
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
 
             @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
+            public JavaType getReturnType() {
+                return SimpleType.construct(List.class);
+            }
+        });
+    }
 
+    public void getAvailableSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
+        sendJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
+            @Override
+            public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    List<BluetoothDevice> sensors = new ArrayList<>();
+                    Log.d(TAG, "response received: " + response.toString());
+                    for (BluetoothDevice device : response) {
+                        if (device.getStatus() == 0) { // TODO: status available and not in use for laundry status
+                            sensors.add(device);
+                        }
+                    }
+                    callback.onResult(sensors);
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
+
+            @Override
+            public JavaType getReturnType() {
+                return SimpleType.construct(List.class);
+            }
+        });
+    }
+
+    public void pairAndRemove(List<BluetoothDevice> pair, List<BluetoothDevice> remove, final CommunicationCallbackBinary callback) {
+        // TODO (how?)
+
+        AsyncTask asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
                 return null;
             }
 
@@ -162,108 +194,41 @@ public class CommunicationFacade {
         asyncTask.execute(null);
     }
 
-    public void connectPermanently(BaseStation station) {
-
-    }
-
-    public void disconnectFromStation(String identifier) {
-
-    }
-
-    public void getPairedSensors(final CommunicationCallback<List<Sensor>> callback) {
-        // TODO: find base stations / run in background / return result
-
-        AsyncTask asyncTask = new AsyncTask() {
-
-            ArrayList<Sensor> testSensors;
-
-            @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-                testSensors = new ArrayList<>();
-                for (int i = 0; i < 10; i++) {
-                    testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                callback.onResult(testSensors);
-            }
-        };
-
-        asyncTask.execute(null);
-    }
-
-    public void getAvailableSensors(final CommunicationCallback<List<Sensor>> callback) {
-        // TODO: find base stations / run in background / return result
-
-        AsyncTask asyncTask = new AsyncTask() {
-
-            ArrayList<Sensor> testSensors;
-
-            @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-                testSensors = new ArrayList<>();
-                for (int i = 0; i < 10; i++) {
-                    testSensors.add(new Sensor("test " + i, (int) (Math.random() * 100)));
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                callback.onResult(testSensors);
-            }
-        };
-
-        asyncTask.execute(null);
-    }
-
-    public void pairAndRemove(List<Sensor> pair, List<Sensor> remove, final CommunicationCallbackBinary callback) {
-        AsyncTask asyncTask = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                // TODO
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                callback.onSuccess();
-            }
-        };
-
-        asyncTask.execute(null);
-    }
-
-    private void sendJSON(String restUrl, int timeout, Response.Listener listener, Response.ErrorListener errorListener) {
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, defaultUrl + restUrl, listener, errorListener);
+    private <T> void sendJSON(String remainderUrl, int timeout, JacksonRequestListener<T> listener) {
+        JacksonRequest<T> request = new JacksonRequest<T>(Request.Method.GET, defaultUrl + remainderUrl, listener);
         // Set timeout
         request.setRetryPolicy(new DefaultRetryPolicy(timeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         RequestQueueProvider.getInstance().getRequestQueue().add(request);
     }
 
+    private <T> void sendJSON(String remainderUrl, JacksonRequestListener<T> listener) {
+        sendJSON(remainderUrl, defaultTimeout, listener);
+    }
+
+    private CommunicationError convertError(VolleyError error) {
+        if (error instanceof NoConnectionError && error.getCause() instanceof UnknownHostException) {
+            return CommunicationError.NO_BASE_STATION_FOUND;
+        } else {
+            return CommunicationError.UNKNOWN;
+        }
+    }
+
     /**
      * Callback to inform a caller over a finished communication action
+     *
      * @param <T> the type that is expected to be the result
      */
     public interface CommunicationCallback<T> {
         /**
          * Called when the action has been successfully executed
+         *
          * @param result the result of the action (if there is one)
          */
         public void onResult(T result);
 
         /**
          * Called when an error occurred during the communication action
+         *
          * @param error the error
          */
         public void onError(CommunicationError error);
@@ -280,6 +245,7 @@ public class CommunicationFacade {
 
         /**
          * Called when an error occurred during the communication action
+         *
          * @param error the error
          */
         public void onError(CommunicationError error);

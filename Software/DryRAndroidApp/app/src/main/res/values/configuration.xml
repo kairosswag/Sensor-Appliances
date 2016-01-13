@@ -6,10 +6,23 @@
     <integer name="sensor_fragment_status_refresh_frequency_period">10</integer>
     <integer name="laundry_fragment_status_refresh_frequency_period">10</integer>
 
-    <!-- Base station host name !-->
-    <string name="default_base_station_host_name">PI</string>
+    <integer name="background_service_check_laundry_state_frequency_period">120</integer>
+
+    <!-- sensor configuration !-->
+    <integer name="sensor_humidity_dry_threshold">10</integer>
+
+    <!-- Base station connection config!-->
+    <string name="default_server_protocol">http</string>
+    <string name="default_base_station_host_name">Yannick-10</string>
     <string name="default_server_port">8080</string>
     <string name="default_server_base_url">/basestation-tomcat/</string>
     <string name="default_server_test_request">TestDataHandler</string>
+
+    <integer name="default_timeout_ms">10000</integer>
+
+    <!-- Servlet urls !-->
+    <string name="servlet_latest_dataPoint">data/single</string>
+    <string name="servlet_devices">devices</string>
+
 
 </resources>

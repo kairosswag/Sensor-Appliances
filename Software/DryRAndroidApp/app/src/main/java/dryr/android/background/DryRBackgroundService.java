@@ -11,9 +11,13 @@ import android.support.v4.app.NotificationCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
+import dryr.android.communication.CommunicationFacade;
 import dryr.android.presenter.MainActivity;
+import dryr.common.json.beans.SensorDataPoint;
 
 /**
  * Background Service that handles communication with the BaseStation that is not requested by the UI
@@ -32,12 +36,12 @@ public class DryRBackgroundService extends Service {
         return serviceRunning;
     }
 
-    // TODO: Find BaseStation via broadcast and get Information regularly, or let BaseStation push information to this service (How?)
-    // TODO: Display notification if needed
     // TODO: Save information from BaseStation in database for diagram (in a later Sprint)
 
     private boolean appRunning = false;
     private List<DryRBackgroundServiceListener> listener = new ArrayList<>();
+
+    private ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(4);
 
     public DryRBackgroundService() {
         instance = this;
@@ -56,6 +60,27 @@ public class DryRBackgroundService extends Service {
             appRunning = false;
         }
         serviceRunning = true;
+
+        // Regularly check if laundry is dry
+        threadPoolExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(new CommunicationFacade.CommunicationCallback<SensorDataPoint>() {
+                    @Override
+                    public void onResult(SensorDataPoint result) {
+                        if (result.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
+                            // Show notification "dry"
+                            showDryNotification();
+                        }
+                    }
+
+                    @Override
+                    public void onError(CommunicationFacade.CommunicationError error) {
+                        // Do nothing
+                    }
+                });
+            }
+        }, 0, getResources().getInteger(R.integer.background_service_check_laundry_state_frequency_period), TimeUnit.SECONDS);
 
         // Make service sticky, restart it whenever it is stopped
         return START_STICKY;

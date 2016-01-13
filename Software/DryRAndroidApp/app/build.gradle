@@ -35,6 +35,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.0'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
-
+    compile 'com.spothero.volley:volley-jackson-extension:1.0.1'
 }
