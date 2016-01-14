@@ -32,7 +32,8 @@ public class DevicesHandler extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if (request.getPathInfo().equals("/connect")) {
+		String pinfo = request.getPathInfo();
+		if (pinfo != null && pinfo.equals("/connect")) {
 			String deviceMac = request.getParameter("device");
 			BluetoothDevice device = (new BluetoothDeviceDB()).getBluetoothDevice(deviceMac);
 			if (device.getStatus() == 1) {
@@ -50,7 +51,7 @@ public class DevicesHandler extends HttpServlet {
 			response.getWriter().append("status: connected");
 			return;
 			
-		} else if (request.getPathInfo().equals("/disconnect")) {
+		} else if (pinfo != null && pinfo.equals("/disconnect")) {
 			String deviceMac = request.getParameter("device");
 			DBusUtil.getInstance().disconnectDevice(deviceMac);
 			response.getWriter().append("status: " + deviceMac + " connected");
