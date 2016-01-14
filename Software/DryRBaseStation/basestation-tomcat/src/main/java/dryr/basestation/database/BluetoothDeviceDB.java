@@ -52,4 +52,33 @@ public class BluetoothDeviceDB {
 		return resultList;
 	}
 
+	public BluetoothDevice getBluetoothDevice(String deviceMac) {
+		if (conn != null) {
+			try {
+				stmt = conn.createStatement();
+				String stat = " where mac=" + deviceMac;
+				ResultSet results = stmt.executeQuery("select * from test.devices" + stat);
+				if (results != null) {
+					while(results.next()) {
+						BluetoothDevice device = new BluetoothDevice();
+						device.setMac(results.getString(1));
+						device.setStatus(results.getInt(2));
+						return device;
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 }

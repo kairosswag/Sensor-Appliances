@@ -40,7 +40,7 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>DevicesHandler</servlet-name>
-  	<url-pattern>/devices</url-pattern>
+  	<url-pattern>/devices/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>RawDataHandler</servlet-name>
