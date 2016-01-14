@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dryr.base.BluetoothDummy;
 import dryr.basestation.database.BluetoothDeviceDB;
+import dryr.basestation.util.DBusUtil;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.*;
 
@@ -39,7 +39,7 @@ public class DevicesHandler extends HttpServlet {
 				response.getWriter().append("status: " + deviceMac + " connected");
 				return;
 			}
-			(new BluetoothDummy()).ConnectDevice(deviceMac);
+			DBusUtil.getInstance().connectDevice(deviceMac);
 			long killtime = System.currentTimeMillis() + 10000;
 			while (!checkAndSleep(deviceMac)) {
 				if (killtime < System.currentTimeMillis()) {
@@ -52,7 +52,7 @@ public class DevicesHandler extends HttpServlet {
 			
 		} else if (request.getPathInfo().equals("/disconnect")) {
 			String deviceMac = request.getParameter("device");
-			(new BluetoothDummy()).DisconnectDevice(deviceMac);
+			DBusUtil.getInstance().disconnectDevice(deviceMac);
 			response.getWriter().append("status: " + deviceMac + " connected");
 		} else {
 			String res = request.getParameter("status");
