@@ -34,7 +34,7 @@ public class DataPointDB {
 				if (results != null) {
 					while(results.next()) {
 						HumiditySensorDataPoint datum = new HumiditySensorDataPoint();
-						datum.setTime(results.getLong(1));
+						datum.setDate(results.getString(1));
 						datum.setHumidity(results.getInt(2));
 						resultList.add(datum);
 					}

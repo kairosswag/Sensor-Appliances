@@ -9,7 +9,7 @@ import dryr.common.json.beans.*;
 public class DatabaseHelper {
 
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/test?autoReconnect=true&amp;useSSL=false";
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/dryr.base?autoReconnect=true&amp;useSSL=false";
 
 	private Connection conn = null;
 

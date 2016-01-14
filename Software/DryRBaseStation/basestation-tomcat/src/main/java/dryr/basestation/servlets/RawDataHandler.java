@@ -1,13 +1,17 @@
 package dryr.basestation.servlets;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dryr.basestation.database.DataPointDB;
 import dryr.basestation.database.DatabaseHelper;
 import dryr.basestation.util.ServletUtil;
+import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
  * Servlet implementation class RawDataHandler
@@ -28,14 +32,18 @@ public class RawDataHandler extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		DatabaseHelper helper = new DatabaseHelper();
-		if (request.getPathInfo().equals("/single")) {
+		String pinfo = request.getPathInfo();
+		if (pinfo != null && pinfo.equals("/single")) {
 			// Object item = helper.getData(1).get(0);
 			// response.getWriter().append(ServletUtil.jsonize(item));
 			response.getWriter().append("Single Data Point");
-		} else if (request.getPathInfo().equals("/multiple")) {
-			//response.getWriter()
-			//		.append(ServletUtil.jsonize(helper.getData(Integer.parseInt(request.getParameter("amount")))));
+		} else if (pinfo != null && pinfo.equals("/multiple")) {
+			int amount = Integer.getInteger(request.getParameter("amount"), -1);
+			List<HumiditySensorDataPoint> res = (new DataPointDB()).getData(amount);
+			if (res != null) {
+				response.getWriter().append(ServletUtil.jsonize(res));
+				return;
+			}
 			response.getWriter().append("Multiple Data Points");
 		} else {
 			response.getWriter().append("Requested page: data").append(request.getPathInfo()).append(
