@@ -43,7 +43,5 @@ connectedFalse pC c = do
   let oP = pCObjectPath pC
   let mac = objectPathToMac oP
 
-  removeDevice c "/org/bluez/hci0" oP
-
   execute (contextDatabase c) (getQuery UpdateDevice $ contextQueries c) (0 :: Integer, mac)
   return ()
