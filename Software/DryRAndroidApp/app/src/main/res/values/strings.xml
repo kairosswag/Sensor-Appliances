@@ -43,7 +43,7 @@
     <string name="pref_notification_push_summary">Push Benachrichtigung über trockene Wäsche ein oder ausschalten</string>
     <string name="pref_notification_push_key">notifications_push</string>
 
-    <string name="pref_notification_last_humidity_key">notification_acknowledged</string>
+    <string name="pref_notification_last_humidity_key">notification_last_humidity</string>
 
 
     <!-- ConnectBaseStationDialog !-->

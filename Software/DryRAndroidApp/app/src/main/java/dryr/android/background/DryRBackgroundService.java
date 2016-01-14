@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.TypedValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.presenter.MainActivity;
-import dryr.common.json.beans.SensorDataPoint;
+import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
  * Background Service that handles communication with the BaseStation that is not requested by the UI
@@ -65,19 +66,24 @@ public class DryRBackgroundService extends Service {
         threadPoolExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(new CommunicationFacade.CommunicationCallback<SensorDataPoint>() {
+                CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
                     @Override
-                    public void onResult(SensorDataPoint result) {
+                    public void onResult(HumiditySensorDataPoint result) {
                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-                        if (result.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold) &&
-                                sp.getLong(getString(R.string.pref_notification_last_humidity_key), Long.MAX_VALUE) > getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
-                            // Make sure the user is only notified again if the laundry got (more) wet again -> new laundry
-                            sp.edit().putLong(getString(R.string.pref_notification_last_humidity_key), result.getHumidity()).apply();
+                        TypedValue outValue = new TypedValue();
+                        getResources().getValue(R.dimen.sensor_humidity_dry_threshold, outValue, true);
+                        float threshold = outValue.getFloat();
+
+                        if (result.getHumidity() <= threshold &&
+                                sp.getFloat(getString(R.string.pref_notification_last_humidity_key), Float.MAX_VALUE) > threshold) {
 
                             // Show notification "dry"
                             showDryNotification();
                         }
+
+                        // Make sure the user is only notified again if the laundry got (more) wet again -> new laundry
+                        sp.edit().putFloat(getString(R.string.pref_notification_last_humidity_key), result.getHumidity()).apply();
                     }
 
                     @Override

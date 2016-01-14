@@ -9,17 +9,18 @@ import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import dryr.android.R;
 import dryr.common.json.beans.BluetoothDevice;
-import dryr.common.json.beans.SensorDataPoint;
+import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
  * Facade supposed to handle communication
@@ -71,10 +72,10 @@ public class CommunicationFacade {
         defaultTimeout = context.getResources().getInteger(R.integer.default_timeout_ms);
     }
 
-    public void getLaundryState(final CommunicationCallback<SensorDataPoint> callback) {
-        sendJSON(context.getString(R.string.servlet_latest_dataPoint), new JacksonRequestListener<SensorDataPoint>() {
+    public void getLaundryState(final CommunicationCallback<HumiditySensorDataPoint> callback) {
+        sendJSON(context.getString(R.string.servlet_latest_dataPoint), new JacksonRequestListener<HumiditySensorDataPoint>() {
             @Override
-            public void onResponse(SensorDataPoint response, int statusCode, VolleyError error) {
+            public void onResponse(HumiditySensorDataPoint response, int statusCode, VolleyError error) {
                 if (response != null) {
                     Log.d(TAG, "response received: " + response.toString());
                     callback.onResult(response);
@@ -87,7 +88,7 @@ public class CommunicationFacade {
 
             @Override
             public JavaType getReturnType() {
-                return SimpleType.construct(SensorDataPoint.class);
+                return SimpleType.construct(HumiditySensorDataPoint.class);
             }
         });
 
@@ -102,6 +103,7 @@ public class CommunicationFacade {
                     for (BluetoothDevice device : response) {
                         if (device.getStatus() == 1) { // TODO: status connected and "paired" / in use for laundry status
                             callback.onResult(device);
+                            return;
                         }
                     }
                     callback.onError(CommunicationError.NO_SENSOR_PAIRED);
@@ -113,7 +115,8 @@ public class CommunicationFacade {
 
             @Override
             public JavaType getReturnType() {
-                return SimpleType.construct(List.class);
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
         });
 
@@ -144,7 +147,8 @@ public class CommunicationFacade {
 
             @Override
             public JavaType getReturnType() {
-                return SimpleType.construct(List.class);
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
         });
     }
@@ -170,7 +174,8 @@ public class CommunicationFacade {
 
             @Override
             public JavaType getReturnType() {
-                return SimpleType.construct(List.class);
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
         });
     }
@@ -206,7 +211,7 @@ public class CommunicationFacade {
     }
 
     private CommunicationError convertError(VolleyError error) {
-        if (error instanceof NoConnectionError && error.getCause() instanceof UnknownHostException) {
+        if (error instanceof NoConnectionError) {
             return CommunicationError.NO_BASE_STATION_FOUND;
         } else {
             return CommunicationError.UNKNOWN;

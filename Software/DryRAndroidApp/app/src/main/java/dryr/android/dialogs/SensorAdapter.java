@@ -35,7 +35,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
     @Override
     public void onBindViewHolder(SensorViewHolder holder, int position) {
         BluetoothDevice sensor = sensors.get(position);
-        holder.title.setText(FormatUtil.longToMacString(sensor.getMac()));
+        holder.title.setText(sensor.getMac());
 
         /*
         int reception = sensor.getReceptionLevel(); // TODO: reception level

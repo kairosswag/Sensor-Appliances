@@ -174,6 +174,10 @@ public class PairSensorDialogPreference extends DialogPreference {
     }
 
     private void pairedSensorSelected(int pos) {
+        if (pos < 0 || pos >= paired.size()) {
+            return;
+        }
+
         if (pairedDeleteMode) {
             delete.add(paired.get(pos));
             paired.remove(pos);
@@ -262,6 +266,7 @@ public class PairSensorDialogPreference extends DialogPreference {
                             public void onResult(final List<BluetoothDevice> result) {
 
                                 available = result;
+                                result.addAll(delete);
                                 filterAvailable();
 
                                 if (result.isEmpty()) {
@@ -327,7 +332,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         addLayout.removeAllViews();
         for (BluetoothDevice a : added) {
             TextView t = new TextView(getContext());
-            t.setText(FormatUtil.longToMacString(a.getMac()));
+            t.setText(a.getMac());
             connectWithLayout.addView(t);
         }
 
@@ -339,18 +344,18 @@ public class PairSensorDialogPreference extends DialogPreference {
         removeLayout.removeAllViews();
         for (BluetoothDevice d : delete) {
             TextView t = new TextView(getContext());
-            t.setText(FormatUtil.longToMacString(d.getMac()));
+            t.setText(d.getMac());
             removeLayout.addView(t);
         }
         ViewUtil.fade(addLayout, connectionQLayout, getContext());
     }
 
     private void filterAvailable() {
-        // Don't display already paired sensors as available
+        // Don't display already paired (or to be paired) sensors as available
         // Not efficient but there is no use case with thousands of sensors in these lists
         for (BluetoothDevice p : paired) {
             for (int i = 0; i < available.size(); i++) {
-                if (p.getMac() == available.get(i).getMac()) {
+                if (p.getMac().equals(available.get(i).getMac())) {
                     available.remove(i);
                 }
             }
@@ -358,7 +363,7 @@ public class PairSensorDialogPreference extends DialogPreference {
 
         for (BluetoothDevice p : added) {
             for (int i = 0; i < available.size(); i++) {
-                if (p.getMac() == available.get(i).getMac()) {
+                if (p.getMac().equals(available.get(i).getMac())) {
                     available.remove(i);
                 }
             }

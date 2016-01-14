@@ -29,7 +29,7 @@ public class DryRPreferenceActivity extends AppCompatActivity{
         getFragmentManager().beginTransaction().replace(android.R.id.content, dryRPreferenceFragment).commit();
     }
 
-    public static class DryRPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class DryRPreferenceFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -40,15 +40,11 @@ public class DryRPreferenceActivity extends AppCompatActivity{
         @Override
         public void onResume() {
             super.onResume();
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            sp.registerOnSharedPreferenceChangeListener(this);
-            refreshPairSensorEnabledState(sp);
         }
 
         @Override
         public void onPause() {
             super.onPause();
-            PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
         }
 
         @Override
@@ -71,23 +67,6 @@ public class DryRPreferenceActivity extends AppCompatActivity{
             }
 
             return v;
-        }
-
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            refreshPairSensorEnabledState(sharedPreferences);
-        }
-
-        private void refreshPairSensorEnabledState(SharedPreferences sp) {
-            // Find out if a BaseStation is connected and enable pair sensor dialog accordingly
-            Preference pairSensor = findPreference(getString(R.string.pref_sensor_pair_key));
-            if (sp.contains(getString(R.string.pref_baseStation_connect_key))) {
-                pairSensor.setEnabled(true);
-            } else {
-                pairSensor.setEnabled(false);
-            }
-
         }
     }
 }

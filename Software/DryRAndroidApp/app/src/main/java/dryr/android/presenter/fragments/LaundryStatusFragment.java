@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +25,7 @@ import dryr.android.communication.CommunicationFacade;
 import dryr.android.presenter.DryRPreferenceActivity;
 import dryr.android.utils.DialogUtil;
 import dryr.android.utils.ViewUtil;
-import dryr.common.json.beans.SensorDataPoint;
+import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +46,7 @@ public class LaundryStatusFragment extends Fragment {
     private Button messageButton;
 
     // Data
-    private SensorDataPoint laundryState;
+    private HumiditySensorDataPoint laundryState;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -140,9 +140,9 @@ public class LaundryStatusFragment extends Fragment {
      */
     private void refreshState(final boolean silent) {
         showProgress(true);
-        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<SensorDataPoint>() {
+        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
             @Override
-            public void onResult(SensorDataPoint result) {
+            public void onResult(HumiditySensorDataPoint result) {
 
                 setLaundryState(result);
                 showProgress(false);
@@ -212,10 +212,15 @@ public class LaundryStatusFragment extends Fragment {
 
     }
 
-    public void setLaundryState(SensorDataPoint laundryState) {
+    public void setLaundryState(HumiditySensorDataPoint laundryState) {
         this.laundryState = laundryState;
         if (laundryStateText != null) {
-            if (laundryState.getHumidity() <= getResources().getInteger(R.integer.sensor_humidity_dry_threshold)) {
+
+            TypedValue outValue = new TypedValue();
+            getResources().getValue(R.dimen.sensor_humidity_dry_threshold, outValue, true);
+            float threshold = outValue.getFloat();
+
+            if (laundryState.getHumidity() <= threshold) {
                 laundryStateText.setText(R.string.laundry_status_dry);
                 laundryStateText.setTextColor(getResources().getColor(R.color.laundry_status_dry_color));
             } else {
