@@ -166,7 +166,7 @@ public class CommunicationFacade {
                     List<BluetoothDevice> sensors = new ArrayList<>();
                     Log.d(TAG, "response received: " + response.toString());
                     for (BluetoothDevice device : response) {
-                        if (device.getStatus() == 0 || device.getStatus() == 2) {
+                        if (device.getStatus() == 0) {
                             sensors.add(device);
                         }
                     }
