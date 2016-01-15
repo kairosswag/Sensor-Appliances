@@ -50,21 +50,21 @@ public class DevicesHandler extends HttpServlet {
 			}
 			response.getWriter().append("status: connected");
 			return;
-			
+
 		} else if (pinfo != null && pinfo.equals("/disconnect")) {
 			String deviceMac = request.getParameter("device");
 			DBusUtil.getInstance().disconnectDevice(deviceMac);
-			response.getWriter().append("status: " + deviceMac + " connected");
+			response.getWriter().append("status: " + deviceMac + " disconnected");
 		} else {
 			String res = request.getParameter("status");
 			int status = Integer.getInteger(res, -1);
 			List<BluetoothDevice> resultList = (new BluetoothDeviceDB()).getBluetoothDeviceList(status);
 			// response.setContentType("application/json");
 			response.getWriter().append(ServletUtil.jsonize(resultList));
-			
+
 		}
 	}
-	
+
 	private boolean checkAndSleep(String deviceMac) {
 		BluetoothDevice device = (new BluetoothDeviceDB()).getBluetoothDevice(deviceMac);
 		if (device != null && device.getStatus() != 1) {
