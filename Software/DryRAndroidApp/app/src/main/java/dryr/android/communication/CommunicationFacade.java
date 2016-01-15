@@ -216,7 +216,7 @@ public class CommunicationFacade {
                 @Override
                 public void onResponse(String response) {
                     Log.d(TAG, "response received: " + response.toString());
-                    if (response.contains("connected")) { // TODO: make this nicer (future sprint)
+                    if (response.contains("disconnected")) { // TODO: make this nicer (future sprint)
                         successfull.put(r.getMac(), true);
                     } else {
                         successfull.put(r.getMac(), false);
