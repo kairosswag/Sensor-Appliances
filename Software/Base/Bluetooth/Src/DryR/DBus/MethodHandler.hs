@@ -10,10 +10,11 @@ import DBus.Client
 import DryR.Context
 import DryR.DBus.MethodHandler.ConnectDevice
 import DryR.DBus.MethodHandler.DisconnectDevice
-
+import DryR.DBus.MethodHandler.RemoveDevice
 methods = [
   ("ConnectDevice", connectDevice),
-  ("DisconnectDevice", disconnectDevice)]
+  ("DisconnectDevice", disconnectDevice),
+  ("RemoveDevice", removeDevice)]
 
 exportMethods :: InnerContext -> IO (Maybe ())
 exportMethods = withContextAndInnerContext (\c i -> do
