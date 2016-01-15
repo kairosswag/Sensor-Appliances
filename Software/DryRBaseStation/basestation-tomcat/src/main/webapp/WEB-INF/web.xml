@@ -1,0 +1,57 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+  	<servlet-name>TestDataHandler</servlet-name>
+  	<display-name>TestDataHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.TestDataHandler</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>DevicesHandler</servlet-name>
+  	<display-name>DevicesHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.DevicesHandler</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>RawDataHandler</servlet-name>
+  	<display-name>RawDataHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.RawDataHandler</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>PredictionHandler</servlet-name>
+  	<display-name>PredictionHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.PredictionHandler</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>BluetoothUpdateHandler</servlet-name>
+  	<display-name>BluetoothUpdateHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.BluetoothUpdateHandler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>TestDataHandler</servlet-name>
+  	<url-pattern>/TestDataHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>DevicesHandler</servlet-name>
+  	<url-pattern>/devices/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>RawDataHandler</servlet-name>
+  	<url-pattern>/data/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>PredictionHandler</servlet-name>
+  	<url-pattern>/prediction</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>BluetoothUpdateHandler</servlet-name>
+  	<url-pattern>/sensor-update</url-pattern>
+  </servlet-mapping>
+</web-app>
