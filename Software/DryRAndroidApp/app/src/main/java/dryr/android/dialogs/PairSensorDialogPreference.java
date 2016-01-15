@@ -16,7 +16,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
@@ -384,14 +387,38 @@ public class PairSensorDialogPreference extends DialogPreference {
         connectionQLayout.setVisibility(View.GONE);
 
         // Remove sensors selected to be removed and pair sensors to be paired
-        CommunicationFacade.getInstance(getContext()).pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallbackBinary() {
+        CommunicationFacade.getInstance(getContext()).pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallback<ConcurrentHashMap<String, Boolean>>() {
             @Override
-            public void onSuccess() {
-                getDialog().dismiss();
+            public void onResult(ConcurrentHashMap<String, Boolean> result) {
+                boolean success = true;
+                for (Map.Entry<String, Boolean> e : result.entrySet()) {
+                    if (e.getValue()) {
+                        removeFromAddedOrDelete(e.getKey());
+                    } else {
+                        success = false;
+                    }
+                }
+                if (success) {
+                    getDialog().dismiss();
+                } else  {
+                    errorText.setText(R.string.error_connection_default);
+                    errorText.setVisibility(View.VISIBLE);
+                    retry.setVisibility(View.VISIBLE);
+                    retry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            applyChanges();
+                        }
+                    });
+
+                    mainContentLayout.setVisibility(View.VISIBLE);
+                    ViewUtil.fadeIn(mainContentLayout, getContext());
+                    ViewUtil.fade(progressBar, connectionQLayout, getContext());
+                }
             }
 
             @Override
-            public void onError(final CommunicationFacade.CommunicationError error) {
+            public void onError(CommunicationFacade.CommunicationError error) {
                 switch (error) {
                     default:
                         errorText.setText(R.string.error_connection_default);
@@ -405,9 +432,29 @@ public class PairSensorDialogPreference extends DialogPreference {
                         });
                 }
                 mainContentLayout.setVisibility(View.VISIBLE);
+                ViewUtil.fadeIn(mainContentLayout, getContext());
                 ViewUtil.fade(progressBar, connectionQLayout, getContext());
+                // TODO: somehow a second error is not displayed correctly (future sprint)
             }
         });
+    }
+
+    private void removeFromAddedOrDelete(String mac) {
+        for (Iterator<BluetoothDevice> iterator = added.iterator(); iterator.hasNext(); ) {
+            BluetoothDevice device = iterator.next();
+            if (device.getMac().equals(mac)) {
+                iterator.remove();
+                return;
+            }
+        }
+
+        for (Iterator<BluetoothDevice> iterator = delete.iterator(); iterator.hasNext(); ) {
+            BluetoothDevice device = iterator.next();
+            if (device.getMac().equals(mac)) {
+                iterator.remove();
+                return;
+            }
+        }
     }
 
     @Override

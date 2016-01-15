@@ -16,7 +16,8 @@
             android:textColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sensor_status_connection"/>
+            android:text="@string/sensor_status_connection"
+            android:visibility="gone"/>
 
         <ProgressBar
             android:layout_width="match_parent"
@@ -25,7 +26,14 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="not implemented yet"
+            android:gravity="center"/>
 
     </LinearLayout>
 
