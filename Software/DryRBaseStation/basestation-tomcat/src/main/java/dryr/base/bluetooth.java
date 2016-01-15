@@ -5,5 +5,6 @@ public interface bluetooth extends DBusInterface
 
   public void ConnectDevice(String a);
   public void DisconnectDevice(String a);
+  public void RemoveDevice(String a);
 
 }
