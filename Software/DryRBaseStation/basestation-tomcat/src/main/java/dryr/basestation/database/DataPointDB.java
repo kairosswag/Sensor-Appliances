@@ -29,13 +29,16 @@ public class DataPointDB {
 		if (conn != null) {
 			try {
 				stmt = conn.createStatement();
-				String device = (deviceId < 0) ? "" : " where device=" + deviceId;
-				ResultSet results = stmt.executeQuery("select * from test.data" + device + " order by date limit " + amount);
+				String device = (deviceId < 0) ? "" : " where Device=" + deviceId;
+				String limit = (amount < 0) ? "" : " limit " + amount;
+				String query = "select * from Humidity" + device + " order by sample_time" + limit;
+				ResultSet results = stmt.executeQuery(query);
 				if (results != null) {
 					while(results.next()) {
 						HumiditySensorDataPoint datum = new HumiditySensorDataPoint();
 						datum.setDate(results.getString(1));
-						datum.setHumidity(results.getInt(2));
+						datum.setSensor(results.getString(2));
+						datum.setHumidity(results.getFloat(3));
 						resultList.add(datum);
 					}
 				}

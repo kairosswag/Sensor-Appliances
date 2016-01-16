@@ -28,7 +28,7 @@ public class BluetoothDeviceDB {
 			try {
 				stmt = conn.createStatement();
 				String stat = (status < 0) ? "" : " where status=" + status;
-				ResultSet results = stmt.executeQuery("select * from test.devices" + stat);
+				ResultSet results = stmt.executeQuery("select * from Device" + stat);
 				if (results != null) {
 					while(results.next()) {
 						BluetoothDevice device = new BluetoothDevice();
@@ -56,8 +56,8 @@ public class BluetoothDeviceDB {
 		if (conn != null) {
 			try {
 				stmt = conn.createStatement();
-				String stat = " where mac=" + deviceMac;
-				ResultSet results = stmt.executeQuery("select * from test.devices" + stat);
+				String stat = " where mac='" + deviceMac + "'";
+				ResultSet results = stmt.executeQuery("select * from Device" + stat);
 				if (results != null) {
 					while(results.next()) {
 						BluetoothDevice device = new BluetoothDevice();
