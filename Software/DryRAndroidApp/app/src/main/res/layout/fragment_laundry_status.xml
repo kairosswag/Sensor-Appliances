@@ -24,8 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/laundry_status_message_view"
@@ -42,16 +41,16 @@
             android:layout_height="wrap_content"
             android:text="@string/pref_sensor_pair_title"
             android:textColor="@drawable/primary_color_selector"
-            android:visibility="gone"/>
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/laundry_status_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"/>
 
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/laundry_status_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
 
 </RelativeLayout>

@@ -19,7 +19,7 @@
     <string name="laundry_status_drying">Trocknet</string>
     <string name="laundry_status_dry">Trocken</string>
     <string name="laundry_status_no_sensor">Es ist kein Sensor mit der Basistation verbunden</string>
-
+    <string name="laundry_status_base_station_connected">Mit Basistation verbunden</string>
 
     <!-- SensorStatus !-->
     <string name="sensor_status_battery">Batteriestand</string>
@@ -84,7 +84,7 @@
     <string name="error_no_base_station_found">Bei der Verbindung mit der Basistation ist ein Fehler aufgetreten, überprüfen
         Sie ihre Netzwerkverbindung und stellen Sie sicher, dass Sie sich im gleichen Netz wie
         Ihre Basisstation befinden und, dass diese angeschaltet ist.</string>
-    <string name="error_no_bs_retry">Nochmal versuchen</string>
+    <string name="error_retry">Nochmal versuchen</string>
 
     <!-- Notifications !-->
     <string name="notification_laundry_dry_title">Wäsche trocken</string>

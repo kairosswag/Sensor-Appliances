@@ -38,7 +38,7 @@ public class LaundryStatusFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     // UI
-    private ProgressBar progressBar;
+    private ProgressBar smallProgress;
     private RelativeLayout laundryStateLayout;
     private TextView laundryStateText;
 
@@ -52,6 +52,8 @@ public class LaundryStatusFragment extends Fragment {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     private boolean refreshingScheduled = false;
     private ScheduledFuture<?> task;
+
+    // TODO: use tabs for multiple sensors
 
     public LaundryStatusFragment() {
         // Required empty public constructor
@@ -77,7 +79,6 @@ public class LaundryStatusFragment extends Fragment {
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    // TODO: Show smaller progress bar for auto refresh (future sprint) + (show some kind of error (smaller?))
                     refreshState(true);
                 }
             }, period, period, TimeUnit.SECONDS);
@@ -92,13 +93,14 @@ public class LaundryStatusFragment extends Fragment {
         task.cancel(true);
         refreshingScheduled = false;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_laundry_status, container, false);
 
-        progressBar = (ProgressBar) v.findViewById(R.id.laundry_status_progress);
+        smallProgress = (ProgressBar) v.findViewById(R.id.laundry_status_progress);
         laundryStateLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_layout);
         laundryStateText = (TextView) v.findViewById(R.id.laundry_status_displayText);
 
@@ -136,6 +138,7 @@ public class LaundryStatusFragment extends Fragment {
 
     /**
      * Refresh laundry state
+     *
      * @param silent don't display error messages
      */
     private void refreshState(final boolean silent) {
@@ -143,30 +146,19 @@ public class LaundryStatusFragment extends Fragment {
         CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
             @Override
             public void onResult(HumiditySensorDataPoint result) {
-
+                enableStateLayout(true);
+                showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
                 setLaundryState(result);
                 showProgress(false);
             }
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
-                if (silent) {
-                    showProgress(false);
-                    return;
-                }
-
                 switch (error) {
-                    /*case NO_BASE_STATION_CONNECTED:
-
-                        Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
-                        intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_baseStation_connect_key));
-                        getActivity().startActivity(intent);
-
-                        break;*/
                     case NO_BASE_STATION_FOUND:
 
                         // Base station was not found in network
-                        showMessage(R.string.error_no_base_station_found, R.string.error_no_bs_retry, true, new View.OnClickListener() {
+                        showMessage(R.string.error_no_base_station_found, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 refreshState(false);
@@ -179,7 +171,7 @@ public class LaundryStatusFragment extends Fragment {
 
                         // Show message informing about the fact that there are no sensors paired and
                         // display button to pair some
-                        showMessage(R.string.laundry_status_no_sensor, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
+                        showMessage(R.string.laundry_status_no_sensor, R.color.light_error_text_color, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 // Show settings activity with PairSensorDialog open
@@ -192,24 +184,48 @@ public class LaundryStatusFragment extends Fragment {
                         break;
 
                     default:
-                        DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
+                        if (!silent) {
+                            DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
+                        } else {
+                            showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    refreshState(false);
+                                }
+                            });
+                        }
                 }
 
                 showProgress(false);
+                enableStateLayout(false);
             }
         });
     }
 
-    private void showMessage(int messageTextId, int buttonTextId, boolean showButton, View.OnClickListener clickListener) {
+    private void enableStateLayout(boolean enable) {
+        laundryStateLayout.setEnabled(enable);
+        if (!enable) {
+            ViewUtil.fadeOut(laundryStateLayout, getActivity(), 0.2f, View.VISIBLE);
+        } else {
+            ViewUtil.fadeIn(laundryStateLayout, getActivity());
+        }
+    }
+
+    private void showMessage(int messageTextId, int messageTextColorId, int buttonTextId, boolean showButton, View.OnClickListener clickListener) {
         messageView.setText(messageTextId);
+        messageView.setTextColor(getResources().getColor(messageTextColorId));
         if (showButton) {
             messageButton.setText(buttonTextId);
             messageButton.setOnClickListener(clickListener);
-            ViewUtil.fadeIn(messageButton, getActivity());
+            if (messageButton.getVisibility() == View.GONE) {
+                ViewUtil.fadeIn(messageButton, getActivity());
+            }
+        } else {
+            messageButton.setVisibility(View.GONE);
         }
-        ViewUtil.fadeIn(messageView, getActivity());
-        laundryStateLayout.setEnabled(false);
-
+        if (messageView.getVisibility() == View.GONE) {
+            ViewUtil.fadeIn(messageView, getActivity());
+        }
     }
 
     public void setLaundryState(HumiditySensorDataPoint laundryState) {
@@ -235,12 +251,20 @@ public class LaundryStatusFragment extends Fragment {
             @Override
             public void run() {
                 if (show) {
-                    ViewUtil.fade(laundryStateLayout, progressBar, getActivity());
+                    ViewUtil.fadeIn(smallProgress, getActivity());
                 } else {
-                    ViewUtil.fade(progressBar, laundryStateLayout, getActivity());
-                    ViewUtil.fadeOut(messageView, getActivity());
-                    ViewUtil.fadeOut(messageButton, getActivity());
-                    laundryStateLayout.setEnabled(true);
+                    // Add delay so the animation doesn't look weird
+                    new ScheduledThreadPoolExecutor(1).schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ViewUtil.fadeOut(smallProgress, getActivity(), View.INVISIBLE);
+                                }
+                            });
+                        }
+                    }, getResources().getInteger(R.integer.progress_delay), TimeUnit.MILLISECONDS);
                 }
             }
         });

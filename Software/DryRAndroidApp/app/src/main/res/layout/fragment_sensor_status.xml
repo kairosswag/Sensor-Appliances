@@ -27,7 +27,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:visibility="gone"/>
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -41,8 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/sensor_status_message_view"
@@ -61,13 +60,14 @@
             android:textColor="@drawable/primary_color_selector"
             android:visibility="gone"/>
 
-    </LinearLayout>
+        <ProgressBar
+            android:id="@+id/sensor_status_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"/>
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sensor_status_progress"
-        android:layout_gravity="center" />
+    </LinearLayout>
 
 </RelativeLayout>

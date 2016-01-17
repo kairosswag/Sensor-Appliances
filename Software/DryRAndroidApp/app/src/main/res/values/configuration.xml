@@ -2,6 +2,9 @@
 <resources>
     <!-- Configuration data for the app !-->
 
+    <!-- UI !-->
+    <integer name="progress_delay">500</integer>
+
     <!-- refresh frequencies (in seconds) !-->
     <integer name="sensor_fragment_status_refresh_frequency_period">10</integer>
     <integer name="laundry_fragment_status_refresh_frequency_period">10</integer>
@@ -13,7 +16,7 @@
 
     <!-- Base station connection config!-->
     <string name="default_server_protocol">http</string>
-    <string name="default_base_station_host_name">PI</string>
+    <string name="default_base_station_host_name">Yannick-10</string>
     <string name="default_server_port">8080</string>
     <string name="default_server_base_url">/basestation-tomcat/</string>
 
