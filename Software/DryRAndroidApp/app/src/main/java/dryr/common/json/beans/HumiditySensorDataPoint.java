@@ -16,6 +16,14 @@ public class HumiditySensorDataPoint {
 	public HumiditySensorDataPoint() {
 	}
 
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public String getSensor() {
 		return sensor;
 	}
@@ -31,13 +39,5 @@ public class HumiditySensorDataPoint {
 	public void setHumidity(float humidity) {
 		this.humidity = humidity;
 	}
-
-	@Override
-	public String toString() {
-		return "HumiditySensorDataPoint{" +
-				"date='" + date + '\'' +
-				", sensor='" + sensor + '\'' +
-				", humidity=" + humidity +
-				'}';
-	}
+	
 }

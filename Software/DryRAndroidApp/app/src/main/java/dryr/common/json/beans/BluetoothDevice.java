@@ -33,11 +33,4 @@ public class BluetoothDevice {
 		this.status = status;
 	}
 
-	@Override
-	public String toString() {
-		return "BluetoothDevice{" +
-				"mac='" + mac + '\'' +
-				", status=" + status +
-				'}';
-	}
 }
