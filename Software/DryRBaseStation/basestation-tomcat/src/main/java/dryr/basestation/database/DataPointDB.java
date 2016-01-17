@@ -31,7 +31,7 @@ public class DataPointDB {
 				stmt = conn.createStatement();
 				String device = (deviceId < 0) ? "" : " where Device=" + deviceId;
 				String limit = (amount < 0) ? "" : " limit " + amount;
-				String query = "select * from Humidity" + device + " order by sample_time" + limit;
+				String query = "select * from Humidity" + device + " order by sample_time desc" + limit;
 				ResultSet results = stmt.executeQuery(query);
 				if (results != null) {
 					while(results.next()) {
