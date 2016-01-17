@@ -1,0 +1,69 @@
+01-17 00:49:29.713 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.NoConnectionError: java.net.ConnectException: failed to connect to Addiss-MBP/192.168.1.119 (port 8080) after 15000ms: isConnected failed: ECONNREFUSED (Connection refused)
+01-17 00:51:29.614 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.NoConnectionError: java.net.ConnectException: failed to connect to Addiss-MBP/192.168.1.119 (port 8080) after 15000ms: isConnected failed: ECONNREFUSED (Connection refused)
+01-17 00:54:04.969 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.NoConnectionError: java.io.EOFException
+01-17 00:54:04.984 25431-25431/dryr.android D/Volley: [1] Request.finish: 35373 ms: [ ] http://Addiss-MBP:8080/basestation-tomcat/data/multiple?amount=1 0x26c6676 NORMAL 15
+01-17 00:55:29.645 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.NoConnectionError: java.io.EOFException
+01-17 00:56:26.395 25431-32364/dryr.android D/OpenGLRenderer: Use EGL_SWAP_BEHAVIOR_PRESERVED: true
+01-17 00:56:26.398 25431-25431/dryr.android D/Atlas: Validating map...
+01-17 00:56:26.437 25431-32364/dryr.android I/Adreno: QUALCOMM build                   : 41a310d, I21d2ab1dda
+                                                      Build Date                       : 08/24/15
+                                                      OpenGL ES Shader Compiler Version: E031.25.03.09
+                                                      Local Branch                     : 
+                                                      Remote Branch                    : quic/LA.BF64.1.2.1_rb2.29
+                                                      Remote Branch                    : NONE
+                                                      Reconstruct Branch               : NOTHING
+01-17 00:56:26.446 25431-32364/dryr.android I/OpenGLRenderer: Initialized EGL, version 1.4
+01-17 00:56:26.452 25431-32364/dryr.android D/OpenGLRenderer: Enabling debug mode 0
+01-17 00:56:26.522 25431-25431/dryr.android I/Timeline: Timeline: Activity_idle id: android.os.BinderProxy@140c88dd time:329328245
+01-17 00:56:27.891 25431-25457/dryr.android E/Volley: [20170] JacksonRequest.parseNetworkResponse: An error occurred while parsing network response:
+                                                      com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field "date" (class dryr.common.json.beans.HumiditySensorDataPoint), not marked as ignorable (2 known properties: "sensor", "humidity"])
+                                                          at [Source: [B@3c656d14; line: 1, column: 11] (through reference chain: java.util.ArrayList[0]->dryr.common.json.beans.HumiditySensorDataPoint["date"])
+                                                          at com.fasterxml.jackson.databind.DeserializationContext.reportUnknownProperty(DeserializationContext.java:855)
+                                                          at com.fasterxml.jackson.databind.deser.std.StdDeserializer.handleUnknownProperty(StdDeserializer.java:1083)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownProperty(BeanDeserializerBase.java:1389)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownVanilla(BeanDeserializerBase.java:1367)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.vanillaDeserialize(BeanDeserializer.java:266)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:125)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:277)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:249)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:26)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:3788)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:2904)
+                                                          at com.spothero.volley.JacksonRequest.parseNetworkResponse(JacksonRequest.java:183)
+                                                          at com.android.volley.NetworkDispatcher.run(NetworkDispatcher.java:116)
+01-17 00:56:27.904 25431-25431/dryr.android I/AppCompatDelegate: The Activity's LayoutInflater already has a Factory installed so we can not install AppCompat's
+01-17 00:56:27.917 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.ParseError
+01-17 00:56:36.677 25431-25458/dryr.android E/Volley: [20171] JacksonRequest.parseNetworkResponse: An error occurred while parsing network response:
+                                                      com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field "date" (class dryr.common.json.beans.HumiditySensorDataPoint), not marked as ignorable (2 known properties: "sensor", "humidity"])
+                                                          at [Source: [B@17efbc86; line: 1, column: 11] (through reference chain: java.util.ArrayList[0]->dryr.common.json.beans.HumiditySensorDataPoint["date"])
+                                                          at com.fasterxml.jackson.databind.DeserializationContext.reportUnknownProperty(DeserializationContext.java:855)
+                                                          at com.fasterxml.jackson.databind.deser.std.StdDeserializer.handleUnknownProperty(StdDeserializer.java:1083)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownProperty(BeanDeserializerBase.java:1389)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownVanilla(BeanDeserializerBase.java:1367)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.vanillaDeserialize(BeanDeserializer.java:266)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:125)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:277)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:249)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:26)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:3788)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:2904)
+                                                          at com.spothero.volley.JacksonRequest.parseNetworkResponse(JacksonRequest.java:183)
+                                                          at com.android.volley.NetworkDispatcher.run(NetworkDispatcher.java:116)
+01-17 00:56:36.684 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.ParseError
+01-17 00:56:46.610 25431-25459/dryr.android E/Volley: [20172] JacksonRequest.parseNetworkResponse: An error occurred while parsing network response:
+                                                      com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field "date" (class dryr.common.json.beans.HumiditySensorDataPoint), not marked as ignorable (2 known properties: "sensor", "humidity"])
+                                                          at [Source: [B@388704e0; line: 1, column: 11] (through reference chain: java.util.ArrayList[0]->dryr.common.json.beans.HumiditySensorDataPoint["date"])
+                                                          at com.fasterxml.jackson.databind.DeserializationContext.reportUnknownProperty(DeserializationContext.java:855)
+                                                          at com.fasterxml.jackson.databind.deser.std.StdDeserializer.handleUnknownProperty(StdDeserializer.java:1083)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownProperty(BeanDeserializerBase.java:1389)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.handleUnknownVanilla(BeanDeserializerBase.java:1367)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.vanillaDeserialize(BeanDeserializer.java:266)
+                                                          at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:125)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:277)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:249)
+                                                          at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:26)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:3788)
+                                                          at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:2904)
+                                                          at com.spothero.volley.JacksonRequest.parseNetworkResponse(JacksonRequest.java:183)
+                                                          at com.android.volley.NetworkDispatcher.run(NetworkDispatcher.java:116)
+01-17 00:56:46.618 25431-25431/dryr.android E/CommunicationFacade: error received: com.android.volley.ParseError
