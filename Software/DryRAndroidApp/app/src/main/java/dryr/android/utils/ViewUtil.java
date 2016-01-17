@@ -3,6 +3,9 @@ package dryr.android.utils;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -81,23 +84,24 @@ public class ViewUtil {
         v.measure(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
-        animateHeight(v, initialHeight, targetHeight);
+        animateHeight(v, initialHeight, targetHeight, View.VISIBLE);
     }
 
     public static void collapse(final View v) {
         final int initialHeight = v.getHeight();
         final int targetHeight = 1;
 
-        animateHeight(v, initialHeight, targetHeight);
+        animateHeight(v, initialHeight, targetHeight, View.GONE);
     }
 
-    public static void animateHeight(final View v, final int initialHeight, final int targetHeight) {
+    public static void animateHeight(final View v, final int initialHeight, final int targetHeight, final int visibilityAfter) {
         Animation a = new Animation()
         {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 if (interpolatedTime == 1) {
-                    v.getLayoutParams().height = FrameLayout.LayoutParams.WRAP_CONTENT;
+                    v.getLayoutParams().height = targetHeight;
+                    v.setVisibility(visibilityAfter);
                 } else {
                     v.getLayoutParams().height =
                             (int) (initialHeight + (targetHeight - initialHeight) * interpolatedTime);
@@ -111,9 +115,14 @@ public class ViewUtil {
             }
         };
 
-        // 1dp / ms
-        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        // 1/4dp / ms
+        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
+    }
+
+    public static float dipToPx(int dip, Context context) {
+        Resources r = context.getResources();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, r.getDisplayMetrics());
     }
 
 }

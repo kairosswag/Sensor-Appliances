@@ -189,6 +189,11 @@ public class CommunicationFacade {
         final ConcurrentHashMap<String, Boolean> successfull = new ConcurrentHashMap<>();
         final int size = pair.size() + remove.size();
 
+        if (pair.isEmpty() && remove.isEmpty()) {
+            callback.onResult(successfull);
+            return;
+        }
+
         for (final BluetoothDevice p : pair) {
             httpGet(context.getString(R.string.servlet_device_connect) + p.getMac(), new Response.Listener<String>() {
                 @Override
@@ -212,7 +217,7 @@ public class CommunicationFacade {
         }
 
         for (final BluetoothDevice r : remove) {
-            httpGet(context.getString(R.string.servlet_device_connect) + r.getMac(), new Response.Listener<String>() {
+            httpGet(context.getString(R.string.servlet_device_disconnect) + r.getMac(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.d(TAG, "response received: " + response.toString());

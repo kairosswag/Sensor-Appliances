@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
@@ -50,6 +52,7 @@ public class PairSensorDialogPreference extends DialogPreference {
     private Button refresh;
     private TextView noneAvailable;
     private RecyclerView availableRecycler;
+    private SensorAdapter availableAdapter;
 
     private LinearLayout connectionQLayout;
     private TextView connectWithTitle;
@@ -101,6 +104,8 @@ public class PairSensorDialogPreference extends DialogPreference {
         available = null;
         delete = new ArrayList<>();
         added = new ArrayList<>();
+        availableAdapter = null;
+        pairedAdapter = null;
 
         // Set up dialog ui
         mainContentLayout = (LinearLayout) view.findViewById(R.id.dialog_pair_sensor_main_content_layout);
@@ -120,8 +125,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         pairNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtil.fadeOut(pairedLayout, getContext());
-                searchForSensors();
+                switchToAdd(pairedLayout);
             }
         });
 
@@ -133,7 +137,6 @@ public class PairSensorDialogPreference extends DialogPreference {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewUtil.fadeOut(addLayout, getContext());
                 searchForSensors();
             }
         });
@@ -161,7 +164,6 @@ public class PairSensorDialogPreference extends DialogPreference {
         progressBar = (ProgressBar) view.findViewById(R.id.dialog_pair_sensor_progress);
 
         // Show paired sensors
-        ViewUtil.fadeOut(pairedLayout, getContext());
         getPairedSensors();
     }
 
@@ -190,8 +192,8 @@ public class PairSensorDialogPreference extends DialogPreference {
                 togglePairedDeleteMode();
 
                 // No paired sensors
-                nonePaired.setVisibility(View.VISIBLE);
-                pairedRecycler.setVisibility(View.GONE);
+                ViewUtil.fadeIn(nonePaired, getContext());
+                showRecycler(pairedRecycler, false);
 
                 pairNew.setEnabled(true); // Only allow one Sensor for now
                 removeSensor.setEnabled(false);
@@ -200,6 +202,8 @@ public class PairSensorDialogPreference extends DialogPreference {
     }
 
     private void getPairedSensors() {
+        pairNew.setEnabled(false);
+        removeSensor.setEnabled(false);
         hideError();
 
         ViewUtil.fadeIn(progressBar, getContext());
@@ -210,28 +214,32 @@ public class PairSensorDialogPreference extends DialogPreference {
                 paired = result;
                 if (result.isEmpty()) {
                     // No paired sensors
-                    nonePaired.setVisibility(View.VISIBLE);
-                    pairedRecycler.setVisibility(View.GONE);
+                    ViewUtil.fadeIn(nonePaired, getContext());
+                    showRecycler(pairedRecycler, false);
 
                     pairNew.setEnabled(true); // Only allow one Sensor for now
                     removeSensor.setEnabled(false);
                 } else {
                     // Display paired sensors
-                    nonePaired.setVisibility(View.GONE);
-                    pairedRecycler.setVisibility(View.VISIBLE);
-                    pairedAdapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
-                        @Override
-                        public void onSensorSelected(int pos) {
-                            pairedSensorSelected(pos);
-                        }
-                    });
-                    pairedRecycler.setAdapter(pairedAdapter);
+                    ViewUtil.fadeOut(nonePaired, getContext());
+                    if (pairedAdapter == null) {
+                        pairedAdapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
+                            @Override
+                            public void onSensorSelected(int pos) {
+                                pairedSensorSelected(pos);
+                            }
+                        });
+                        pairedRecycler.setAdapter(pairedAdapter);
+                    } else {
+                        pairedAdapter.setSensors(result);
+                        pairedAdapter.notifyDataSetChanged();
+                    }
 
                     removeSensor.setEnabled(true);
                     pairNew.setEnabled(false); // Only allow one Sensor for now
+                    showRecycler(pairedRecycler, true);
                 }
-                ViewUtil.fade(progressBar, pairedLayout, getContext());
-
+                ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
             }
 
             @Override
@@ -251,10 +259,29 @@ public class PairSensorDialogPreference extends DialogPreference {
                 }
 
                 pairNew.setEnabled(false);
-                ViewUtil.fade(progressBar, pairedLayout, getContext());
-
+                removeSensor.setEnabled(false);
+                ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
             }
         });
+    }
+
+    private void showRecycler(RecyclerView recyclerView, boolean show) {
+        // expand or collapse recycler
+        if (show) {
+            if (recyclerView.getVisibility() == View.GONE) {
+                recyclerView.setVisibility(View.VISIBLE);
+                ViewUtil.animateHeight(recyclerView, 1, (int) ViewUtil.dipToPx(100, getContext()), View.VISIBLE);
+            }
+        } else {
+            if (recyclerView.getVisibility() == View.VISIBLE) {
+                ViewUtil.animateHeight(recyclerView, (int) ViewUtil.dipToPx(100, getContext()), 1, View.GONE);
+            }
+        }
+    }
+
+    private void switchToAdd(View from) {
+        ViewUtil.fade(from, addLayout, getContext());
+        searchForSensors();
     }
 
     private void searchForSensors() {
@@ -274,23 +301,29 @@ public class PairSensorDialogPreference extends DialogPreference {
 
                                 if (result.isEmpty()) {
                                     // No available sensors
-                                    noneAvailable.setVisibility(View.VISIBLE);
-                                    availableRecycler.setVisibility(View.GONE);
+                                    ViewUtil.fadeIn(noneAvailable, getContext());
+                                    showRecycler(availableRecycler, false);
                                 } else {
                                     // Display available sensors in a recycler react to onCLick
                                     noneAvailable.setVisibility(View.GONE);
-                                    availableRecycler.setVisibility(View.VISIBLE);
 
-                                    SensorAdapter adapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
-                                        @Override
-                                        public void onSensorSelected(int pos) {
-                                            addSensor(pos);
-                                        }
-                                    });
-                                    availableRecycler.setAdapter(adapter);
+                                    if (availableAdapter == null) {
+                                        availableAdapter = new SensorAdapter(result, new SensorAdapter.SensorAdapterListener() {
+                                            @Override
+                                            public void onSensorSelected(int pos) {
+                                                addSensor(pos);
+                                            }
+                                        });
+                                        availableRecycler.setAdapter(availableAdapter);
+                                    } else {
+                                        availableAdapter.setSensors(result);
+                                        availableAdapter.notifyDataSetChanged();
+                                    }
+
+                                    showRecycler(availableRecycler, true);
                                 }
 
-                                ViewUtil.fade(progressBar, addLayout, getContext());
+                                ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
                             }
 
 
@@ -300,13 +333,12 @@ public class PairSensorDialogPreference extends DialogPreference {
                                 switch (error) {
                                     default:
                                         // Display error
-                                        ViewUtil.fade(progressBar, addLayout, getContext());
                                         errorText.setText(R.string.error_connection_default);
-                                        errorText.setVisibility(View.VISIBLE);
+                                        ViewUtil.fadeIn(errorText, getContext());
                                 }
 
                                 // Give option to retry
-                                retry.setVisibility(View.VISIBLE);
+                                ViewUtil.fadeIn(retry, getContext());
                                 retry.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -314,18 +346,80 @@ public class PairSensorDialogPreference extends DialogPreference {
                                     }
                                 });
 
-                                ViewUtil.fade(progressBar, addLayout, getContext());
+                                ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
+                                ViewUtil.fadeIn(addLayout, getContext());
                             }
-
-
                         }
 
                 );
     }
 
+    private void applyChanges() {
+        ViewUtil.fadeIn(progressBar, getContext());
+        hideError();
+
+        // Remove sensors selected to be removed and pair sensors to be paired
+        CommunicationFacade.getInstance(getContext()).pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallback<ConcurrentHashMap<String, Boolean>>() {
+            @Override
+            public void onResult(ConcurrentHashMap<String, Boolean> result) {
+                boolean success = true;
+                for (Map.Entry<String, Boolean> e : result.entrySet()) {
+                    if (e.getValue()) {
+                        removeFromAddedOrDelete(e.getKey());
+                    } else {
+                        success = false;
+                    }
+                }
+                if (success) {
+                    getDialog().dismiss();
+                } else {
+                    errorText.setText(R.string.error_connection_default);
+                    ViewUtil.fadeIn(errorText, getContext());
+                    retry.setVisibility(View.VISIBLE);
+                    ViewUtil.fadeIn(retry, getContext());
+                    retry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            applyChanges();
+                        }
+                    });
+
+                    ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onError(CommunicationFacade.CommunicationError error) {
+                switch (error) {
+                    default:
+                        errorText.setText(R.string.error_connection_default);
+                        ViewUtil.fadeIn(errorText, getContext());
+                        retry.setVisibility(View.VISIBLE);
+                        ViewUtil.fadeIn(retry, getContext());
+                        retry.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                applyChanges();
+                            }
+                        });
+                }
+                ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
+                // TODO: somehow a second error is not displayed correctly (future sprint)
+            }
+        });
+    }
+
+    private void hideError() {
+        if (errorText.getVisibility() == View.VISIBLE) {
+            ViewUtil.fadeOut(errorText, getContext());
+            ViewUtil.fadeOut(retry, getContext());
+        }
+    }
+
     private void addSensor(final int pos) {
         // Add sensor switch to connectionQLayout
         added.add(available.get(pos));
+        filterDelete(available.get(pos));
 
         if (added.isEmpty()) {
             connectWithTitle.setVisibility(View.GONE);
@@ -353,90 +447,33 @@ public class PairSensorDialogPreference extends DialogPreference {
         ViewUtil.fade(addLayout, connectionQLayout, getContext());
     }
 
+    private void filterDelete(BluetoothDevice a) {
+        for (Iterator<BluetoothDevice> iterator = delete.iterator(); iterator.hasNext(); ) {
+            if (a.equals(iterator.next().getMac())) {
+                iterator.remove();
+                return;
+            }
+        }
+    }
+
     private void filterAvailable() {
         // Don't display already paired (or to be paired) sensors as available
         // Not efficient but there is no use case with thousands of sensors in these lists
         for (BluetoothDevice p : paired) {
-            for (int i = 0; i < available.size(); i++) {
-                if (p.getMac().equals(available.get(i).getMac())) {
-                    available.remove(i);
+            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext();) {
+                if (p.getMac().equals(iterator.next().getMac())) {
+                    iterator.remove();
                 }
             }
         }
 
         for (BluetoothDevice p : added) {
-            for (int i = 0; i < available.size(); i++) {
-                if (p.getMac().equals(available.get(i).getMac())) {
-                    available.remove(i);
+            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext();) {
+                if (p.getMac().equals(iterator.next().getMac())) {
+                    iterator.remove();
                 }
             }
         }
-    }
-
-    private void hideError() {
-        ViewUtil.fadeOut(errorText, getContext());
-        ViewUtil.fadeOut(retry, getContext());
-    }
-
-    private void applyChanges() {
-        ViewUtil.fade(mainContentLayout, progressBar, getContext());
-        hideError();
-
-        pairedLayout.setVisibility(View.GONE);
-        addLayout.setVisibility(View.GONE);
-        connectionQLayout.setVisibility(View.GONE);
-
-        // Remove sensors selected to be removed and pair sensors to be paired
-        CommunicationFacade.getInstance(getContext()).pairAndRemove(added, delete, new CommunicationFacade.CommunicationCallback<ConcurrentHashMap<String, Boolean>>() {
-            @Override
-            public void onResult(ConcurrentHashMap<String, Boolean> result) {
-                boolean success = true;
-                for (Map.Entry<String, Boolean> e : result.entrySet()) {
-                    if (e.getValue()) {
-                        removeFromAddedOrDelete(e.getKey());
-                    } else {
-                        success = false;
-                    }
-                }
-                if (success) {
-                    getDialog().dismiss();
-                } else  {
-                    errorText.setText(R.string.error_connection_default);
-                    errorText.setVisibility(View.VISIBLE);
-                    retry.setVisibility(View.VISIBLE);
-                    retry.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            applyChanges();
-                        }
-                    });
-
-                    mainContentLayout.setVisibility(View.VISIBLE);
-                    ViewUtil.fadeIn(mainContentLayout, getContext());
-                    ViewUtil.fade(progressBar, connectionQLayout, getContext());
-                }
-            }
-
-            @Override
-            public void onError(CommunicationFacade.CommunicationError error) {
-                switch (error) {
-                    default:
-                        errorText.setText(R.string.error_connection_default);
-                        errorText.setVisibility(View.VISIBLE);
-                        retry.setVisibility(View.VISIBLE);
-                        retry.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                applyChanges();
-                            }
-                        });
-                }
-                mainContentLayout.setVisibility(View.VISIBLE);
-                ViewUtil.fadeIn(mainContentLayout, getContext());
-                ViewUtil.fade(progressBar, connectionQLayout, getContext());
-                // TODO: somehow a second error is not displayed correctly (future sprint)
-            }
-        });
     }
 
     private void removeFromAddedOrDelete(String mac) {

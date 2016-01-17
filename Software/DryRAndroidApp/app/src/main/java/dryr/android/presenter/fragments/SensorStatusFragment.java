@@ -31,7 +31,6 @@ import dryr.common.json.beans.BluetoothDevice;
  * Activities that contain this fragment must implement the
  * {@link SensorStatusFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
-
  */
 public class SensorStatusFragment extends Fragment {
     public static final String TAG = "sensorStatus";
@@ -139,6 +138,7 @@ public class SensorStatusFragment extends Fragment {
 
     /**
      * refresh the sensor state with data from the base station
+     *
      * @param silent displays no error message on error
      */
     private void refreshSensorState(final boolean silent) {
@@ -177,16 +177,13 @@ public class SensorStatusFragment extends Fragment {
                         break;
 
                     default:
-                        if (silent) {
-                            showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    refreshSensorState(false);
-                                }
-                            });
-                        } else {
-                            DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
-                        }
+                        showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refreshSensorState(false);
+                            }
+                        });
+
                 }
                 showProgress(false);
                 enableStateLayout(false);
@@ -196,7 +193,7 @@ public class SensorStatusFragment extends Fragment {
 
     private void enableStateLayout(boolean enable) {
         sensorStatusLayout.setEnabled(enable);
-        if (enable) {
+        if (!enable) {
             ViewUtil.fadeOut(sensorStatusLayout, getActivity(), 0.2f, View.VISIBLE);
         } else {
             ViewUtil.fadeIn(sensorStatusLayout, getActivity());
@@ -250,7 +247,6 @@ public class SensorStatusFragment extends Fragment {
             connectionBar.setProgress(10); // TODO: Get connection level from bluetooth device
         }
     }
-
 
 
     @Override

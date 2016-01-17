@@ -184,16 +184,12 @@ public class LaundryStatusFragment extends Fragment {
                         break;
 
                     default:
-                        if (!silent) {
-                            DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
-                        } else {
-                            showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    refreshState(false);
-                                }
-                            });
-                        }
+                        showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refreshState(false);
+                            }
+                        });
                 }
 
                 showProgress(false);

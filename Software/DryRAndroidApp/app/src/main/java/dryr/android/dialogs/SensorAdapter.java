@@ -81,6 +81,10 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         }
     }
 
+    public void setSensors(List<BluetoothDevice> sensors) {
+        this.sensors = sensors;
+    }
+
     public interface SensorAdapterListener {
         /**
          * Called when the users clicks a sensor from the displayed list
