@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dryr.basestation.database.DataPointDB;
 import dryr.basestation.database.DatabaseHelper;
+import dryr.basestation.util.OtherUtil;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
@@ -38,7 +39,7 @@ public class RawDataHandler extends HttpServlet {
 			// response.getWriter().append(ServletUtil.jsonize(item));
 			response.getWriter().append("Single Data Point");
 		} else if (pinfo != null && pinfo.equals("/multiple")) {
-			int amount = Integer.getInteger(request.getParameter("amount"), -1);
+			int amount = OtherUtil.parseInt(request.getParameter("amount"), -1);
 			List<HumiditySensorDataPoint> res = (new DataPointDB()).getData(amount);
 			if (res != null) {
 				response.getWriter().append(ServletUtil.jsonize(res));
