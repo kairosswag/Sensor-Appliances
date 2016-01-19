@@ -90,6 +90,11 @@ public class DryRBackgroundService extends Service {
                     public void onError(CommunicationFacade.CommunicationError error) {
                         // Do nothing
                     }
+
+                    @Override
+                    public Object getTag() {
+                        return DryRBackgroundService.this;
+                    }
                 });
             }
         }, 0, getResources().getInteger(R.integer.background_service_check_laundry_state_frequency_period), TimeUnit.SECONDS);
@@ -102,6 +107,8 @@ public class DryRBackgroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         serviceRunning = false;
+        // cancel sent requests
+        CommunicationFacade.getInstance(getApplicationContext()).cancelAllByTag(this);
     }
 
     private void showDryNotification() {

@@ -262,6 +262,11 @@ public class PairSensorDialogPreference extends DialogPreference {
                 removeSensor.setEnabled(false);
                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
             }
+
+            @Override
+            public Object getTag() {
+                return PairSensorDialogPreference.this;
+            }
         });
     }
 
@@ -349,6 +354,11 @@ public class PairSensorDialogPreference extends DialogPreference {
                                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
                                 ViewUtil.fadeIn(addLayout, getContext());
                             }
+
+                            @Override
+                            public Object getTag() {
+                                return PairSensorDialogPreference.this;
+                            }
                         }
 
                 );
@@ -406,6 +416,11 @@ public class PairSensorDialogPreference extends DialogPreference {
                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
                 // TODO: somehow a second error is not displayed correctly (future sprint)
             }
+
+            @Override
+            public Object getTag() {
+                return PairSensorDialogPreference.this;
+            }
         });
     }
 
@@ -460,7 +475,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         // Don't display already paired (or to be paired) sensors as available
         // Not efficient but there is no use case with thousands of sensors in these lists
         for (BluetoothDevice p : paired) {
-            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext();) {
+            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext(); ) {
                 if (p.getMac().equals(iterator.next().getMac())) {
                     iterator.remove();
                 }
@@ -468,7 +483,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         }
 
         for (BluetoothDevice p : added) {
-            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext();) {
+            for (Iterator<BluetoothDevice> iterator = available.iterator(); iterator.hasNext(); ) {
                 if (p.getMac().equals(iterator.next().getMac())) {
                     iterator.remove();
                 }
@@ -499,5 +514,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         super.onDialogClosed(positiveResult);
         if (positiveResult) {
         }
+        // cancel already sent requests
+        CommunicationFacade.getInstance(getContext()).cancelAllByTag(this);
     }
 }

@@ -52,6 +52,7 @@ public class SensorStatusFragment extends Fragment {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     private boolean refreshingScheduled = false;
     private ScheduledFuture<?> task;
+    private boolean refreshing;
 
     public SensorStatusFragment() {
         // Required empty public constructor
@@ -75,7 +76,7 @@ public class SensorStatusFragment extends Fragment {
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    refreshSensorState(true);
+                    if (!refreshing) refreshSensorState(true);
                 }
             }, period, period, TimeUnit.SECONDS);
         }
@@ -88,6 +89,9 @@ public class SensorStatusFragment extends Fragment {
         // stop refreshing
         task.cancel(true);
         refreshingScheduled = false;
+
+        // cancel already sent requests
+        CommunicationFacade.getInstance(getActivity()).cancelAllByTag(this);
     }
 
     @Override
@@ -113,6 +117,7 @@ public class SensorStatusFragment extends Fragment {
         showProgress(true);
 
 
+        enableStateLayout(false);
         // TODO: Use tabs for multiple sensors (future sprint)
 
         return v;
@@ -142,12 +147,15 @@ public class SensorStatusFragment extends Fragment {
      * @param silent displays no error message on error
      */
     private void refreshSensorState(final boolean silent) {
+        refreshing = true;
         showProgress(true);
 
         // Refresh Sensor state
         CommunicationFacade.getInstance(getContext()).getSensorState(new CommunicationFacade.CommunicationCallback<BluetoothDevice>() {
             @Override
             public void onResult(BluetoothDevice result) {
+                refreshing = false;
+
                 enableStateLayout(true);
                 showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
                 setSensorState(result);
@@ -156,6 +164,7 @@ public class SensorStatusFragment extends Fragment {
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
+                refreshing = false;
 
                 switch (error) {
                     case NO_BASE_STATION_FOUND:
@@ -187,6 +196,11 @@ public class SensorStatusFragment extends Fragment {
                 }
                 showProgress(false);
                 enableStateLayout(false);
+            }
+
+            @Override
+            public Object getTag() {
+                return SensorStatusFragment.this;
             }
         });
     }

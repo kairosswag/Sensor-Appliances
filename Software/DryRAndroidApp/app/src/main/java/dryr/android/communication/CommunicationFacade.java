@@ -2,6 +2,7 @@ package dryr.android.communication;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -98,7 +99,7 @@ public class CommunicationFacade {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.getTypeFactory().constructCollectionType(List.class, HumiditySensorDataPoint.class);
             }
-        });
+        }, callback.getTag());
 
     }
 
@@ -126,7 +127,7 @@ public class CommunicationFacade {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
-        });
+        }, callback.getTag());
 
     }
 
@@ -155,7 +156,7 @@ public class CommunicationFacade {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
-        });
+        }, callback.getTag());
     }
 
     public void getAvailableSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
@@ -182,7 +183,7 @@ public class CommunicationFacade {
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
-        });
+        }, callback.getTag());
     }
 
     public void pairAndRemove(List<BluetoothDevice> pair, List<BluetoothDevice> remove, final CommunicationCallback<ConcurrentHashMap<String, Boolean>> callback) {
@@ -213,7 +214,7 @@ public class CommunicationFacade {
                     successfull.put(p.getMac(), false);
                     checkPairAndRemoveFinished(size, successfull, callback);
                 }
-            });
+            }, callback.getTag());
         }
 
         for (final BluetoothDevice r : remove) {
@@ -235,7 +236,7 @@ public class CommunicationFacade {
                     successfull.put(r.getMac(), false);
                     checkPairAndRemoveFinished(size, successfull, callback);
                 }
-            });
+            }, callback.getTag());
         }
     }
 
@@ -246,26 +247,28 @@ public class CommunicationFacade {
     }
 
 
-    private void httpGet(String remainderUrl, int timeout, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+    private void httpGet(String remainderUrl, int timeout, Response.Listener<String> listener, Response.ErrorListener errorListener, Object tag) {
         Request<String> request = new StringRequest(Request.Method.GET, defaultUrl + remainderUrl, listener, errorListener);
         // Set timeout
         request.setRetryPolicy(new DefaultRetryPolicy(timeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setTag(tag);
         RequestQueueProvider.getInstance().getRequestQueue().add(request);
     }
 
-    private void httpGet(String remainderUrl, Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        httpGet(remainderUrl, defaultTimeout, listener, errorListener);
+    private void httpGet(String remainderUrl, Response.Listener<String> listener, Response.ErrorListener errorListener, Object tag) {
+        httpGet(remainderUrl, defaultTimeout, listener, errorListener, tag);
     }
 
-    private <T> void httpGetJSON(String remainderUrl, int timeout, JacksonRequestListener<T> listener) {
+    private <T> void httpGetJSON(String remainderUrl, int timeout, JacksonRequestListener<T> listener, Object tag) {
         JacksonRequest<T> request = new JacksonRequest<T>(Request.Method.GET, defaultUrl + remainderUrl, listener);
         // Set timeout
         request.setRetryPolicy(new DefaultRetryPolicy(timeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setTag(tag);
         RequestQueueProvider.getInstance().getRequestQueue().add(request);
     }
 
-    private <T> void httpGetJSON(String remainderUrl, JacksonRequestListener<T> listener) {
-        httpGetJSON(remainderUrl, defaultTimeout, listener);
+    private <T> void httpGetJSON(String remainderUrl, JacksonRequestListener<T> listener, Object tag) {
+        httpGetJSON(remainderUrl, defaultTimeout, listener, tag);
     }
 
     private CommunicationError convertError(VolleyError error) {
@@ -274,6 +277,10 @@ public class CommunicationFacade {
         } else {
             return CommunicationError.UNKNOWN;
         }
+    }
+
+    public void cancelAllByTag(Object tag) {
+        RequestQueueProvider.getInstance().getRequestQueue().cancelAll(tag);
     }
 
     /**
@@ -295,22 +302,11 @@ public class CommunicationFacade {
          * @param error the error
          */
         public void onError(CommunicationError error);
-    }
-
-    /**
-     * Callback to inform a caller over a finished communication action
-     */
-    public interface CommunicationCallbackBinary {
-        /**
-         * Called when the action has been successfully executed
-         */
-        public void onSuccess();
 
         /**
-         * Called when an error occurred during the communication action
-         *
-         * @param error the error
+         * Method to get a tag to tag communication requests to later cancel them with cancelAllByTag
+         * @return the tag
          */
-        public void onError(CommunicationError error);
+        public Object getTag();
     }
 }

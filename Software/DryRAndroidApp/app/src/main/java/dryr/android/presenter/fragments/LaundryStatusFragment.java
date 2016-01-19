@@ -52,6 +52,7 @@ public class LaundryStatusFragment extends Fragment {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     private boolean refreshingScheduled = false;
     private ScheduledFuture<?> task;
+    private boolean refreshing = false;
 
     // TODO: use tabs for multiple sensors
 
@@ -79,7 +80,7 @@ public class LaundryStatusFragment extends Fragment {
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    refreshState(true);
+                    if (!refreshing) refreshState(true);
                 }
             }, period, period, TimeUnit.SECONDS);
         }
@@ -92,6 +93,9 @@ public class LaundryStatusFragment extends Fragment {
         // stop refreshing
         task.cancel(true);
         refreshingScheduled = false;
+
+        // cancel already sent requests
+        CommunicationFacade.getInstance(getActivity()).cancelAllByTag(this);
     }
 
     @Override
@@ -114,6 +118,8 @@ public class LaundryStatusFragment extends Fragment {
         if (laundryState != null) {
             setLaundryState(laundryState);
         }
+
+        enableStateLayout(false);
 
         return v;
     }
@@ -142,10 +148,13 @@ public class LaundryStatusFragment extends Fragment {
      * @param silent don't display error messages
      */
     private void refreshState(final boolean silent) {
+        refreshing = true;
         showProgress(true);
         CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
             @Override
             public void onResult(HumiditySensorDataPoint result) {
+                refreshing = false;
+
                 enableStateLayout(true);
                 showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
                 setLaundryState(result);
@@ -154,6 +163,8 @@ public class LaundryStatusFragment extends Fragment {
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
+                refreshing = false;
+
                 switch (error) {
                     case NO_BASE_STATION_FOUND:
 
@@ -194,6 +205,11 @@ public class LaundryStatusFragment extends Fragment {
 
                 showProgress(false);
                 enableStateLayout(false);
+            }
+
+            @Override
+            public Object getTag() {
+                return LaundryStatusFragment.this;
             }
         });
     }
