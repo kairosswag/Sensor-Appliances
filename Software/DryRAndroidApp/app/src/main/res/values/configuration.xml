@@ -23,9 +23,12 @@
     <integer name="default_timeout_ms">15000</integer>
 
     <!-- Servlet urls !-->
-    <string name="servlet_latest_dataPoint">data/multiple?amount=1</string>
+    <string name="servlet_latest_dataPoint_by_device">data/multiple?amount=1&amp;device=</string>
     <string name="servlet_devices">devices</string>
     <string name="servlet_device_connect">devices/connect?device=</string>
     <string name="servlet_device_disconnect">devices/disconnect?device=</string>
+
+    <!-- DateTime format received from server !-->
+    <string name="date_time_format_server">yyyy-MM-dd HH:mm:ss</string>
 
 </resources>

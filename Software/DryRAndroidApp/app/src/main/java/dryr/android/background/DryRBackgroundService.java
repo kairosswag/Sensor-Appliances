@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
+import dryr.android.db.HumidityTable;
 import dryr.android.presenter.MainActivity;
+import dryr.android.utils.ConfigUtil;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
@@ -69,14 +71,12 @@ public class DryRBackgroundService extends Service {
                 CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
                     @Override
                     public void onResult(HumiditySensorDataPoint result) {
+                        HumidityTable.getInstance(getApplicationContext()).addDataPoint(result);
+
                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-                        TypedValue outValue = new TypedValue();
-                        getResources().getValue(R.dimen.sensor_humidity_dry_threshold, outValue, true);
-                        float threshold = outValue.getFloat();
-
-                        if (result.getHumidity() <= threshold &&
-                                sp.getFloat(getString(R.string.pref_notification_last_humidity_key), Float.MAX_VALUE) > threshold) {
+                        if (result.getHumidity() <= ConfigUtil.getDryThreshold(getApplicationContext()) &&
+                                sp.getFloat(getString(R.string.pref_notification_last_humidity_key), Float.MAX_VALUE) > ConfigUtil.getDryThreshold(getApplicationContext())) {
 
                             // Show notification "dry"
                             showDryNotification();

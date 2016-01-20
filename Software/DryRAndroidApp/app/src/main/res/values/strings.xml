@@ -18,6 +18,11 @@
     <!-- LaundryStatus !-->
     <string name="laundry_status_drying">Trocknet</string>
     <string name="laundry_status_dry">Trocken</string>
+    <string name="laundry_status_dry_at">Vorraussichtlich trocken um:</string>
+    <string name="laundry_status_humidity">Feuchtigkeit</string>
+    <string name="laundry_status_humidity_dry">trocken</string>
+    <string name="laundry_status_humidity_wet">nass</string>
+    <string name="laundry_status_time">Zeit</string>
     <string name="laundry_status_no_sensor">Es ist kein Sensor mit der Basistation verbunden</string>
     <string name="laundry_status_base_station_connected">Mit Basistation verbunden</string>
 
@@ -89,5 +94,8 @@
     <!-- Notifications !-->
     <string name="notification_laundry_dry_title">Wäsche trocken</string>
     <string name="notification_laundry_dry_text">Ihre Wäsche ist nun trocken</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

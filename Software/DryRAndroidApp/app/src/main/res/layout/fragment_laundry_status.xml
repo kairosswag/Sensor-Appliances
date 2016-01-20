@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,15 +10,53 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/laundry_status_displayText"
-            style="@android:style/TextAppearance.DeviceDefault.Large"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="@string/laundry_status_drying"
-            android:textSize="40dp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/laundry_status_displayText"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/laundry_status_drying"
+                android:textSize="30sp" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/laundry_status_graph"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_margin="14dp"
+                android:layout_marginTop="12dp" />
+
+            <LinearLayout
+                android:id="@+id/laundry_status_prediction_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/laundry_status_dry_at"
+                    android:layout_weight="0.5"/>
+
+                <TextView
+                    android:id="@+id/laundry_status_prediction_time"
+                    style="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="test"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="0.5"/>
+            </LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
@@ -49,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
 
     </LinearLayout>
 

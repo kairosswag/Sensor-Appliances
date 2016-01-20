@@ -1,5 +1,14 @@
 package dryr.android.utils;
 
+import android.content.Context;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import dryr.android.R;
+import dryr.common.json.beans.HumiditySensorDataPoint;
+
 /**
  * Utility containing methods to format strings
  */
@@ -20,5 +29,16 @@ public class FormatUtil {
         }
 
         return formatted;
+    }
+
+    public static Date getDateFromHDT(HumiditySensorDataPoint dataPoint, Context context) {
+        SimpleDateFormat sdf = new SimpleDateFormat(context.getString(R.string.date_time_format_server));
+        Date date = null;
+        try {
+            date = sdf.parse(dataPoint.getDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }
