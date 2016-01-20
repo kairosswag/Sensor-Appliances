@@ -19,17 +19,17 @@ public class DataPointDB {
 	}
 	
 	public List<HumiditySensorDataPoint> getData(int amount) {
-		return getData(amount, -1);
+		return getData(amount, null);
 	}
 	
-	public List<HumiditySensorDataPoint> getData(int amount, long deviceId) {
+	public List<HumiditySensorDataPoint> getData(int amount, String mac) {
 		if (amount > 10000) return null; //sanity check
 		
 		List<HumiditySensorDataPoint> resultList = new LinkedList<HumiditySensorDataPoint>();
 		if (conn != null) {
 			try {
 				stmt = conn.createStatement();
-				String device = (deviceId < 0) ? "" : " where Device=" + deviceId;
+				String device = (mac == null) ? "" : " where mac=" + mac;
 				String limit = (amount < 0) ? "" : " limit " + amount;
 				String query = "select * from Humidity" + device + " order by sample_time desc" + limit;
 				ResultSet results = stmt.executeQuery(query);

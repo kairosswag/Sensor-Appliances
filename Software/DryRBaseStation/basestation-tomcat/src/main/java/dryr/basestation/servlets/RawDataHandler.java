@@ -40,7 +40,8 @@ public class RawDataHandler extends HttpServlet {
 			response.getWriter().append("Single Data Point");
 		} else if (pinfo != null && pinfo.equals("/multiple")) {
 			int amount = OtherUtil.parseInt(request.getParameter("amount"), -1);
-			List<HumiditySensorDataPoint> res = (new DataPointDB()).getData(amount);
+			String mac = request.getParameter("device");
+			List<HumiditySensorDataPoint> res = (new DataPointDB()).getData(amount, mac);
 			if (res != null) {
 				response.getWriter().append(ServletUtil.jsonize(res));
 				return;
