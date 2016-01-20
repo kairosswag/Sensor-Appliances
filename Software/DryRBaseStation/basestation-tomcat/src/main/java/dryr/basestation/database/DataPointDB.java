@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.LinkedList;
 import java.util.List;
 
+import dryr.basestation.type.MinMax;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 public class DataPointDB {
@@ -57,4 +59,49 @@ public class DataPointDB {
 		return resultList;
 	}
 
+	public MinMax getMinMax(String mac, int seconds) {
+		String queryString =
+		"SELECT MIN(value), MAX(value) FROM Humidity\n" +
+		"WHERE mac=?\n" +
+		"AND (sample_time BETWEEN DATE_SUB(NOW(), INTERVAL ? SECOND) AND NOW())";
+		PreparedStatement stmt;
+		try {
+			stmt = conn.prepareCall(queryString);
+			stmt.setString(0, mac);
+			stmt.setInt(1, seconds);
+			ResultSet result = stmt.executeQuery();
+			if (result.next()) {
+				return new MinMax(result.getFloat(0), result.getFloat(1));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void deleteData(String mac) {
+		String queryString =
+		"DELETE FROM Humidity WHERE mac=?;";
+		try {
+			PreparedStatement stmt = conn.prepareCall(queryString);
+			stmt.setString(0, mac);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteOldData(int hours) {
+		String queryString =
+		"DELETE FROM Humidity\n" +
+		"WHERE (sample_time BETWEEN DATE_SUB(NOW(), INTERVAL ? HOUR) AND NOW());";
+		try {
+			PreparedStatement stmt = conn.prepareCall(queryString);
+			stmt.setInt(0, hours);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
