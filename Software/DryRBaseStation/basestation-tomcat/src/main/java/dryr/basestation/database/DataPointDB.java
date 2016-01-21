@@ -67,8 +67,8 @@ public class DataPointDB {
 		PreparedStatement stmt;
 		try {
 			stmt = conn.prepareCall(queryString);
-			stmt.setString(0, mac);
-			stmt.setInt(1, seconds);
+			stmt.setString(1, mac);
+			stmt.setInt(2, seconds);
 			ResultSet result = stmt.executeQuery();
 			if (result.next()) {
 				return new MinMax(result.getFloat(0), result.getFloat(1));
@@ -85,7 +85,7 @@ public class DataPointDB {
 		"DELETE FROM Humidity WHERE mac=?;";
 		try {
 			PreparedStatement stmt = conn.prepareCall(queryString);
-			stmt.setString(0, mac);
+			stmt.setString(1, mac);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -95,10 +95,10 @@ public class DataPointDB {
 	public void deleteOldData(int hours) {
 		String queryString =
 		"DELETE FROM Humidity\n" +
-		"WHERE (sample_time BETWEEN DATE_SUB(NOW(), INTERVAL ? HOUR) AND NOW());";
+		"WHERE sample_time <= DATE_SUB(NOW(), INTERVAL ? HOUR);";
 		try {
 			PreparedStatement stmt = conn.prepareCall(queryString);
-			stmt.setInt(0, hours);
+			stmt.setInt(1, hours);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
