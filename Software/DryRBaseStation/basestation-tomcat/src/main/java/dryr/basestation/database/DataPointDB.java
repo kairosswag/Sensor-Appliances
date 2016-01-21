@@ -71,7 +71,7 @@ public class DataPointDB {
 			stmt.setInt(2, seconds);
 			ResultSet result = stmt.executeQuery();
 			if (result.next()) {
-				return new MinMax(result.getFloat(0), result.getFloat(1));
+				return new MinMax(result.getFloat(1), result.getFloat(2));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
