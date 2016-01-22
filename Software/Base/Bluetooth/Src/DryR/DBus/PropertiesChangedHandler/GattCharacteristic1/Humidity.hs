@@ -12,6 +12,8 @@ import Database.MySQL.Simple
 import DBus
 import DBus.Client
 
+import Network.HTTP
+
 import DryR.Context
 import DryR.DBus.PropertiesChanged
 import DryR.DBus.Util
@@ -27,6 +29,8 @@ humidityHandler pC c = do
       let value = fromJust $ word8ListToFloat $ reverse $ BS.unpack lookupValue
 
       execute (contextDatabase c) (getQuery InsertHumidity $ contextQueries c) (mac, value)
+
+      simpleHTTP (getRequest $ "http://localhost:8080/basestation-tomcat/data-update?device=" ++ mac)
 
       return ()
     Nothing -> return ()

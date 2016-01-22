@@ -5,6 +5,12 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
+  	<servlet-name>DataUpdateHandler</servlet-name>
+  	<display-name>DataUpdateHandler</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.DataUpdateHandler</servlet-class>
+  </servlet>
+  <servlet>
   	<servlet-name>TestDataHandler</servlet-name>
   	<display-name>TestDataHandler</display-name>
   	<description></description>
@@ -34,6 +40,10 @@
   	<description></description>
   	<servlet-class>dryr.basestation.servlets.BluetoothUpdateHandler</servlet-class>
   </servlet>
+  <servlet-mapping>
+  	<servlet-name>DataUpdateHandler</servlet-name>
+  	<url-pattern>/data-update</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>TestDataHandler</servlet-name>
   	<url-pattern>/TestDataHandler</url-pattern>

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dryr.basestation.database.DataPointDB;
 import dryr.basestation.database.DatabaseHelper;
+import dryr.basestation.util.OtherUtil;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
@@ -38,13 +39,23 @@ public class RawDataHandler extends HttpServlet {
 			// response.getWriter().append(ServletUtil.jsonize(item));
 			response.getWriter().append("Single Data Point");
 		} else if (pinfo != null && pinfo.equals("/multiple")) {
-			int amount = Integer.getInteger(request.getParameter("amount"), -1);
-			List<HumiditySensorDataPoint> res = (new DataPointDB()).getData(amount);
-			if (res != null) {
-				response.getWriter().append(ServletUtil.jsonize(res));
-				return;
+			if (request.getParameterMap().containsKey("device")) {
+				String mac = request.getParameter("device");
+				List<HumiditySensorDataPoint> res;
+				if (request.getParameterMap().containsKey("minDate")) {
+					String minDate = request.getParameter("minDate");
+					res = (new DataPointDB()).getDataNewerThan(mac, minDate);
+				} else {
+					res = (new DataPointDB()).getData(mac);
+				}
+				if (res != null) {
+					response.getWriter().append(ServletUtil.jsonize(res));
+					return;
+				}
+				response.getWriter().append("Multiple Data Points");
+			} else {
+				response.setStatus(response.SC_NOT_ACCEPTABLE);
 			}
-			response.getWriter().append("Multiple Data Points");
 		} else {
 			response.getWriter().append("Requested page: data").append(request.getPathInfo()).append(
 					". \nAccess /data/single for the most recent data point or /data/multiple for multiple data points.");
