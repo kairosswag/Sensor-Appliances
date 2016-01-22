@@ -95,7 +95,4 @@
     <string name="notification_laundry_dry_title">Wäsche trocken</string>
     <string name="notification_laundry_dry_text">Ihre Wäsche ist nun trocken</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 </resources>

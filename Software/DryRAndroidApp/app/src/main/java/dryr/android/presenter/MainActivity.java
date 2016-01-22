@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LaundryStatusFragment.OnFragmentInteractionListener,
                 SensorStatusFragment.OnFragmentInteractionListener, SensorTabContainerFragment.OnFragmentInteractionListener {
 
+    public static String SENSOR_MAC_EXTRA = "dryr.android.mac";
+
     private DrawerLayout drawer;
 
     private List<RefreshListener> listeners = new ArrayList<>();
@@ -50,11 +52,26 @@ public class MainActivity extends AppCompatActivity
         if (DryRBackgroundService.isServiceRunning()) {
             DryRBackgroundServiceProvider.getInstance().getService(this).setAppRunning(true);
         }
+
+        // Get extras
+        String sensorMac = null;
+        if (getIntent().getExtras() != null) {
+            sensorMac = getIntent().getExtras().getString(SENSOR_MAC_EXTRA, null);
+        }
+
+        switchToLaundryStatus(sensorMac);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // Start background service
         DryRBackgroundServiceProvider.getInstance().startService(this, true);
 
@@ -69,7 +86,6 @@ public class MainActivity extends AppCompatActivity
 
         // Select first item and put the fragment in the container
         navigationView.getMenu().getItem(0).setChecked(true);
-        switchToLaundryStatus();
     }
 
     @Override
@@ -116,7 +132,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_laundry_status) {
-            switchToLaundryStatus();
+            switchToLaundryStatus(null);
         } else if (id == R.id.nav_sensor_status) {
             switchToSensorStatus();
         } else if (id == R.id.nav_settings) {
@@ -129,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void switchToLaundryStatus() {
+    private void switchToLaundryStatus(String switchToSensorMac) {
         // Show LaundryStatusFragment (tabs)
         String tag = SensorTabContainerFragment.TAG + LaundryStatusFragment.TAG;
         SensorTabContainerFragment containerFragment = (SensorTabContainerFragment) getSupportFragmentManager().findFragmentByTag(tag);
@@ -144,6 +160,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+        containerFragment.setSensorToDisplay(switchToSensorMac);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_fragment_container, containerFragment, tag).commit();
     }

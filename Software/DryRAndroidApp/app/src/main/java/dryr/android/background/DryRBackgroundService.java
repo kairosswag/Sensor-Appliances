@@ -118,19 +118,19 @@ public class DryRBackgroundService extends Service {
         threadPoolExecutor.schedule(new Runnable() {
             @Override
             public void run() {
-                // HumidityTable.getInstance(getApplicationContext()).addDataPoint(state); TODO: working graph
+                HumiditySensorDataPoint lastPoint = HumidityTable.getInstance(getApplicationContext()).getLatesteDataPoint(state.getSensor());
 
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-                if (state.getHumidity() <= ConfigUtil.getDryThreshold(getApplicationContext()) &&
-                        sp.getFloat(getString(R.string.pref_notification_last_humidity_key), Float.MAX_VALUE) > ConfigUtil.getDryThreshold(getApplicationContext())) {
-
-                    // Show notification "dry"
-                    showDryNotification();
-                }
+                HumidityTable.getInstance(getApplicationContext()).addDataPoint(state);
 
                 // Make sure the user is only notified again if the laundry got (more) wet again -> new laundry
-                sp.edit().putFloat(getString(R.string.pref_notification_last_humidity_key), state.getHumidity()).apply();
+                if (state.getHumidity() <= ConfigUtil.getDryThreshold(getApplicationContext()) &&
+                        (lastPoint == null ? Float.MAX_VALUE : lastPoint.getHumidity()) > ConfigUtil.getDryThreshold(getApplicationContext())) {
+
+                    // Show notification "dry"
+                    showDryNotification(state.getSensor());
+                }
+
+
             }
         },0, TimeUnit.MILLISECONDS);
     }
@@ -143,8 +143,7 @@ public class DryRBackgroundService extends Service {
         CommunicationFacade.getInstance(getApplicationContext()).cancelAllByTag(this);
     }
 
-    private void showDryNotification() {
-        // TODO: notification intent to switch to the right LaundryStatusFragment
+    private void showDryNotification(String mac) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean pushNotifications = sp.getBoolean(getResources().getString(R.string.pref_notification_push_key), true);
 
@@ -157,6 +156,7 @@ public class DryRBackgroundService extends Service {
                             .setContentText(getResources().getString(R.string.notification_laundry_dry_text));
 
             Intent resultIntent = new Intent(this, MainActivity.class);
+            resultIntent.putExtra(MainActivity.SENSOR_MAC_EXTRA, mac);
             PendingIntent resultPendingIntent =
                     PendingIntent.getActivity(
                             this,

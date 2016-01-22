@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +50,7 @@ public class SensorTabContainerFragment extends Fragment implements RefreshListe
     private MessageView messageView;
 
     private SensorTabContainerContentProvider contentProvider;
+    private String sensorToDisplayMac;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -64,6 +64,10 @@ public class SensorTabContainerFragment extends Fragment implements RefreshListe
 
     public void setContentProvider(SensorTabContainerContentProvider contentProvider) {
         this.contentProvider = contentProvider;
+    }
+
+    public void setSensorToDisplay(String mac) {
+        this.sensorToDisplayMac = mac;
     }
 
     @Override
@@ -166,6 +170,8 @@ public class SensorTabContainerFragment extends Fragment implements RefreshListe
                         ViewUtil.fadeIn(pager, getActivity());
                     }
 
+                    switchToPage(sensorToDisplayMac);
+                    sensorToDisplayMac = null;
                     showProgress(false);
                 }
             }
@@ -222,6 +228,14 @@ public class SensorTabContainerFragment extends Fragment implements RefreshListe
                 return SensorTabContainerFragment.this;
             }
         });
+    }
+
+    private void switchToPage(String mac) {
+        for (int i = 0; i < adapter.sensors.size(); i++) {
+            if (adapter.sensors.get(i).getMac().equals(mac)) {
+                pager.setCurrentItem(i, true);
+            }
+        }
     }
 
     private boolean sensorListEquals(List<BluetoothDevice> l1, List<BluetoothDevice> l2) {
