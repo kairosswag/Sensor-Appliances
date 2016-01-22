@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import dryr.basestation.type.MinMax;
+import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 public class DataPointDB {
@@ -50,12 +51,12 @@ public class DataPointDB {
 		"WHERE mac=?\n" +
 		"AND sample_time > ?\n" +
 		"ORDER BY sample_time DESC;";
+		List<HumiditySensorDataPoint> resultList = new LinkedList<HumiditySensorDataPoint>();
 		try {
 			PreparedStatement stmt = conn.prepareCall(queryString);
 			stmt.setString(1, mac);
 			stmt.setString(2, date);
 			ResultSet result = stmt.executeQuery();
-			List<HumiditySensorDataPoint> resultList = new LinkedList<HumiditySensorDataPoint>();
 			while (result.next()) {
 				HumiditySensorDataPoint datum = new HumiditySensorDataPoint();
 				datum.setDate(result.getString(1));
@@ -63,12 +64,11 @@ public class DataPointDB {
 				datum.setHumidity(result.getFloat(3));
 				resultList.add(datum);
 			}
-			return resultList;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return null;
+		return resultList;
 	}
 	
 	public MinMax getMinMax(String mac, int seconds) {
@@ -90,25 +90,31 @@ public class DataPointDB {
 
 		return null;
 	}
-	
-	public Float getAverage(String mac, int seconds) {
+
+	public List<Dry> getDry(float threshold, int seconds) {
 		String queryString =
-		"SELECT AVG(value) FROM Humidity\n" +
-		"WHERE mac=?\n" +
-		"AND sample_time >= DATE_SUB(NOW(), INTERVAL ? SECOND);";
+		"SELECT dev.mac, COALESCE(res.value, 0) < ? FROM Device dev NATURAL LEFT JOIN (\n" +
+		  "SELECT hum.mac, AVG(hum.value) AS value FROM Humidity hum JOIN (\n" +
+		    "SELECT mac, MAX(sample_time) AS sample_time FROM Humidity\n" +
+		    "GROUP BY mac\n" +
+		  ") max ON hum.mac = max.mac\n" +
+		  "WHERE hum.sample_time >= DATE_SUB(max.sample_time, INTERVAL ? SECOND)\n" +
+		  "GROUP BY mac\n" +
+		") res;";
+		List<Dry> resultList = new LinkedList<Dry>();
 		try {
 			PreparedStatement stmt = conn.prepareCall(queryString);
-			stmt.setString(1, mac);
+			stmt.setFloat(1, threshold);
 			stmt.setInt(2, seconds);
 			ResultSet result = stmt.executeQuery();
-			if (result.next()) {
-				return result.getFloat(1);
+			while (result.next()) {
+				resultList.add(new Dry(result.getString(1), result.getBoolean(2)));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return null;
+		return resultList;
 	}
 
 	public void deleteData(String mac) {
