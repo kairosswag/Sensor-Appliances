@@ -66,7 +66,7 @@ public class HumidityTable {
         this.listener = listener;
     }
 
-    public void addDataPoint(HumiditySensorDataPoint dataPoint) {
+    synchronized public void addDataPoint(HumiditySensorDataPoint dataPoint) {
         HumiditySensorDataPoint latest = getLatesteDataPoint(dataPoint.getSensor());
         // If humidity is above threshold and was below before delete all data points except the newest one
         if (latest != null && dataPoint.getDate().compareTo(latest.getDate()) >= 0
@@ -90,7 +90,7 @@ public class HumidityTable {
 
             if (listener != null) {
                 if (latest.getDate() != dataPoint.getDate()) {
-                    listener.dataPointAdded(dataPoint);
+                    listener.dataPointAdded(dataPoint, dataPoint.getSensor());
                 }
             }
         }
@@ -108,7 +108,7 @@ public class HumidityTable {
         ArrayList<HumiditySensorDataPoint> dataPoints = new ArrayList<>();
         SQLiteDatabase db = new DryRDbHelper(context).getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_NAME, null, MAC + " = " + "'" + mac + "'", null, null, null, DATE_TIME + " DESC");
+        Cursor cursor = db.query(TABLE_NAME, null, MAC + " = " + "'" + mac + "'", null, null, null, DATE_TIME + " ASC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 dataPoints.add(dataPointFromCursor(cursor));
@@ -139,13 +139,13 @@ public class HumidityTable {
         return dataPoint;
     }
 
-    public void deleteDataPointsByMac(String mac) {
+    synchronized public void deleteDataPointsByMac(String mac) {
         SQLiteDatabase db = new DryRDbHelper(context).getWritableDatabase();
         db.delete(TABLE_NAME, MAC + " = '" + mac + "'", null);
         db.close();
 
         if (listener != null) {
-            listener.pointsDeleted();
+            listener.pointsDeleted(mac);
         }
     }
 
@@ -164,7 +164,7 @@ public class HumidityTable {
     }
 
     public interface HumidityDbListener {
-        public void dataPointAdded(HumiditySensorDataPoint dataPoint);
-        public void pointsDeleted();
+        public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac);
+        public void pointsDeleted(String mac);
     }
 }

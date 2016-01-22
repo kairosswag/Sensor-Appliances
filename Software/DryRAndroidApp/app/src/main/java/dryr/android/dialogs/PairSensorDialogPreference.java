@@ -29,8 +29,6 @@ import dryr.android.utils.FormatUtil;
 import dryr.android.utils.ViewUtil;
 import dryr.common.json.beans.BluetoothDevice;
 
-// TODO: make dialogs stay one size (user friendliness)
-
 /**
  * Dialog to pair a sensor to the BaseStation
  */
@@ -154,12 +152,9 @@ public class PairSensorDialogPreference extends DialogPreference {
         addAnother.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filterAvailable();
-                // TODO: handle onCLick, refresh list (don't display added sensors, display removed ones?)
+                switchToAdd(connectionQLayout);
             }
         });
-        addAnother.setVisibility(View.GONE); // Only allow one sensor for now
-
 
         progressBar = (ProgressBar) view.findViewById(R.id.dialog_pair_sensor_progress);
 
@@ -195,7 +190,7 @@ public class PairSensorDialogPreference extends DialogPreference {
                 ViewUtil.fadeIn(nonePaired, getContext());
                 showRecycler(pairedRecycler, false);
 
-                pairNew.setEnabled(true); // Only allow one Sensor for now
+                pairNew.setEnabled(true);
                 removeSensor.setEnabled(false);
             }
         }
@@ -217,7 +212,6 @@ public class PairSensorDialogPreference extends DialogPreference {
                     ViewUtil.fadeIn(nonePaired, getContext());
                     showRecycler(pairedRecycler, false);
 
-                    pairNew.setEnabled(true); // Only allow one Sensor for now
                     removeSensor.setEnabled(false);
                 } else {
                     // Display paired sensors
@@ -236,9 +230,9 @@ public class PairSensorDialogPreference extends DialogPreference {
                     }
 
                     removeSensor.setEnabled(true);
-                    pairNew.setEnabled(false); // Only allow one Sensor for now
                     showRecycler(pairedRecycler, true);
                 }
+                pairNew.setEnabled(true);
                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
             }
 
@@ -352,7 +346,6 @@ public class PairSensorDialogPreference extends DialogPreference {
                                 });
 
                                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
-                                ViewUtil.fadeIn(addLayout, getContext());
                             }
 
                             @Override
@@ -414,7 +407,6 @@ public class PairSensorDialogPreference extends DialogPreference {
                         });
                 }
                 ViewUtil.fadeOut(progressBar, getContext(), View.INVISIBLE);
-                // TODO: somehow a second error is not displayed correctly (future sprint)
             }
 
             @Override
@@ -441,7 +433,7 @@ public class PairSensorDialogPreference extends DialogPreference {
         } else {
             connectWithTitle.setVisibility(View.VISIBLE);
         }
-        addLayout.removeAllViews();
+        connectWithLayout.removeAllViews();
         for (BluetoothDevice a : added) {
             TextView t = new TextView(getContext());
             t.setText(a.getMac());

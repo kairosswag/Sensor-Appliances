@@ -1,8 +1,6 @@
 package dryr.android.communication;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -13,15 +11,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import dryr.android.R;
 import dryr.common.json.beans.BluetoothDevice;
@@ -77,8 +72,8 @@ public class CommunicationFacade {
         defaultTimeout = context.getResources().getInteger(R.integer.default_timeout_ms);
     }
 
-    public void getLaundryState(final CommunicationCallback<HumiditySensorDataPoint> callback) {
-        httpGetJSON(context.getString(R.string.servlet_latest_dataPoint), new JacksonRequestListener<List<HumiditySensorDataPoint>>() {
+    public void getLaundryState(String mac, final CommunicationCallback<HumiditySensorDataPoint> callback) {
+        httpGetJSON(context.getString(R.string.servlet_latest_dataPoint_by_device) + mac, new JacksonRequestListener<List<HumiditySensorDataPoint>>() {
             @Override
             public void onResponse(List<HumiditySensorDataPoint> response, int statusCode, VolleyError error) {
                 if (response != null) {
@@ -103,19 +98,21 @@ public class CommunicationFacade {
 
     }
 
-    public void getSensorState(final CommunicationCallback<BluetoothDevice> callback) {
-        httpGetJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
+    public void getSensorState(final String mac, final CommunicationCallback<BluetoothDevice> callback) {
+        httpGetJSON(context.getString(R.string.servlet_devices_connected), new JacksonRequestListener<List<BluetoothDevice>>() {
             @Override
             public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
                 if (response != null) {
                     Log.d(TAG, "response received: " + response.toString());
-                    for (BluetoothDevice device : response) {
-                        if (device.getStatus() == 1) {
-                            callback.onResult(device);
-                            return;
+                    if (response.size() == 0) {
+                        callback.onError(CommunicationError.NO_SENSOR_PAIRED);
+                    } else {
+                        for (BluetoothDevice device : response) {
+                            if (device.getMac().equals(mac)) {
+                                callback.onResult(device);
+                            }
                         }
                     }
-                    callback.onError(CommunicationError.NO_SENSOR_PAIRED);
                 } else {
                     callback.onError(convertError(error));
                     Log.e(TAG, "error received: " + error.toString());
@@ -132,18 +129,12 @@ public class CommunicationFacade {
     }
 
     public void getPairedSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
-        httpGetJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
+        httpGetJSON(context.getString(R.string.servlet_devices_connected), new JacksonRequestListener<List<BluetoothDevice>>() {
             @Override
             public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
                 if (response != null) {
-                    List<BluetoothDevice> sensors = new ArrayList<>();
                     Log.d(TAG, "response received: " + response.toString());
-                    for (BluetoothDevice device : response) {
-                        if (device.getStatus() == 1) {
-                            sensors.add(device);
-                        }
-                    }
-                    callback.onResult(sensors);
+                    callback.onResult(response);
 
                 } else {
                     callback.onError(convertError(error));
@@ -160,18 +151,12 @@ public class CommunicationFacade {
     }
 
     public void getAvailableSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
-        httpGetJSON(context.getString(R.string.servlet_devices), new JacksonRequestListener<List<BluetoothDevice>>() {
+        httpGetJSON(context.getString(R.string.servlet_devices_available), new JacksonRequestListener<List<BluetoothDevice>>() {
             @Override
             public void onResponse(List<BluetoothDevice> response, int statusCode, VolleyError error) {
                 if (response != null) {
-                    List<BluetoothDevice> sensors = new ArrayList<>();
                     Log.d(TAG, "response received: " + response.toString());
-                    for (BluetoothDevice device : response) {
-                        if (device.getStatus() == 0) {
-                            sensors.add(device);
-                        }
-                    }
-                    callback.onResult(sensors);
+                    callback.onResult(response);
                 } else {
                     callback.onError(convertError(error));
                     Log.e(TAG, "error received: " + error.toString());

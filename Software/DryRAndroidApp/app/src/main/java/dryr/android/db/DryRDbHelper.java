@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DryRDbHelper extends SQLiteOpenHelper {
     private static String DB_NAME = "dryr.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 4;
 
     public DryRDbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -23,5 +23,6 @@ public class DryRDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(HumidityTable.dropSQL());
+        onCreate(db);
     }
 }

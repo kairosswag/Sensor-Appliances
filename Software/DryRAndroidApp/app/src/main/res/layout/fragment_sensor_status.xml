@@ -16,8 +16,7 @@
             android:textColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sensor_status_connection"
-            android:visibility="gone"/>
+            android:text="@string/sensor_status_connection"/>
 
         <ProgressBar
             android:layout_width="match_parent"
@@ -26,8 +25,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            />
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -43,22 +41,10 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <TextView
+        <dryr.android.views.MessageView
             android:id="@+id/sensor_status_message_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/laundry_status_no_sensor"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/sensor_status_message_button"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/pref_sensor_pair_title"
-            android:textColor="@drawable/primary_color_selector"
-            android:visibility="gone"/>
+            android:layout_height="wrap_content"/>
 
         <ProgressBar
             android:id="@+id/sensor_status_progress"

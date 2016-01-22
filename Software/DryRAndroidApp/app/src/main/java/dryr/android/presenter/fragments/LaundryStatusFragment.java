@@ -6,12 +6,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -23,6 +20,7 @@ import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,9 +30,12 @@ import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.db.HumidityTable;
 import dryr.android.presenter.DryRPreferenceActivity;
+import dryr.android.presenter.listener.RefreshListener;
 import dryr.android.utils.ConfigUtil;
 import dryr.android.utils.FormatUtil;
 import dryr.android.utils.ViewUtil;
+import dryr.android.views.MessageView;
+import dryr.common.json.beans.BluetoothDevice;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
@@ -43,8 +44,8 @@ import dryr.common.json.beans.HumiditySensorDataPoint;
  * {@link LaundryStatusFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class LaundryStatusFragment extends Fragment {
-    public static final String TAG = "main";
+public class LaundryStatusFragment extends Fragment implements RefreshListener {
+    public static final String TAG = "laundryStatus";
     private OnFragmentInteractionListener mListener;
 
     // UI
@@ -53,13 +54,13 @@ public class LaundryStatusFragment extends Fragment {
     private RelativeLayout laundryStateLayout;
     private TextView laundryStateText;
     private GraphView graphView;
-    private LinearLayout predictionLayout;
+    private RelativeLayout predictionLayout;
     private TextView predictionTime;
 
-    private TextView messageView;
-    private Button messageButton;
+    private MessageView messageView;
 
     // Data
+    private BluetoothDevice sensor;
     private HumiditySensorDataPoint laundryState;
     private LineGraphSeries<DataPoint>  series;
     LineGraphSeries<DataPoint> predictionSeries;
@@ -69,8 +70,6 @@ public class LaundryStatusFragment extends Fragment {
     private boolean refreshingScheduled = false;
     private ScheduledFuture<?> task;
     private boolean refreshing = false;
-
-    // TODO: use tabs for multiple sensors
 
     public LaundryStatusFragment() {
         // Required empty public constructor
@@ -85,22 +84,24 @@ public class LaundryStatusFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-
         // refresh regularly
         if (!refreshingScheduled) {
 
-            refreshState(false);
+            refresh(false);
             int period = getResources().getInteger(R.integer.sensor_fragment_status_refresh_frequency_period);
 
             refreshingScheduled = true;
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    if (!refreshing) refreshState(true);
+                    if (!refreshing) refresh(true);
                 }
             }, period, period, TimeUnit.SECONDS);
         }
+
+        mListener.registerForRefresh(this);
     }
+
 
     @Override
     public void onPause() {
@@ -112,6 +113,8 @@ public class LaundryStatusFragment extends Fragment {
 
         // cancel already sent requests
         CommunicationFacade.getInstance(getActivity()).cancelAllByTag(this);
+
+        mListener.unregisterForRefresh(this);
     }
 
     @Override
@@ -125,8 +128,26 @@ public class LaundryStatusFragment extends Fragment {
         laundryStateLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_layout);
         laundryStateText = (TextView) v.findViewById(R.id.laundry_status_displayText);
 
+        // graphView = (GraphView) v.findViewById(R.id.laundry_status_graph);
+        // setupGraph(); TODO: Working graph
+
+        predictionLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_prediction_layout);
+        predictionTime = (TextView) v.findViewById(R.id.laundry_status_prediction_time);
+
+        messageView = (MessageView) v.findViewById(R.id.laundry_status_message_view); // TODO: Show more messages about connection etc. in a future Sprint
+
+        if (laundryState != null) {
+            setLaundryState(laundryState);
+        }
+
+        enableStateLayout(false);
+
+        return v;
+    }
+
+    private void setupGraph() {
+        // TODO: fix graph
         // Set up graph
-        graphView = (GraphView) v.findViewById(R.id.laundry_status_graph);
         graphView.getViewport().setScrollable(false);
         graphView.getViewport().setMaxY(100);
         graphView.getViewport().setMinY(ConfigUtil.getDryThreshold(getActivity()));
@@ -136,22 +157,63 @@ public class LaundryStatusFragment extends Fragment {
         graphView.getGridLabelRenderer().setHorizontalLabelsColor(getResources().getColor(R.color.graph_grid_color));
         graphView.getGridLabelRenderer().setVerticalLabelsColor(getResources().getColor(R.color.graph_grid_color));
         graphView.getGridLabelRenderer().setGridColor(getResources().getColor(R.color.graph_grid_color));
+        graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
 
         // Show dates on x axis and show static labels on y axis
         StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(graphView, new DateAsXAxisLabelFormatter(getActivity())); // TODO: Show exact time?
         labelsFormatter.setVerticalLabels(new String[] {getString(R.string.laundry_status_humidity_dry), getString(R.string.laundry_status_humidity_wet)});
         graphView.getGridLabelRenderer().setLabelFormatter(labelsFormatter);
 
-        // Load data points from database
-        List<HumiditySensorDataPoint> humiditySensorDataPoints = HumidityTable.getInstance(getActivity()).getDataPoints("*" ); // TODO
-        DataPoint[] dataPoints = new DataPoint[humiditySensorDataPoints.size()];
-        int i = 0;
-        for (HumiditySensorDataPoint dataPoint : humiditySensorDataPoints) {
-            dataPoints[i] = new DataPoint(FormatUtil.getDateFromHDT(dataPoint, getActivity()).getTime(), dataPoint.getHumidity());
-        }
-        series = new LineGraphSeries<>(dataPoints);
+        // Add series
+        series = new LineGraphSeries<>();
         series.setColor(getResources().getColor(R.color.graph_humidity_color));
+
+
+        // Connect with db
+        HumidityTable humidityTable = HumidityTable.getInstance(getActivity());
+
+        graphView.getViewport().setXAxisBoundsManual(true);
+
+        if (sensor != null) {
+            List<HumiditySensorDataPoint> humiditySensorDataPoints = humidityTable.getDataPoints(sensor.getMac());
+            if (humiditySensorDataPoints.size() != 0) {
+                DataPoint[] dataPoints = new DataPoint[humiditySensorDataPoints.size()];
+                int i = 0;
+                for (HumiditySensorDataPoint dataPoint : humiditySensorDataPoints) {
+                    dataPoints[i] = new DataPoint(FormatUtil.getDateFromHDT(dataPoint, getActivity()), dataPoint.getHumidity());
+                    i++;
+                }
+                series = new LineGraphSeries<>(dataPoints);
+
+                graphView.getViewport().setMinX(dataPoints[0].getX());
+                graphView.getViewport().setMinX(dataPoints[dataPoints.length - 1].getX());
+            } else {
+                series = new LineGraphSeries<>();
+
+                graphView.getViewport().setMinX(new Date().getTime());
+                graphView.getViewport().setMaxX(new Date().getTime() + 1000000);
+            }
+        }
         graphView.addSeries(series);
+
+        // Update from db
+        humidityTable.setListener(new HumidityTable.HumidityDbListener() {
+            @Override
+            public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac) {
+                if (mac.equals(sensor.getMac())) {
+                    DataPoint dp = new DataPoint(FormatUtil.getDateFromHDT(dataPoint, getActivity()), dataPoint.getHumidity());
+                    series.appendData(dp, false, 200);
+                    graphView.getViewport().setMaxX(dp.getX()); // TODO: set this to prediction or whatever is larger
+                }
+            }
+
+            @Override
+            public void pointsDeleted(String mac) {
+                if (mac.equals(sensor.getMac())) {
+                    series.resetData(new DataPoint[0]);
+                }
+            }
+        });
 
         // TODO: do this in setLaundryState / setPrediction
         // TODO: maybe save last prediction for smoothness
@@ -163,42 +225,11 @@ public class LaundryStatusFragment extends Fragment {
         graphView.addSeries(predictionSeries);
 
         // TODO: refresh prediction, hide if none available
-
-        predictionLayout = (LinearLayout) v.findViewById(R.id.laundry_status_prediction_layout);
-        predictionTime = (TextView) v.findViewById(R.id.laundry_status_prediction_time);
-
-        messageView = (TextView) v.findViewById(R.id.laundry_status_message_view);
-        messageView.setVisibility(View.GONE); // TODO: Show more messages about connection etc. in a future Sprint
-        messageButton = (Button) v.findViewById(R.id.laundry_status_message_button);
-
-        setHasOptionsMenu(true);
-
-
-        if (laundryState != null) {
-            setLaundryState(laundryState);
-        }
-
-        enableStateLayout(false);
-
-        return v;
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.laundry_state, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.laundry_status_refresh:
-                refreshState(false);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void refresh() {
+        refresh(false);
     }
 
     /**
@@ -206,17 +237,20 @@ public class LaundryStatusFragment extends Fragment {
      *
      * @param silent don't display error messages
      */
-    private void refreshState(final boolean silent) {
+    public void refresh(final boolean silent) {
+        if (sensor == null) {
+            return;
+        }
+
         refreshing = true;
         showProgress(true);
-        CommunicationFacade.getInstance(getActivity()).getLaundryState(new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
+        CommunicationFacade.getInstance(getActivity()).getLaundryState(sensor.getMac(), new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
             @Override
             public void onResult(HumiditySensorDataPoint result) {
                 refreshing = false;
 
                 enableStateLayout(true);
-                showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
-                HumidityTable.getInstance(getActivity()).addDataPoint(result);
+                messageView.showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
                 setLaundryState(result);
                 showProgress(false);
             }
@@ -229,10 +263,10 @@ public class LaundryStatusFragment extends Fragment {
                     case NO_BASE_STATION_FOUND:
 
                         // Base station was not found in network
-                        showMessage(R.string.error_no_base_station_found, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                        messageView.showMessage(R.string.error_no_base_station_found, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                refreshState(false);
+                                refresh(false);
                             }
                         });
 
@@ -242,7 +276,7 @@ public class LaundryStatusFragment extends Fragment {
 
                         // Show message informing about the fact that there are no sensors paired and
                         // display button to pair some
-                        showMessage(R.string.laundry_status_no_sensor, R.color.light_error_text_color, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
+                        messageView.showMessage(R.string.laundry_status_no_sensor, R.color.light_error_text_color, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 // Show settings activity with PairSensorDialog open
@@ -255,10 +289,10 @@ public class LaundryStatusFragment extends Fragment {
                         break;
 
                     default:
-                        showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                        messageView.showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                refreshState(false);
+                                refresh(false);
                             }
                         });
                 }
@@ -283,23 +317,6 @@ public class LaundryStatusFragment extends Fragment {
         }
     }
 
-    private void showMessage(int messageTextId, int messageTextColorId, int buttonTextId, boolean showButton, View.OnClickListener clickListener) {
-        messageView.setText(messageTextId);
-        messageView.setTextColor(getResources().getColor(messageTextColorId));
-        if (showButton) {
-            messageButton.setText(buttonTextId);
-            messageButton.setOnClickListener(clickListener);
-            if (messageButton.getVisibility() == View.GONE) {
-                ViewUtil.fadeIn(messageButton, getActivity());
-            }
-        } else {
-            messageButton.setVisibility(View.GONE);
-        }
-        if (messageView.getVisibility() == View.GONE) {
-            ViewUtil.fadeIn(messageView, getActivity());
-        }
-    }
-
     public void setLaundryState(HumiditySensorDataPoint laundryState) {
         this.laundryState = laundryState;
         if (laundryStateText != null) {
@@ -316,6 +333,10 @@ public class LaundryStatusFragment extends Fragment {
                 laundryStateText.setTextColor(getResources().getColor(R.color.laundry_status_drying_color));
             }
         }
+    }
+
+    public void setSensor(BluetoothDevice sensor) {
+        this.sensor = sensor;
     }
 
     private void showProgress(final boolean show) {
@@ -366,5 +387,7 @@ public class LaundryStatusFragment extends Fragment {
      * activity.
      */
     public interface OnFragmentInteractionListener {
+        public void registerForRefresh(RefreshListener listener);
+        public void unregisterForRefresh(RefreshListener listener);
     }
 }
