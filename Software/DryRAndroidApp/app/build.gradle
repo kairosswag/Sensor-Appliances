@@ -36,5 +36,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.0'
     compile 'com.spothero.volley:volley-jackson-extension:1.0.1'
-    compile 'com.jjoe64:graphview:4.0.1'
+    compile "com.androidplot:androidplot-core:0.9.6"
 }

@@ -2,24 +2,33 @@ package dryr.android.presenter.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
-import com.jjoe64.graphview.helper.StaticLabelsFormatter;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.CatmullRomInterpolator;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PointLabelFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
+import com.androidplot.xy.XYStepMode;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -44,7 +53,7 @@ import dryr.common.json.beans.HumiditySensorDataPoint;
  * {@link LaundryStatusFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class LaundryStatusFragment extends Fragment implements RefreshListener {
+public class LaundryStatusFragment extends Fragment implements RefreshListener, HumidityTable.HumidityDbListener{
     public static final String TAG = "laundryStatus";
     private OnFragmentInteractionListener mListener;
 
@@ -53,7 +62,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
 
     private RelativeLayout laundryStateLayout;
     private TextView laundryStateText;
-    private GraphView graphView;
+    private XYPlot graph;
     private RelativeLayout predictionLayout;
     private TextView predictionTime;
 
@@ -62,8 +71,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
     // Data
     private BluetoothDevice sensor;
     private HumiditySensorDataPoint laundryState;
-    private LineGraphSeries<DataPoint>  series;
-    LineGraphSeries<DataPoint> predictionSeries;
+    private SimpleXYSeries data;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -115,6 +123,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
         CommunicationFacade.getInstance(getActivity()).cancelAllByTag(this);
 
         mListener.unregisterForRefresh(this);
+        HumidityTable.getInstance(getActivity()).unregisterListener(this);
     }
 
     @Override
@@ -128,8 +137,8 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
         laundryStateLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_layout);
         laundryStateText = (TextView) v.findViewById(R.id.laundry_status_displayText);
 
-        // graphView = (GraphView) v.findViewById(R.id.laundry_status_graph);
-        // setupGraph(); TODO: Working graph
+        graph = (XYPlot) v.findViewById(R.id.laundry_status_graph);
+        setupGraph();
 
         predictionLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_prediction_layout);
         predictionTime = (TextView) v.findViewById(R.id.laundry_status_prediction_time);
@@ -147,84 +156,98 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
 
     private void setupGraph() {
         // TODO: fix graph
-        // Set up graph
-        graphView.getViewport().setScrollable(false);
-        graphView.getViewport().setMaxY(100);
-        graphView.getViewport().setMinY(ConfigUtil.getDryThreshold(getActivity()));
-        // Set colors
-        graphView.getGridLabelRenderer().setHorizontalAxisTitleColor(getResources().getColor(R.color.graph_grid_color));
-        graphView.getGridLabelRenderer().setVerticalAxisTitleColor(getResources().getColor(R.color.graph_grid_color));
-        graphView.getGridLabelRenderer().setHorizontalLabelsColor(getResources().getColor(R.color.graph_grid_color));
-        graphView.getGridLabelRenderer().setVerticalLabelsColor(getResources().getColor(R.color.graph_grid_color));
-        graphView.getGridLabelRenderer().setGridColor(getResources().getColor(R.color.graph_grid_color));
-        graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
-
-        // Show dates on x axis and show static labels on y axis
-        StaticLabelsFormatter labelsFormatter = new StaticLabelsFormatter(graphView, new DateAsXAxisLabelFormatter(getActivity())); // TODO: Show exact time?
-        labelsFormatter.setVerticalLabels(new String[] {getString(R.string.laundry_status_humidity_dry), getString(R.string.laundry_status_humidity_wet)});
-        graphView.getGridLabelRenderer().setLabelFormatter(labelsFormatter);
-
-        // Add series
-        series = new LineGraphSeries<>();
-        series.setColor(getResources().getColor(R.color.graph_humidity_color));
-
 
         // Connect with db
         HumidityTable humidityTable = HumidityTable.getInstance(getActivity());
 
-        graphView.getViewport().setXAxisBoundsManual(true);
-
+        List<Long> xValues = new ArrayList<>();
+        List<Float> yValues = new ArrayList<>();
         if (sensor != null) {
             List<HumiditySensorDataPoint> humiditySensorDataPoints = humidityTable.getDataPoints(sensor.getMac());
-            if (humiditySensorDataPoints.size() != 0) {
-                DataPoint[] dataPoints = new DataPoint[humiditySensorDataPoints.size()];
-                int i = 0;
-                for (HumiditySensorDataPoint dataPoint : humiditySensorDataPoints) {
-                    dataPoints[i] = new DataPoint(FormatUtil.getDateFromHDT(dataPoint, getActivity()), dataPoint.getHumidity());
-                    i++;
-                }
-                series = new LineGraphSeries<>(dataPoints);
-
-                graphView.getViewport().setMinX(dataPoints[0].getX());
-                graphView.getViewport().setMinX(dataPoints[dataPoints.length - 1].getX());
-            } else {
-                series = new LineGraphSeries<>();
-
-                graphView.getViewport().setMinX(new Date().getTime());
-                graphView.getViewport().setMaxX(new Date().getTime() + 1000000);
+            for (HumiditySensorDataPoint dataPoint : humiditySensorDataPoints) {
+                xValues.add(FormatUtil.getDateFromHDT(dataPoint, getActivity()).getTime() / 1000); // Use seconds
+                yValues.add(dataPoint.getHumidity());
             }
         }
-        graphView.addSeries(series);
+        data = new SimpleXYSeries(xValues, yValues, getString(R.string.laundry_status_humidity));
+
+        final LineAndPointFormatter dataFormat = new LineAndPointFormatter();
+        dataFormat.setPointLabelFormatter(new PointLabelFormatter());
+        dataFormat.configure(getActivity(), R.xml.laundry_status_graph_data_format);
+
+        graph.addSeries(data, dataFormat);
+
+        // 3 steps on x axis 2 on y axis
+        graph.setDomainStep(XYStepMode.SUBDIVIDE, 3);
+        graph.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 25);
+
+        // Boundaries
+        graph.setRangeBoundaries(25, 100, BoundaryMode.FIXED);
+
+        // Colors that cannot be defined in xml
+        graph.getGraphWidget().getDomainOriginLinePaint().setColor(getResources().getColor(R.color.graph_grid_color));
+        graph.getGraphWidget().getDomainGridLinePaint().setColor(getResources().getColor(R.color.graph_grid_color));
+        graph.getGraphWidget().getRangeOriginLinePaint().setColor(getResources().getColor(R.color.graph_grid_color));
+        graph.getGraphWidget().getRangeGridLinePaint().setColor(Color.TRANSPARENT);
+
+        // Show dates on x axis and show static labels on y axis
+        graph.setRangeValueFormat(new Format() {
+            @Override
+            public StringBuffer format(Object object, StringBuffer buffer, FieldPosition field) {
+                Number n = (Number) object;
+                int roundNum = (int) (n.floatValue() + 0.5f);
+                if (roundNum == ConfigUtil.getDryThreshold(getActivity())) {
+                    buffer.append(getString(R.string.laundry_status_humidity_dry));
+                } else if (roundNum == 100) {
+                    buffer.append(getString(R.string.laundry_status_humidity_wet));
+                } else {
+                    buffer.append("");
+                }
+                return buffer;
+            }
+
+            @Override
+            public Object parseObject(String string, ParsePosition position) {
+                return null;
+            }
+        });
+        graph.setDomainValueFormat(new Format() {
+
+            private DateFormat dateFormat = android.text.format.DateFormat.getTimeFormat(getActivity());
+
+            @Override
+            public StringBuffer format(Object object, StringBuffer buffer, FieldPosition field) {
+                long time = ((Number) object).longValue() * 1000;
+                Date date = new Date(time);
+                return dateFormat.format(date, buffer, field);
+            }
+
+            @Override
+            public Object parseObject(String string, ParsePosition position) {
+                return null;
+            }
+        });
+
 
         // Update from db
-        humidityTable.setListener(new HumidityTable.HumidityDbListener() {
-            @Override
-            public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac) {
-                if (mac.equals(sensor.getMac())) {
-                    DataPoint dp = new DataPoint(FormatUtil.getDateFromHDT(dataPoint, getActivity()), dataPoint.getHumidity());
-                    series.appendData(dp, false, 200);
-                    graphView.getViewport().setMaxX(dp.getX()); // TODO: set this to prediction or whatever is larger
-                }
-            }
+        humidityTable.registerListener(this);
 
-            @Override
-            public void pointsDeleted(String mac) {
-                if (mac.equals(sensor.getMac())) {
-                    series.resetData(new DataPoint[0]);
-                }
-            }
-        });
-
-        // TODO: do this in setLaundryState / setPrediction
-        // TODO: maybe save last prediction for smoothness
-        predictionSeries = new LineGraphSeries<>(new DataPoint[]{
-                new DataPoint(4 /* TODO: laundryState.getDate */, /* TODO: laundryState.getHumidity()*/ 60),
-                new DataPoint(7, 50)
-        });
-        predictionSeries.setColor(getResources().getColor(R.color.graph_predicted_humidity_color));
-        graphView.addSeries(predictionSeries);
-
+        // TODO: add series for prediction
         // TODO: refresh prediction, hide if none available
+        // style with ie series2Format.getLinePaint().setPathEffect( new DashPathEffect(new float[] { PixelUtils.dpToPix(20), PixelUtils.dpToPix(15)}, 0));
+    }
+
+    @Override
+    public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac) {
+        data.addLast(FormatUtil.getDateFromHDT(dataPoint, getActivity()).getTime() / 1000,
+                dataPoint.getHumidity());
+        graph.redraw();
+    }
+
+    @Override
+    public void pointsDeleted(String mac) {
+        data.setModel(new ArrayList<Float>(), SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED);
+        graph.redraw();
     }
 
     @Override
@@ -388,6 +411,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener {
      */
     public interface OnFragmentInteractionListener {
         public void registerForRefresh(RefreshListener listener);
+
         public void unregisterForRefresh(RefreshListener listener);
     }
 }

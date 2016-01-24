@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import dryr.android.utils.ConfigUtil;
@@ -43,7 +44,7 @@ public class HumidityTable {
      * @return a String to drop the table
      */
     public static String dropSQL() {
-        return  "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
+        return "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
     }
 
     private static HumidityTable instance;
@@ -56,14 +57,30 @@ public class HumidityTable {
     }
 
     private Context context;
-    private HumidityDbListener listener;
+    private List<HumidityDbListener> listeners = new ArrayList<>();
 
     public HumidityTable(Context context) {
         this.context = context;
     }
 
-    public void setListener(HumidityDbListener listener) {
-        this.listener = listener;
+    public void registerListener(HumidityDbListener listener) {
+        listeners.add(listener);
+    }
+
+    public void unregisterListener(HumidityDbListener listener) {
+        listeners.remove(listener);
+    }
+
+    public void informListenersDPAdded(HumiditySensorDataPoint dataPoint) {
+        for (HumidityDbListener listener : listeners) {
+            listener.dataPointAdded(dataPoint, dataPoint.getSensor());
+        }
+    }
+
+    public void informListenersDPDeleted(String mac) {
+        for (HumidityDbListener listener : listeners) {
+            listener.pointsDeleted(mac);
+        }
     }
 
     synchronized public void addDataPoint(HumiditySensorDataPoint dataPoint) {
@@ -84,14 +101,12 @@ public class HumidityTable {
         SQLiteDatabase db = new DryRDbHelper(context).getWritableDatabase();
         long insertResultCode = db.insert(TABLE_NAME, null, contentValues);
         db.close();
-        if (insertResultCode < 0 ) {
+        if (insertResultCode < 0) {
             Log.e(TAG, "Error inserting data point: " + insertResultCode);
         } else {
 
-            if (listener != null) {
-                if (latest.getDate() != dataPoint.getDate()) {
-                    listener.dataPointAdded(dataPoint, dataPoint.getSensor());
-                }
+            if (latest.getDate() != dataPoint.getDate()) {
+                informListenersDPAdded(dataPoint);
             }
         }
     }
@@ -144,9 +159,7 @@ public class HumidityTable {
         db.delete(TABLE_NAME, MAC + " = '" + mac + "'", null);
         db.close();
 
-        if (listener != null) {
-            listener.pointsDeleted(mac);
-        }
+        informListenersDPDeleted(mac);
     }
 
     private HumiditySensorDataPoint dataPointFromCursor(Cursor cursor) {
@@ -165,6 +178,7 @@ public class HumidityTable {
 
     public interface HumidityDbListener {
         public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac);
+
         public void pointsDeleted(String mac);
     }
 }

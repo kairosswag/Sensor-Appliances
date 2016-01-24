@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,6 +26,47 @@
                 android:text="@string/laundry_status_drying"
                 android:textSize="30sp" />
 
+            <com.androidplot.xy.XYPlot
+                android:id="@+id/laundry_status_graph"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                ap:label=""
+                ap:rangeLabel=""
+                ap:domainLabel=""
+                ap:borderColor="@android:color/transparent"
+                ap:backgroundColor="@android:color/transparent"
+                ap:graphBackgroundColor="@android:color/transparent"
+                ap:gridBackgroundColor="@android:color/transparent"
+                ap:gridPaddingLeft="10dp"
+                ap:gridPaddingRight="10dp"
+                ap:gridPaddingTop="10dp"
+                ap:gridPaddingBottom="10dp"
+                ap:labelTextSize="20sp"
+                ap:rangeLabelTextSize="13sp"
+                ap:domainLabelTextSize="13sp"
+                ap:graphMarginTop="10dp"
+                ap:graphMarginBottom="10dp"
+                ap:graphMarginLeft="20dp"
+                ap:graphMarginRight="10dp"
+                androidPlot.legendWidget.visible="false"
+                ap:rangeTickLabelTextColor="@color/graph_grid_color"
+                ap:domainTickLabelTextColor="@color/graph_grid_color"
+                ap:rangeOriginTickLabelTextColor="@color/graph_grid_color"
+                ap:domainOriginTickLabelTextColor="@color/graph_grid_color"
+                ap:graphDomainLineColor="@color/graph_grid_color"
+                ap:graphDomainLineThickness="1dp"
+                ap:graphRangeLineColor="@color/graph_grid_color"
+                ap:graphRangeLineThickness="1dp"
+                ap:rangeTickLabelTextSize="15sp"
+                ap:rangeOriginTickLabelTextSize="15sp"
+                ap:domainTickLabelTextSize="15sp"
+                ap:domainOriginTickLabelTextSize="15sp"
+                ap:legendTextSize="15sp"
+                ap:legendIconHeight="15dp"
+                ap:legendIconWidth="15dp"
+                ap:legendHeight="25dp"
+                ap:legendAnchorPosition="right_bottom"/>
+
             <RelativeLayout
                 android:id="@+id/laundry_status_prediction_layout"
                 android:layout_width="match_parent"
@@ -36,8 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_centerHorizontal="true"
-                    android:visibility="gone">
+                    android:layout_centerHorizontal="true">
 
                     <TextView
                         style="@android:style/TextAppearance.DeviceDefault.Medium"
