@@ -93,7 +93,7 @@ public class DataPointDB {
 
 	public List<Dry> getDry(float threshold, int seconds) {
 		String queryString =
-		"SELECT dev.mac, COALESCE(res.value, 0) < ? FROM Device dev NATURAL LEFT JOIN (\n" +
+		"SELECT dev.mac, COALESCE(res.value, 100) < ? FROM Device dev NATURAL LEFT JOIN (\n" +
 		  "SELECT hum.mac, AVG(hum.value) AS value FROM Humidity hum JOIN (\n" +
 		    "SELECT mac, MAX(sample_time) AS sample_time FROM Humidity\n" +
 		    "GROUP BY mac\n" +
