@@ -2,6 +2,8 @@
 
 module DryR.DBus.MethodCall.Adapter1 where
 
+import qualified Data.Map.Lazy as LM
+
 import DBus
 import DBus.Client
 
@@ -41,6 +43,18 @@ removeDevice c oP device = do
   let mc = (methodCall oP ("org.bluez.Adapter1") ("RemoveDevice")) {
     methodCallDestination = Just "org.bluez",
     methodCallBody = [toVariant device]
+  }
+
+  mr <- call (contextDBus c) mc
+  case (mr) of
+    Left e -> return Nothing
+    Right s -> return $ Just ()
+
+setDiscoveryFilter :: Context -> ObjectPath -> (LM.Map String Variant) -> IO (Maybe ())
+setDiscoveryFilter c oP filters = do
+  let mc = (methodCall oP "org.bluez.Adapter1" "SetDiscoveryFilter") {
+    methodCallDestination = Just "org.bluez",
+    methodCallBody = [toVariant $ filters]
   }
 
   mr <- call (contextDBus c) mc
