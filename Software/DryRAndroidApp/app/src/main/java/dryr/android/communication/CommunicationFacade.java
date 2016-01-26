@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import dryr.android.R;
 import dryr.common.json.beans.BluetoothDevice;
+import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
@@ -72,7 +73,62 @@ public class CommunicationFacade {
         defaultTimeout = context.getResources().getInteger(R.integer.default_timeout_ms);
     }
 
-    public void getLaundryState(String mac, final CommunicationCallback<HumiditySensorDataPoint> callback) {
+    public void isDry(final String mac, final CommunicationCallback<Dry> callback) {
+        httpGetJSON(context.getString(R.string.servlet_isDry), new JacksonRequestListener<List<Dry>>() {
+            @Override
+            public void onResponse(List<Dry> response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    if (response.size() > 0) {
+                        for (Dry r : response) {
+                            if (r.getMac().equals(mac)) {
+                                callback.onResult(r);
+                                break;
+                            }
+                        }
+                    } else {
+                        callback.onError(CommunicationError.NO_SENSOR_PAIRED);
+                    }
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
+
+            @Override
+            public JavaType getReturnType() {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.getTypeFactory().constructCollectionType(List.class, Dry.class);
+            }
+        }, callback.getTag());
+    }
+
+    public void isDry(final CommunicationCallback<List<Dry>> callback) {
+        httpGetJSON(context.getString(R.string.servlet_isDry), new JacksonRequestListener<List<Dry>>() {
+            @Override
+            public void onResponse(List<Dry> response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    if (response.size() > 0) {
+                        callback.onResult(response);
+                    } else {
+                        callback.onError(CommunicationError.NO_SENSOR_PAIRED);
+                    }
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
+
+            @Override
+            public JavaType getReturnType() {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.getTypeFactory().constructCollectionType(List.class, Dry.class);
+            }
+        }, callback.getTag());
+    }
+
+    public void getHumidity(final String mac, final CommunicationCallback<HumiditySensorDataPoint> callback) {
         httpGetJSON(context.getString(R.string.servlet_latest_dataPoint_by_device) + mac, new JacksonRequestListener<List<HumiditySensorDataPoint>>() {
             @Override
             public void onResponse(List<HumiditySensorDataPoint> response, int statusCode, VolleyError error) {
@@ -95,7 +151,6 @@ public class CommunicationFacade {
                 return mapper.getTypeFactory().constructCollectionType(List.class, HumiditySensorDataPoint.class);
             }
         }, callback.getTag());
-
     }
 
     public void getSensorState(final String mac, final CommunicationCallback<BluetoothDevice> callback) {

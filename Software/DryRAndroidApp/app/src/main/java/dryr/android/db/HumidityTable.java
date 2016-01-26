@@ -71,13 +71,13 @@ public class HumidityTable {
         listeners.remove(listener);
     }
 
-    public void informListenersDPAdded(HumiditySensorDataPoint dataPoint) {
+    private void informListenersDPAdded(HumiditySensorDataPoint dataPoint) {
         for (HumidityDbListener listener : listeners) {
             listener.dataPointAdded(dataPoint, dataPoint.getSensor());
         }
     }
 
-    public void informListenersDPDeleted(String mac) {
+    private void informListenersDPDeleted(String mac) {
         for (HumidityDbListener listener : listeners) {
             listener.pointsDeleted(mac);
         }

@@ -21,6 +21,7 @@ import dryr.android.db.HumidityTable;
 import dryr.android.presenter.MainActivity;
 import dryr.android.utils.ConfigUtil;
 import dryr.common.json.beans.BluetoothDevice;
+import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 
 /**
@@ -68,6 +69,7 @@ public class DryRBackgroundService extends Service {
             @Override
             public void run() {
                 updateSensors();
+                updateDryState();
             }
         }, 0, getResources().getInteger(R.integer.background_service_check_laundry_state_frequency_period), TimeUnit.SECONDS);
 
@@ -80,7 +82,7 @@ public class DryRBackgroundService extends Service {
             @Override
             public void onResult(List<BluetoothDevice> result) {
                 for (BluetoothDevice sensor : result) {
-                    updateDryState(sensor.getMac());
+                    updateHumidity(sensor.getMac());
                 }
             }
 
@@ -95,11 +97,33 @@ public class DryRBackgroundService extends Service {
         });
     }
 
-    private void updateDryState(String mac) {
-        CommunicationFacade.getInstance(getApplicationContext()).getLaundryState(mac, new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
+    private void updateDryState() {
+        CommunicationFacade.getInstance(getApplicationContext()).isDry(new CommunicationFacade.CommunicationCallback<List<Dry>>() {
+            @Override
+            public void onResult(List<Dry> result) {
+                for (Dry d : result) {
+                    if (d.getDry()) {
+                        showDryNotification(d.getMac());
+                    }
+                }
+            }
+
+            @Override
+            public void onError(CommunicationFacade.CommunicationError error) {
+            }
+
+            @Override
+            public Object getTag() {
+                return this;
+            }
+        });
+    }
+
+    private void updateHumidity(String mac) {
+        CommunicationFacade.getInstance(getApplicationContext()).getHumidity(mac, new CommunicationFacade.CommunicationCallback<HumiditySensorDataPoint>() {
             @Override
             public void onResult(HumiditySensorDataPoint result) {
-                handleDryState(result);
+                HumidityTable.getInstance(getApplicationContext()).addDataPoint(result);
             }
 
             @Override
@@ -111,28 +135,6 @@ public class DryRBackgroundService extends Service {
                 return DryRBackgroundService.this;
             }
         });
-    }
-
-    private void handleDryState(final HumiditySensorDataPoint state) {
-        // Handle in background
-        threadPoolExecutor.schedule(new Runnable() {
-            @Override
-            public void run() {
-                HumiditySensorDataPoint lastPoint = HumidityTable.getInstance(getApplicationContext()).getLatesteDataPoint(state.getSensor());
-
-                HumidityTable.getInstance(getApplicationContext()).addDataPoint(state);
-
-                // Make sure the user is only notified again if the laundry got (more) wet again -> new laundry
-                if (state.getHumidity() <= ConfigUtil.getDryThreshold(getApplicationContext()) &&
-                        (lastPoint == null ? Float.MAX_VALUE : lastPoint.getHumidity()) > ConfigUtil.getDryThreshold(getApplicationContext())) {
-
-                    // Show notification "dry"
-                    showDryNotification(state.getSensor());
-                }
-
-
-            }
-        },0, TimeUnit.MILLISECONDS);
     }
 
     @Override
