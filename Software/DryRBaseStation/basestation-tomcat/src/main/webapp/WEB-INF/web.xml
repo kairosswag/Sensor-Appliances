@@ -46,6 +46,12 @@
   	<description></description>
   	<servlet-class>dryr.basestation.servlets.BluetoothUpdateHandler</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>InformationRequestServlet</servlet-name>
+  	<display-name>InformationRequestServlet</display-name>
+  	<description></description>
+  	<servlet-class>dryr.basestation.servlets.InformationRequestServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>DataUpdateHandler</servlet-name>
   	<url-pattern>/data-update</url-pattern>
@@ -60,7 +66,7 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>DryHandler</servlet-name>
-  	<url-pattern>/dry</url-pattern>
+  	<url-pattern>/dry/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>RawDataHandler</servlet-name>

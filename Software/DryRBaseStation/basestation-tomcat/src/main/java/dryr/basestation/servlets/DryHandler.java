@@ -12,21 +12,32 @@ import javax.servlet.http.HttpServletResponse;
 import dryr.basestation.database.DataPointDB;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.Dry;
+import dryr.common.json.beans.HumidityTreshold;
 
 public class DryHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
 	public DryHandler() {
-        super();
+		super();
 	}
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append(ServletUtil.jsonize((new DataPointDB()).getDry(50.0f, 60)));
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HumidityTreshold treshold = new HumidityTreshold();
+		treshold.setUserBias(0);
+		
+		String pinfo = request.getPathInfo();
+		if (pinfo != null && pinfo.equals("/info")) {
+			response.getWriter().append(ServletUtil.jsonize(treshold));
+		} else {
+			response.getWriter().append(ServletUtil.jsonize((new DataPointDB()).getDry(treshold.getTreshold(), 60)));
+		}
 	}
 }
