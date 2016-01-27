@@ -34,6 +34,7 @@ public class BluetoothDeviceDB {
 						BluetoothDevice device = new BluetoothDevice();
 						device.setMac(results.getString(1));
 						device.setStatus(results.getInt(2));
+						device.setRSSI(results.getShort(3));
 						resultList.add(device);
 					}
 				}

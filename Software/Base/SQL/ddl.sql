@@ -7,6 +7,7 @@ CREATE TABLE Status (
 CREATE TABLE Device (
   mac CHAR(17) NOT NULL,
   status_id INTEGER NOT NULL,
+  rssi SMALLINT NOT NULL,
   PRIMARY KEY (mac),
   FOREIGN KEY (status_id) REFERENCES Status(id)
   ON UPDATE CASCADE
@@ -27,3 +28,9 @@ CREATE VIEW Group_Humidity AS
 SELECT DATE_SUB(sample_time, INTERVAL SECOND(sample_time) SECOND) AS group_time, mac, AVG(value)
 FROM `Humidity`
 GROUP BY mac, group_time;
+
+INSERT INTO Status
+VALUES
+(0, 'Disconnected'),
+(1, 'Connected'),
+(2, 'Not Available');
