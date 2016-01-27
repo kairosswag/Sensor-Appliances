@@ -22,19 +22,19 @@ initialize = withContext (\c -> do
   let transportFilter = ("Transport" :: String, toVariant $ ("le" :: String))
   let filters = LM.fromList [transportFilter]
 
-  powerOn c "/org/bluez/hci0"
-  setDiscoveryFilter c "/org/bluez/hci0" filters
-  startDiscovery c "/org/bluez/hci0"
+  powerOn c (contextAdapter c)
+  setDiscoveryFilter c (contextAdapter c) filters
+  startDiscovery c (contextAdapter c)
   return ())
 
 uninitialize :: InnerContext -> IO (Maybe ())
 uninitialize = withContext (\c -> do
 
   qr :: [Only String] <- query_ (contextDatabase c) (getQuery SelectDeviceConnected $ contextQueries c)
-  let connected_devices = map ((macToObjectPath "/org/bluez/hci0") . fromOnly) qr
+  let connected_devices = map ((macToObjectPath (contextAdapter c)) . fromOnly) qr
 
   mapM_ (disconnect c) connected_devices
 
-  stopDiscovery c "/org/bluez/hci0"
-  powerOff c "/org/bluez/hci0"
+  stopDiscovery c (contextAdapter c)
+  powerOff c (contextAdapter c)
   return ())

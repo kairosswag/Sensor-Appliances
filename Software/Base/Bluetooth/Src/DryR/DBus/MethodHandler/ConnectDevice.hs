@@ -12,6 +12,6 @@ import DryR.Context
 
 connectDevice :: String -> Context -> IO ()
 connectDevice mac c = do
-  let oP = macToObjectPath "/org/bluez/hci0" mac
+  let oP = macToObjectPath (contextAdapter c) mac
   D1.connect c oP
   return ()

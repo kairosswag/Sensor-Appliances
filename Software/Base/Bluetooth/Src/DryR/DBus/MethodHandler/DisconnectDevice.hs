@@ -12,6 +12,6 @@ import DryR.Context
 
 disconnectDevice :: String -> Context -> IO ()
 disconnectDevice mac c = do
-  let oP = macToObjectPath "/org/bluez/hci0" mac
+  let oP = macToObjectPath (contextAdapter c) mac
   D1.disconnect c oP
   return ()

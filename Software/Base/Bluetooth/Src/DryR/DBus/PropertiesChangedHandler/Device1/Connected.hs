@@ -33,15 +33,14 @@ connectedTrue pC c = do
 
   oP_sv_hum <- getGattService1 c oP sv_hum
   oP_ch_hum <- getGattCharacteristic1 c (fromJust oP_sv_hum) ch_hum
-
   startNotify c $ fromJust oP_ch_hum
 
-  execute (contextDatabase c) (getQuery UpdateDevice $ contextQueries c) (1 :: Integer, mac)
+  execute (contextDatabase c) (getQuery UpdateDeviceStatus $ contextQueries c) (1 :: Integer, mac)
   return ()
 
 connectedFalse pC c = do
   let oP = pCObjectPath pC
   let mac = objectPathToMac oP
 
-  execute (contextDatabase c) (getQuery UpdateDevice $ contextQueries c) (0 :: Integer, mac)
+  execute (contextDatabase c) (getQuery UpdateDeviceStatus $ contextQueries c) (0 :: Integer, mac)
   return ()

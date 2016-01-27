@@ -1,27 +1,31 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module DryR.Context where
 
 import Control.Concurrent
 import Control.Concurrent.MVar
 
 import qualified Database.MySQL.Simple as DB
-import qualified DBus.Client as DS
+import qualified DBus as DS
+import qualified DBus.Client as DC
 
 import DryR.SQL.Query
 import DryR.SQL.Read
 
 data Context = Context {
   contextDatabase :: DB.Connection,
-  contextDBus :: DS.Client,
-  contextQueries :: [(QueryIdentifier, String)]}
+  contextDBus :: DC.Client,
+  contextQueries :: [(QueryIdentifier, String)],
+  contextAdapter :: DS.ObjectPath}
 
 type InnerContext = MVar (Maybe Context)
 
 newContext :: IO (InnerContext)
 newContext = do
-  connDBus <- DS.connectSystem
+  connDBus <- DC.connectSystem
   connDatabase <- DB.connect DB.defaultConnectInfo {DB.connectDatabase="dryr.base", DB.connectUser="dryr.base"}
   querystrings <- readSQL
-  newMVar $ Just $ Context connDatabase connDBus querystrings
+  newMVar $ Just $ Context connDatabase connDBus querystrings "/org/bluez/hci0"
 
 takeContext :: InnerContext -> IO (Maybe Context)
 takeContext vcontext = do
@@ -29,9 +33,9 @@ takeContext vcontext = do
   return mcontext
 
 deleteContext :: Context -> IO ()
-deleteContext (Context connDatabase connDBus _) = do
+deleteContext (Context connDatabase connDBus _ _) = do
   DB.close connDatabase
-  DS.disconnect connDBus
+  DC.disconnect connDBus
 
 withContext :: (Context -> IO (a)) -> InnerContext -> IO (Maybe a)
 withContext func vcontext  = do

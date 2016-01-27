@@ -15,8 +15,8 @@ import DryR.Context
 
 removeDevice :: String -> Context -> IO ()
 removeDevice mac c = do
-  let device = macToObjectPath "/org/bluez/hci0" mac
-  A1.removeDevice c "/org/bluez/hci0" device
+  let device = macToObjectPath (contextAdapter c) mac
+  A1.removeDevice c (contextAdapter c) device
 
   execute (contextDatabase c) (getQuery DeleteDevice $ contextQueries c) (Only mac)
 
