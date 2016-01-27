@@ -11,7 +11,8 @@ data QueryIdentifier =
   InsertHumidity |
   SelectDevice |
   SelectDeviceConnected |
-  UpdateDevice
+  UpdateDeviceStatus |
+  UpdateDeviceRSSI
   deriving (Eq)
 
 queries = [
@@ -20,7 +21,8 @@ queries = [
   InsertHumidity,
   SelectDevice,
   SelectDeviceConnected,
-  UpdateDevice]
+  UpdateDeviceStatus,
+  UpdateDeviceRSSI]
 
 names = [
   "DeleteDevice.sql",
@@ -28,7 +30,8 @@ names = [
   "InsertHumidity.sql",
   "SelectDevice.sql",
   "SelectDeviceConnected.sql",
-  "UpdateDevice.sql"]
+  "UpdateDeviceStatus.sql",
+  "UpdateDeviceRSSI.sql"]
 
 getQuery :: QueryIdentifier -> [(QueryIdentifier, String)] -> Query
 getQuery qi tb = fromString $ fromJust $ lookup qi tb
