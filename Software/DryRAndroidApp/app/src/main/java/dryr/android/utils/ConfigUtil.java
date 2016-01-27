@@ -11,4 +11,10 @@ public class ConfigUtil {
         context.getResources().getValue(R.dimen.sensor_humidity_dry_threshold, outValue, true);
         return outValue.getFloat();
     }
+
+    public static final float getJumpThreshold(Context context) {
+        TypedValue outValue = new TypedValue();
+        context.getResources().getValue(R.dimen.sensor_humidity_jump_threshold, outValue, true);
+        return outValue.getFloat();
+    }
 }

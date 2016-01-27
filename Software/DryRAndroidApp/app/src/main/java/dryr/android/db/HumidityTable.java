@@ -85,10 +85,10 @@ public class HumidityTable {
 
     synchronized public void addDataPoint(HumiditySensorDataPoint dataPoint) {
         HumiditySensorDataPoint latest = getLatesteDataPoint(dataPoint.getSensor());
-        // If humidity is above threshold and was below before delete all data points except the newest one
+        // If humidity made a jump greater than a threshold from configuration delete old data points
+        // -> new laundry
         if (latest != null && dataPoint.getDate().compareTo(latest.getDate()) >= 0
-                && dataPoint.getHumidity() > ConfigUtil.getDryThreshold(context)
-                && latest.getHumidity() <= ConfigUtil.getDryThreshold(context)) {
+                && dataPoint.getHumidity() - latest.getHumidity() > ConfigUtil.getJumpThreshold(context)) {
             deleteDataPointsByMac(dataPoint.getSensor());
         }
 
