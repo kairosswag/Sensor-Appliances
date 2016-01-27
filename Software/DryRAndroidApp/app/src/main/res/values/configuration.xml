@@ -18,7 +18,7 @@
 
     <!-- Base station connection config!-->
     <string name="default_server_protocol">http</string>
-    <string name="default_base_station_host_name">Yannick-10</string>
+    <string name="default_base_station_host_name">PI</string>
     <string name="default_server_port">8080</string>
     <string name="default_server_base_url">/basestation-tomcat/</string>
 
@@ -27,6 +27,7 @@
     <!-- Servlet urls !-->
     <string name="servlet_latest_dataPoint_by_device">data/multiple?amount=1&amp;device=</string>
     <string name="servlet_isDry">dry</string>
+    <string name="servlet_dry_info">dry/info</string>
     <string name="servlet_devices_available">devices?status=0</string>
     <string name="servlet_devices_connected">devices?status=1</string>
     <string name="servlet_device_connect">devices/connect?device=</string>

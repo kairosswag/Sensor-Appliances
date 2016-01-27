@@ -11,6 +11,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
@@ -22,6 +23,7 @@ import dryr.android.R;
 import dryr.common.json.beans.BluetoothDevice;
 import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
+import dryr.common.json.beans.HumidityTreshold;
 
 /**
  * Facade supposed to handle communication
@@ -71,6 +73,26 @@ public class CommunicationFacade {
         String port = context.getString(R.string.default_server_port);
         defaultUrl = protocol + "://" + hostName + ":" + port + context.getString(R.string.default_server_base_url);
         defaultTimeout = context.getResources().getInteger(R.integer.default_timeout_ms);
+    }
+
+    public void getDryInformation(final CommunicationCallback<HumidityTreshold> callback) {
+        httpGetJSON(context.getString(R.string.servlet_dry_info), new JacksonRequestListener<HumidityTreshold>() {
+            @Override
+            public void onResponse(HumidityTreshold response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    callback.onResult(response);
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
+
+            @Override
+            public JavaType getReturnType() {
+                return SimpleType.construct(HumidityTreshold.class);
+            }
+        }, callback.getTag());
     }
 
     public void isDry(final String mac, final CommunicationCallback<Dry> callback) {
@@ -180,7 +202,6 @@ public class CommunicationFacade {
                 return mapper.getTypeFactory().constructCollectionType(List.class, BluetoothDevice.class);
             }
         }, callback.getTag());
-
     }
 
     public void getPairedSensors(final CommunicationCallback<List<BluetoothDevice>> callback) {
