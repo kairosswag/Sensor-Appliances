@@ -12,6 +12,7 @@ package dryr.common.json.beans;
 public class BluetoothDevice {
 	private String mac;
 	private int status;
+	private short rssi;
 	
 	public BluetoothDevice() { 
 		
@@ -33,4 +34,11 @@ public class BluetoothDevice {
 		this.status = status;
 	}
 
+	public int getRSSI() {
+		return rssi;
+	}
+
+	public void setRSSI(short rssi) {
+		this.rssi = rssi;
+	}
 }

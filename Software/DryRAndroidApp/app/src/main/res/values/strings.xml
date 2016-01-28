@@ -22,6 +22,7 @@
     <string name="laundry_status_humidity">Feuchtigkeit</string>
     <string name="laundry_status_humidity_dry">trocken</string>
     <string name="laundry_status_humidity_wet">nass</string>
+    <string name="laundry_status_no_graph_data">Es stehen noch nicht genügend Daten für das Diagramm zur Verfügung</string>
     <string name="laundry_status_time">Zeit</string>
     <string name="laundry_status_no_sensor">Es ist kein Sensor mit der Basistation verbunden</string>
     <string name="laundry_status_base_station_connected">Mit Basistation verbunden</string>

@@ -37,9 +37,8 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         BluetoothDevice sensor = sensors.get(position);
         holder.title.setText(sensor.getMac());
 
-        /*
-        int reception = sensor.getReceptionLevel(); // TODO: reception level
-        int step = Sensor.MAX_RECEPTION / 5;
+        int reception = sensor.getRSSI();
+        int step = holder.icon.getContext().getResources().getInteger(R.integer.sensor_bssi_max) / 5;
         if (reception < step) {
             holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_0_bar);
         } else if (reception < 2 * step) {
@@ -51,9 +50,6 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         } else {
             holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_4_bar);
         }
-        */
-
-        holder.icon.setVisibility(View.GONE);
     }
 
     @Override

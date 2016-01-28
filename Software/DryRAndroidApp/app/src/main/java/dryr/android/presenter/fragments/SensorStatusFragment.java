@@ -100,6 +100,7 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
 
         sensorStatusLayout = (LinearLayout) v.findViewById(R.id.sensor_status_layout);
         connectionBar = (ProgressBar) v.findViewById(R.id.sensor_status_connection_bar);
+        connectionBar.setMax(getResources().getInteger(R.integer.sensor_bssi_max));
 
         messageView = (MessageView) v.findViewById(R.id.sensor_status_message_view);
         progressBar = (ProgressBar) v.findViewById(R.id.sensor_status_progress);
@@ -215,7 +216,7 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
     public void setSensorState(BluetoothDevice sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            connectionBar.setProgress(10); // TODO: Get connection level from bluetooth device
+            connectionBar.setProgress(sensorState.getRSSI());
         }
     }
 

@@ -11,14 +11,10 @@ public class Dry {
 		this.mac = mac;
 		this.dry = dry;
 	}
-	
-
 
 	public String getMac() {
 		return mac;
 	}
-	
-
 
 	public boolean getDry() {
 		return dry;

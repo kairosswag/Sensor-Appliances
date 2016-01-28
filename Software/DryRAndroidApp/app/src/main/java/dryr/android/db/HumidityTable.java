@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import dryr.android.utils.ConfigUtil;
@@ -84,7 +83,7 @@ public class HumidityTable {
     }
 
     synchronized public void addDataPoint(HumiditySensorDataPoint dataPoint) {
-        HumiditySensorDataPoint latest = getLatesteDataPoint(dataPoint.getSensor());
+        HumiditySensorDataPoint latest = getLatestDataPoint(dataPoint.getSensor());
         // If humidity made a jump greater than a threshold from configuration delete old data points
         // -> new laundry
         if (latest != null && dataPoint.getDate().compareTo(latest.getDate()) >= 0
@@ -104,8 +103,7 @@ public class HumidityTable {
         if (insertResultCode < 0) {
             Log.e(TAG, "Error inserting data point: " + insertResultCode);
         } else {
-
-            if (latest.getDate() != dataPoint.getDate()) {
+            if (latest == null || !latest.getDate().equals(dataPoint.getDate())) {
                 informListenersDPAdded(dataPoint);
             }
         }
@@ -138,7 +136,7 @@ public class HumidityTable {
         return dataPoints;
     }
 
-    public HumiditySensorDataPoint getLatesteDataPoint(String mac) {
+    public HumiditySensorDataPoint getLatestDataPoint(String mac) {
         HumiditySensorDataPoint dataPoint = null;
         SQLiteDatabase db = new DryRDbHelper(context).getReadableDatabase();
 

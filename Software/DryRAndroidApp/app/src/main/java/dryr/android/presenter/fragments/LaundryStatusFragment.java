@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +60,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
 
     private RelativeLayout laundryStateLayout;
     private TextView laundryStateText;
+    private TextView noGraphData;
     private XYPlot graph;
     private RelativeLayout predictionLayout;
     private TextView predictionTime;
@@ -106,6 +106,8 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         }
 
         mListener.registerForRefresh(this);
+        // Update from db
+        HumidityTable.getInstance(getActivity()).registerListener(this);
     }
 
 
@@ -135,13 +137,15 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         laundryStateLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_layout);
         laundryStateText = (TextView) v.findViewById(R.id.laundry_status_displayText);
 
+        noGraphData = (TextView) v.findViewById(R.id.laundry_status_enough_graph_data);
         graph = (XYPlot) v.findViewById(R.id.laundry_status_graph);
         setupGraph();
 
         predictionLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_prediction_layout);
         predictionTime = (TextView) v.findViewById(R.id.laundry_status_prediction_time);
 
-        messageView = (MessageView) v.findViewById(R.id.laundry_status_message_view); // TODO: Show more messages about connection etc. in a future Sprint
+        messageView = (MessageView) v.findViewById(R.id.laundry_status_message_view);
+        // TODO: maybe show more detailed messages about connection etc.
 
         if (laundryState != null) {
             setLaundryState(laundryState);
@@ -153,8 +157,6 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
     }
 
     private void setupGraph() {
-        // TODO: fix graph
-
         // Connect with db
         HumidityTable humidityTable = HumidityTable.getInstance(getActivity());
 
@@ -167,20 +169,15 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
                 yValues.add(dataPoint.getHumidity());
             }
         }
-        data = new SimpleXYSeries(xValues, yValues, getString(R.string.laundry_status_humidity));
 
-        final LineAndPointFormatter dataFormat = new LineAndPointFormatter();
-        dataFormat.setPointLabelFormatter(new PointLabelFormatter());
-        dataFormat.configure(getActivity(), R.xml.laundry_status_graph_data_format);
-
-        graph.addSeries(data, dataFormat);
+        setupDataSeries(xValues, yValues);
 
         // 3 steps on x axis 2 on y axis
         graph.setDomainStep(XYStepMode.SUBDIVIDE, 3);
         graph.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
 
         // Boundaries
-        graph.setRangeBoundaries(25, 100, BoundaryMode.FIXED);
+        graph.setRangeBoundaries(25, 101, BoundaryMode.FIXED);
 
         // Colors that cannot be defined in xml
         graph.getGraphWidget().getDomainOriginLinePaint().setColor(getResources().getColor(R.color.graph_grid_color));
@@ -207,9 +204,9 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
             }
         });
 
-
-        // Update from db
-        humidityTable.registerListener(this);
+        if (data.size() <= 1) {
+            showNotEnoughGraphData(true);
+        }
 
         // TODO: add series for prediction
         // TODO: refresh prediction, hide if none available
@@ -239,16 +236,46 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         });
     }
 
+    private void setupDataSeries(List<Long> xValues, List<Float> yValues) {
+        data = new SimpleXYSeries(xValues, yValues, getString(R.string.laundry_status_humidity));
+        final LineAndPointFormatter dataFormat = new LineAndPointFormatter();
+        dataFormat.setPointLabelFormatter(new PointLabelFormatter());
+        dataFormat.configure(getActivity(), R.xml.laundry_status_graph_data_format);
+        graph.addSeries(data, dataFormat);
+    }
+
+    private void showNotEnoughGraphData(boolean show) {
+        if (show) {
+            if (noGraphData.getVisibility() != View.VISIBLE) {
+                ViewUtil.fadeIn(noGraphData, getActivity());
+                ViewUtil.fadeOut(graph, getActivity());
+            }
+        } else {
+            if (noGraphData.getVisibility() == View.VISIBLE) {
+                ViewUtil.fadeOut(noGraphData, getActivity());
+                ViewUtil.fadeIn(graph, getActivity());
+            }
+        }
+    }
+
     @Override
     public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac) {
         data.addLast(FormatUtil.getDateFromHDT(dataPoint, getActivity()).getTime() / 1000,
                 dataPoint.getHumidity());
+
+        if (data.size() <= 1) {
+            showNotEnoughGraphData(true);
+        } else {
+            showNotEnoughGraphData(false);
+        }
         graph.redraw();
     }
 
     @Override
     public void pointsDeleted(String mac) {
-        data.setModel(new ArrayList<Float>(), SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED);
+        graph.removeSeries(data);
+        setupDataSeries(new ArrayList<Long>(), new ArrayList<Float>());
+        showNotEnoughGraphData(true);
         graph.redraw();
     }
 
