@@ -9,6 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import dryr.android.R;
+import dryr.android.utils.ConfigUtil;
 import dryr.android.utils.FormatUtil;
 import dryr.common.json.beans.BluetoothDevice;
 
@@ -37,18 +38,23 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         BluetoothDevice sensor = sensors.get(position);
         holder.title.setText(sensor.getMac());
 
-        int reception = sensor.getRSSI();
-        int step = holder.icon.getContext().getResources().getInteger(R.integer.sensor_bssi_max) / 5;
-        if (reception < step) {
-            holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_0_bar);
-        } else if (reception < 2 * step) {
-            holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_1_bar);
-        } else if (reception < 3 * step) {
-            holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_2_bar);
-        } else if (reception < 4 * step) {
-            holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_3_bar);
-        } else {
-            holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_4_bar);
+        int reception = (int) (ConfigUtil.convertBssi(sensor.getRSSI(), holder.icon.getContext()) * 4);
+        switch (reception) {
+            case 0:
+                holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_0_bar);
+                break;
+            case 1:
+                holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_1_bar);
+                break;
+            case 2:
+                holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_2_bar);
+                break;
+            case 3:
+                holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_3_bar);
+                break;
+            case 4:
+                holder.icon.setBackgroundResource(R.drawable.ic_signal_cellular_4_bar);
+                break;
         }
     }
 

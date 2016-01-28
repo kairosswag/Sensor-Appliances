@@ -17,4 +17,25 @@ public class ConfigUtil {
         context.getResources().getValue(R.dimen.sensor_humidity_jump_threshold, outValue, true);
         return outValue.getFloat();
     }
+
+    /**
+     * Converts the bssi to a number between 0 and 1
+     * (bssi range defined in configuration.xml)
+     * @return reception value between 0 and 1
+     */
+    public static double convertBssi(int bssi, Context context) {
+        int bssiMin = context.getResources().getInteger(R.integer.sensor_bssi_min);
+        int bssiMax = context.getResources().getInteger(R.integer.sensor_bssi_max);
+
+        double result = (double) (bssi - bssiMin) / (bssiMax - bssiMin);
+
+        // prevent unexpected values to affect the ui too much
+        if (result < 0) {
+            result = 0;
+        } else if (result > 1) {
+            result = 1;
+        }
+
+        return result;
+    }
 }

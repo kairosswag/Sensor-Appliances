@@ -18,6 +18,7 @@ import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.presenter.DryRPreferenceActivity;
 import dryr.android.presenter.listener.RefreshListener;
+import dryr.android.utils.ConfigUtil;
 import dryr.android.utils.ViewUtil;
 import dryr.android.views.MessageView;
 import dryr.common.json.beans.BluetoothDevice;
@@ -100,7 +101,7 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
 
         sensorStatusLayout = (LinearLayout) v.findViewById(R.id.sensor_status_layout);
         connectionBar = (ProgressBar) v.findViewById(R.id.sensor_status_connection_bar);
-        connectionBar.setMax(getResources().getInteger(R.integer.sensor_bssi_max));
+        connectionBar.setMax(100);
 
         messageView = (MessageView) v.findViewById(R.id.sensor_status_message_view);
         progressBar = (ProgressBar) v.findViewById(R.id.sensor_status_progress);
@@ -216,7 +217,7 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
     public void setSensorState(BluetoothDevice sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            connectionBar.setProgress(sensorState.getRSSI());
+            connectionBar.setProgress((int) (ConfigUtil.convertBssi(sensorState.getRSSI(), getActivity()) * 100));
         }
     }
 
