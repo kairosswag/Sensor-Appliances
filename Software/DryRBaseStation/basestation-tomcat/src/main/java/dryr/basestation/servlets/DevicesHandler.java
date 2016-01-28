@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import dryr.basestation.database.BluetoothDeviceDB;
 import dryr.basestation.util.DBusUtil;
+import dryr.basestation.util.OtherUtil;
 import dryr.basestation.util.ServletUtil;
 import dryr.common.json.beans.*;
 
@@ -57,7 +58,7 @@ public class DevicesHandler extends HttpServlet {
 			response.getWriter().append("status: " + deviceMac + " disconnected");
 		} else {
 			String res = request.getParameter("status");
-			int status = Integer.getInteger(res, -1);
+			int status = OtherUtil.parseInt(res, -1);
 			List<BluetoothDevice> resultList = (new BluetoothDeviceDB()).getBluetoothDeviceList(status);
 			// response.setContentType("application/json");
 			response.getWriter().append(ServletUtil.jsonize(resultList));
