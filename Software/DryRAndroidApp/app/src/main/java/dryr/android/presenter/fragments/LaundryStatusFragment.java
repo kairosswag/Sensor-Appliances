@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,12 +21,11 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 
-import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -43,6 +44,7 @@ import dryr.common.json.beans.BluetoothDevice;
 import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 import dryr.common.json.beans.HumidityTreshold;
+import dryr.common.json.beans.Prediction;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,15 +64,18 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
     private TextView laundryStateText;
     private TextView noGraphData;
     private XYPlot graph;
-    private RelativeLayout predictionLayout;
+    private LinearLayout predictionLayout;
     private TextView predictionTime;
 
     private MessageView messageView;
 
     // Data
     private BluetoothDevice sensor;
+    private Prediction prediction;
+    private HumidityTreshold threshold;
     private Dry laundryState;
     private SimpleXYSeries data;
+    private SimpleXYSeries predictionSeries;
 
     // Regularly refresh state
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -141,7 +146,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         graph = (XYPlot) v.findViewById(R.id.laundry_status_graph);
         setupGraph();
 
-        predictionLayout = (RelativeLayout) v.findViewById(R.id.laundry_status_prediction_layout);
+        predictionLayout = (LinearLayout) v.findViewById(R.id.laundry_status_prediction_layout);
         predictionTime = (TextView) v.findViewById(R.id.laundry_status_prediction_time);
 
         messageView = (MessageView) v.findViewById(R.id.laundry_status_message_view);
@@ -189,13 +194,22 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         setGraphThreshold(ConfigUtil.getDryThreshold(getActivity()));
         graph.setDomainValueFormat(new Format() {
 
-            private DateFormat dateFormat = android.text.format.DateFormat.getTimeFormat(getActivity());
-
             @Override
             public StringBuffer format(Object object, StringBuffer buffer, FieldPosition field) {
                 long time = ((Number) object).longValue() * 1000;
-                Date date = new Date(time);
-                return dateFormat.format(date, buffer, field);
+                int flags = DateUtils.FORMAT_SHOW_TIME;
+
+                Calendar cal1 = Calendar.getInstance();
+                Calendar cal2 = Calendar.getInstance();
+                cal1.setTimeInMillis(data.getX(0).longValue() * 1000);
+                cal2.setTimeInMillis(data.getX(data.size() - 1).longValue() * 1000);
+
+                if (cal1.get(Calendar.YEAR) != cal2.get(Calendar.YEAR) ||
+                        cal1.get(Calendar.DAY_OF_YEAR) != cal2.get(Calendar.DAY_OF_YEAR)) {
+                    flags = flags | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_NUMERIC_DATE;
+                }
+                buffer.append(DateUtils.formatDateTime(getActivity(), time, flags));
+                return buffer;
             }
 
             @Override
@@ -207,10 +221,6 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         if (data.size() <= 1) {
             showNotEnoughGraphData(true);
         }
-
-        // TODO: add series for prediction
-        // TODO: refresh prediction, hide if none available
-        // style with ie series2Format.getLinePaint().setPathEffect( new DashPathEffect(new float[] { PixelUtils.dpToPix(20), PixelUtils.dpToPix(15)}, 0));
     }
 
     private void setGraphThreshold(final float threshold) {
@@ -258,6 +268,42 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         }
     }
 
+    private void updatePrediction() {
+        if (predictionSeries != null) {
+            graph.removeSeries(predictionSeries);
+            predictionSeries = null;
+        }
+
+        if (prediction == null || data.size() == 0) {
+            predictionLayout.setVisibility(View.GONE);
+            graph.redraw();
+            return;
+        }
+
+        predictionTime.setText(FormatUtil.formatPredictionTime(prediction, getActivity()));
+
+        ArrayList<Long> xVals = new ArrayList<>();
+        ArrayList<Float> yVals = new ArrayList<>();
+
+        // latest point from base station
+        xVals.add(data.getX(data.size() - 1).longValue());
+        yVals.add(data.getY(data.size() - 1).floatValue());
+        // Prediction
+        xVals.add(prediction.getEstimate() / 1000);
+        if (threshold != null) {
+            yVals.add(threshold.getTreshold());
+        } else {
+            yVals.add(ConfigUtil.getDryThreshold(getActivity()));
+        }
+
+        predictionSeries = new SimpleXYSeries(xVals, yVals, getString(R.string.laundry_status_prediction));
+        final LineAndPointFormatter dataFormat = new LineAndPointFormatter();
+        dataFormat.setPointLabelFormatter(new PointLabelFormatter());
+        dataFormat.configure(getActivity(), R.xml.laundry_status_graph_prediction_format);
+        graph.addSeries(predictionSeries, dataFormat);
+        graph.redraw();
+    }
+
     @Override
     public void dataPointAdded(HumiditySensorDataPoint dataPoint, String mac) {
         data.addLast(FormatUtil.getDateFromHDT(dataPoint, getActivity()).getTime() / 1000,
@@ -268,7 +314,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         } else {
             showNotEnoughGraphData(false);
         }
-        graph.redraw();
+        updatePrediction();
     }
 
     @Override
@@ -276,7 +322,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         graph.removeSeries(data);
         setupDataSeries(new ArrayList<Long>(), new ArrayList<Float>());
         showNotEnoughGraphData(true);
-        graph.redraw();
+        updatePrediction();
     }
 
     private void enableStateLayout(boolean enable) {
@@ -352,9 +398,9 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
     public void refresh(boolean silent) {
         if (progressCounter == 0) {
             refreshDryState(silent);
-            refreshPrediction(silent);
             refreshHumidityGraph(silent);
             refreshDryInformation(silent);
+            // refreshPrediction(silent);
         }
     }
 
@@ -388,8 +434,27 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         });
     }
 
-    private void refreshPrediction(boolean silent) {
-        // TODO
+    private void refreshPrediction(final boolean silent) {
+        showProgress(true);
+        CommunicationFacade.getInstance(getActivity()).getPrediction(sensor.getMac(), new CommunicationFacade.CommunicationCallback<Prediction>() {
+            @Override
+            public void onResult(Prediction result) {
+                prediction = result;
+                updatePrediction();
+                showProgress(false);
+            }
+
+            @Override
+            public void onError(CommunicationFacade.CommunicationError error) {
+                showError(silent, error);
+                showProgress(false);
+            }
+
+            @Override
+            public Object getTag() {
+                return LaundryStatusFragment.this;
+            }
+        });
     }
 
     private void refreshDryInformation(final boolean silent) {
@@ -397,6 +462,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         CommunicationFacade.getInstance(getActivity()).getDryInformation(new CommunicationFacade.CommunicationCallback<HumidityTreshold>() {
             @Override
             public void onResult(HumidityTreshold result) {
+                threshold = result;
                 setGraphThreshold(result.getTreshold());
                 graph.redraw();
                 showProgress(false);

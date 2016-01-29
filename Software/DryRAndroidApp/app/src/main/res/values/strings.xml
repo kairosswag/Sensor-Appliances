@@ -18,8 +18,9 @@
     <!-- LaundryStatus !-->
     <string name="laundry_status_drying">Trocknet</string>
     <string name="laundry_status_dry">Trocken</string>
-    <string name="laundry_status_dry_at">Vorraussichtlich trocken um:</string>
+    <string name="laundry_status_dry_at">Vorraussichtlicher Trockenheitszeitpunkt:</string>
     <string name="laundry_status_humidity">Feuchtigkeit</string>
+    <string name="laundry_status_prediction">Vorhersage</string>
     <string name="laundry_status_humidity_dry">trocken</string>
     <string name="laundry_status_humidity_wet">nass</string>
     <string name="laundry_status_no_graph_data">Es stehen noch nicht genügend Daten für das Diagramm zur Verfügung</string>

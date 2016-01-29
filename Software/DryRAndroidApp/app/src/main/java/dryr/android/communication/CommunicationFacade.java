@@ -16,6 +16,7 @@ import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +25,7 @@ import dryr.common.json.beans.BluetoothDevice;
 import dryr.common.json.beans.Dry;
 import dryr.common.json.beans.HumiditySensorDataPoint;
 import dryr.common.json.beans.HumidityTreshold;
+import dryr.common.json.beans.Prediction;
 
 /**
  * Facade supposed to handle communication
@@ -173,6 +175,33 @@ public class CommunicationFacade {
                 return mapper.getTypeFactory().constructCollectionType(List.class, HumiditySensorDataPoint.class);
             }
         }, callback.getTag());
+    }
+
+    public void getPrediction(final String mac, final CommunicationCallback<Prediction> callback) {
+
+        Prediction prediction = new Prediction();
+        prediction.setEstimate(new Date().getTime() + 1000000);
+        prediction.setVariance(1);
+        callback.onResult(prediction);
+
+        /* TODO: uncomment as soon as prediction is implemented
+        httpGetJSON(context.getString(R.string.servlet_prediction) + mac, new JacksonRequestListener<Prediction>() {
+            @Override
+            public void onResponse(Prediction response, int statusCode, VolleyError error) {
+                if (response != null) {
+                    Log.d(TAG, "response received: " + response.toString());
+                    callback.onResult(response);
+                } else {
+                    callback.onError(convertError(error));
+                    Log.e(TAG, "error received: " + error.toString());
+                }
+            }
+
+            @Override
+            public JavaType getReturnType() {
+                return SimpleType.construct(Prediction.class);
+            }
+        }, callback.getTag());*/
     }
 
     public void getSensorState(final String mac, final CommunicationCallback<BluetoothDevice> callback) {

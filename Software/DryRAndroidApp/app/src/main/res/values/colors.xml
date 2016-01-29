@@ -9,7 +9,7 @@
     <color name="laundry_status_dry_color">#2e7d32</color>
     <color name="laundry_status_drying_color">#424242</color>
     <color name="graph_humidity_color">#26c6da</color>
-    <color name="graph_predicted_humidity_color">#a1a1a1</color>
+    <color name="graph_predicted_humidity_color">#686868</color>
     <color name="graph_grid_color">#707070</color>
     <color name="graph_prediction_fill_color">#bdbdbd</color>
 

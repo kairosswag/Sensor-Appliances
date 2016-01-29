@@ -30,6 +30,7 @@
     <string name="servlet_latest_dataPoint_by_device">data/multiple?amount=1&amp;device=</string>
     <string name="servlet_isDry">dry</string>
     <string name="servlet_dry_info">dry/info</string>
+    <string name="servlet_prediction">prediction?device=</string>
     <string name="servlet_devices_available">devices?status=0</string>
     <string name="servlet_devices_connected">devices?status=1</string>
     <string name="servlet_device_connect">devices/connect?device=</string>
