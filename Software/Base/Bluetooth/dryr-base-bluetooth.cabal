@@ -23,7 +23,7 @@ executable dryr-base-bluetooth
     Paths_dryr_base_bluetooth
   -- other-extensions:
   build-depends:
-    base >=4.7 && <4.8,
+    base >=4.6,
     containers >= 0.5.5.0,
     MissingH >=1.3.0.0,
     errors >=1.4.0,
