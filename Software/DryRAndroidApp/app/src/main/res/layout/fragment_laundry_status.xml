@@ -1,4 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,49 +11,115 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/laundry_status_displayText"
-            style="@android:style/TextAppearance.DeviceDefault.Large"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="@string/laundry_status_drying"
-            android:textSize="40dp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/laundry_status_displayText"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/laundry_status_drying"
+                android:textSize="30sp" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/laundry_status_enough_graph_data"
+                    style="@android:style/TextAppearance.DeviceDefault.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:text="@string/laundry_status_no_graph_data"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:visibility="gone"/>
+
+                <com.androidplot.xy.XYPlot
+                    android:id="@+id/laundry_status_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    ap:label=""
+                    ap:rangeLabel=""
+                    ap:domainLabel=""
+                    ap:borderColor="@android:color/transparent"
+                    ap:backgroundColor="@android:color/transparent"
+                    ap:graphBackgroundColor="@android:color/transparent"
+                    ap:gridBackgroundColor="@android:color/transparent"
+                    ap:gridPaddingLeft="30dp"
+                    ap:gridPaddingRight="30dp"
+                    ap:gridPaddingTop="20dp"
+                    ap:gridPaddingBottom="20dp"
+                    ap:labelTextSize="20sp"
+                    ap:rangeLabelTextSize="13sp"
+                    ap:domainLabelTextSize="13sp"
+                    androidPlot.legendWidget.visible="false"
+                    ap:rangeTickLabelTextColor="@color/graph_grid_color"
+                    ap:domainTickLabelTextColor="@color/graph_grid_color"
+                    ap:rangeOriginTickLabelTextColor="@color/graph_grid_color"
+                    ap:domainOriginTickLabelTextColor="@color/graph_grid_color"
+                    ap:graphDomainLineColor="@color/graph_grid_color"
+                    ap:graphDomainLineThickness="1dp"
+                    ap:graphRangeLineColor="@color/graph_grid_color"
+                    ap:graphRangeLineThickness="1dp"
+                    ap:rangeTickLabelTextSize="15sp"
+                    ap:rangeOriginTickLabelTextSize="15sp"
+                    ap:domainTickLabelTextSize="15sp"
+                    ap:domainOriginTickLabelTextSize="15sp" />
+            </FrameLayout>
+
+
+            <LinearLayout
+                android:id="@+id/laundry_status_prediction_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                    <TextView
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/laundry_status_dry_at" />
+
+                    <TextView
+                        android:id="@+id/laundry_status_prediction_time"
+                        style="@android:style/TextAppearance.DeviceDefault.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="19:43" />
+
+            </LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
-        <TextView
+        <dryr.android.views.MessageView
             android:id="@+id/laundry_status_message_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/laundry_status_no_sensor"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/laundry_status_message_button"
-            style="?android:attr/borderlessButtonStyle"
+        <ProgressBar
+            android:id="@+id/laundry_status_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pref_sensor_pair_title"
-            android:textColor="@drawable/primary_color_selector"
-            android:visibility="gone"/>
+            android:indeterminate="true"
+            android:visibility="invisible" />
 
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/laundry_status_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
 
 </RelativeLayout>

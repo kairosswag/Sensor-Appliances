@@ -2,14 +2,21 @@
 <resources>
     <!-- Configuration data for the app !-->
 
+    <!-- UI !-->
+    <integer name="progress_delay">500</integer>
+
     <!-- refresh frequencies (in seconds) !-->
+    <integer name="sensor_tab_fragment_refresh_frequency_period">20</integer>
     <integer name="sensor_fragment_status_refresh_frequency_period">10</integer>
     <integer name="laundry_fragment_status_refresh_frequency_period">10</integer>
 
-    <integer name="background_service_check_laundry_state_frequency_period">120</integer>
+    <integer name="background_service_check_laundry_state_frequency_period">60</integer>
 
     <!-- sensor configuration !-->
     <item name="sensor_humidity_dry_threshold" format="float" type="dimen">50</item>
+    <item name="sensor_humidity_jump_threshold" format="float" type="dimen">20</item>
+    <integer name="sensor_bssi_min">0</integer>
+    <integer name="sensor_bssi_max">100</integer>
 
     <!-- Base station connection config!-->
     <string name="default_server_protocol">http</string>
@@ -20,9 +27,16 @@
     <integer name="default_timeout_ms">15000</integer>
 
     <!-- Servlet urls !-->
-    <string name="servlet_latest_dataPoint">data/multiple?amount=1</string>
-    <string name="servlet_devices">devices</string>
+    <string name="servlet_latest_dataPoint_by_device">data/multiple?amount=1&amp;device=</string>
+    <string name="servlet_isDry">dry</string>
+    <string name="servlet_dry_info">dry/info</string>
+    <string name="servlet_prediction">prediction?device=</string>
+    <string name="servlet_devices_available">devices?status=0</string>
+    <string name="servlet_devices_connected">devices?status=1</string>
     <string name="servlet_device_connect">devices/connect?device=</string>
     <string name="servlet_device_disconnect">devices/disconnect?device=</string>
+
+    <!-- DateTime format received from server !-->
+    <string name="date_time_format_server">yyyy-MM-dd HH:mm:ss</string>
 
 </resources>

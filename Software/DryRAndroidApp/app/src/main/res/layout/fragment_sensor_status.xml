@@ -16,8 +16,7 @@
             android:textColor="@color/colorAccent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sensor_status_connection"
-            android:visibility="gone"/>
+            android:text="@string/sensor_status_connection"/>
 
         <ProgressBar
             android:layout_width="match_parent"
@@ -26,14 +25,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:visibility="gone"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="not implemented yet"
-            android:gravity="center"/>
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
     </LinearLayout>
 
@@ -41,33 +33,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:orientation="vertical">
 
-        <TextView
+        <dryr.android.views.MessageView
             android:id="@+id/sensor_status_message_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/laundry_status_no_sensor"
-            android:visibility="gone" />
+            android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/sensor_status_message_button"
-            style="?android:attr/borderlessButtonStyle"
+        <ProgressBar
+            android:id="@+id/sensor_status_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pref_sensor_pair_title"
-            android:textColor="@drawable/primary_color_selector"
-            android:visibility="gone"/>
+            android:indeterminate="true"
+            android:visibility="invisible"/>
 
     </LinearLayout>
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/sensor_status_progress"
-        android:layout_gravity="center" />
 
 </RelativeLayout>
