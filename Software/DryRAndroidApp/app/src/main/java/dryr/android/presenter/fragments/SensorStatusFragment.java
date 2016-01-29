@@ -5,15 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -22,8 +17,10 @@ import java.util.concurrent.TimeUnit;
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
 import dryr.android.presenter.DryRPreferenceActivity;
-import dryr.android.utils.DialogUtil;
+import dryr.android.presenter.listener.RefreshListener;
+import dryr.android.utils.ConfigUtil;
 import dryr.android.utils.ViewUtil;
+import dryr.android.views.MessageView;
 import dryr.common.json.beans.BluetoothDevice;
 
 /**
@@ -31,9 +28,8 @@ import dryr.common.json.beans.BluetoothDevice;
  * Activities that contain this fragment must implement the
  * {@link SensorStatusFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
-
  */
-public class SensorStatusFragment extends Fragment {
+public class SensorStatusFragment extends Fragment implements RefreshListener {
     public static final String TAG = "sensorStatus";
     private OnFragmentInteractionListener mListener;
 
@@ -41,8 +37,7 @@ public class SensorStatusFragment extends Fragment {
     private LinearLayout sensorStatusLayout;
     private ProgressBar connectionBar;
 
-    private TextView messageView;
-    private Button messageButton;
+    private MessageView messageView;
 
     private ProgressBar progressBar;
 
@@ -53,6 +48,7 @@ public class SensorStatusFragment extends Fragment {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     private boolean refreshingScheduled = false;
     private ScheduledFuture<?> task;
+    private boolean refreshing;
 
     public SensorStatusFragment() {
         // Required empty public constructor
@@ -69,18 +65,18 @@ public class SensorStatusFragment extends Fragment {
 
         // refresh regularly
         if (!refreshingScheduled) {
-            refreshSensorState(false);
             int period = getResources().getInteger(R.integer.sensor_fragment_status_refresh_frequency_period);
 
             refreshingScheduled = true;
             task = scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    // TODO: Show smaller progress bar for auto refresh (future sprint)
-                    refreshSensorState(true);
+                    if (!refreshing) refresh(true);
                 }
             }, period, period, TimeUnit.SECONDS);
         }
+
+        mListener.registerForRefresh(this);
     }
 
     @Override
@@ -90,6 +86,11 @@ public class SensorStatusFragment extends Fragment {
         // stop refreshing
         task.cancel(true);
         refreshingScheduled = false;
+
+        // cancel already sent requests
+        CommunicationFacade.getInstance(getActivity()).cancelAllByTag(this);
+
+        mListener.unregisterForRefresh(this);
     }
 
     @Override
@@ -100,78 +101,55 @@ public class SensorStatusFragment extends Fragment {
 
         sensorStatusLayout = (LinearLayout) v.findViewById(R.id.sensor_status_layout);
         connectionBar = (ProgressBar) v.findViewById(R.id.sensor_status_connection_bar);
+        connectionBar.setMax(100);
 
-        messageView = (TextView) v.findViewById(R.id.sensor_status_message_view);
-        messageButton = (Button) v.findViewById(R.id.sensor_status_message_button);
-
+        messageView = (MessageView) v.findViewById(R.id.sensor_status_message_view);
         progressBar = (ProgressBar) v.findViewById(R.id.sensor_status_progress);
-
-        setHasOptionsMenu(true);
 
         if (sensorState != null) {
             setSensorState(sensorState);
         }
 
-        showProgress(true);
-
-
-        // TODO: Use tabs for multiple sensors (future sprint)
-
         return v;
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.sensor_state, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.sensor_state_refresh:
-                refreshSensorState(false);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void refresh() {
+        refresh(false);
     }
 
     /**
      * refresh the sensor state with data from the base station
-     * @param silent displays no error message on error
+     *
+     * @param silent displays no (dialog) error message on error
      */
-    private void refreshSensorState(final boolean silent) {
+    public void refresh(final boolean silent) {
+        refreshing = true;
+        showProgress(true);
+
         // Refresh Sensor state
-        CommunicationFacade.getInstance(getContext()).getSensorState(new CommunicationFacade.CommunicationCallback<BluetoothDevice>() {
+        CommunicationFacade.getInstance(getContext()).getSensorState(sensorState.getMac(), new CommunicationFacade.CommunicationCallback<BluetoothDevice>() {
             @Override
             public void onResult(BluetoothDevice result) {
+                refreshing = false;
+
+                enableStateLayout(true);
+                messageView.showMessage(R.string.laundry_status_base_station_connected, R.color.light_success_color, 0, false, null);
                 setSensorState(result);
                 showProgress(false);
             }
 
             @Override
             public void onError(CommunicationFacade.CommunicationError error) {
-                if (silent) {
-                    showProgress(false);
-                    return;
-                }
+                refreshing = false;
 
                 switch (error) {
-                    /* case NO_BASE_STATION_CONNECTED:
-                        // Show settings activity with ConnectBaseStationDialog open
-                        Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
-                        intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_baseStation_connect_key));
-                        getActivity().startActivity(intent);
-
-                        break; */
                     case NO_BASE_STATION_FOUND:
                         // Base station was not found in network
-                        showMessage(R.string.error_no_base_station_found, R.string.error_no_bs_retry, true, new View.OnClickListener() {
+                        messageView.showMessage(R.string.error_no_base_station_found, R.string.error_retry, R.color.light_error_text_color, true, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                refreshSensorState(false);
+                                refresh(false);
                             }
                         });
 
@@ -184,22 +162,32 @@ public class SensorStatusFragment extends Fragment {
                         break;
 
                     default:
-                        DialogUtil.showErrorDialog(getActivity(), R.string.error_connection_default, null);
-                        showProgress(false);
+                        messageView.showMessage(R.string.error_connection_default, R.color.light_error_text_color, R.string.error_retry, true, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refresh(false);
+                            }
+                        });
+
                 }
+                showProgress(false);
+                enableStateLayout(false);
+            }
+
+            @Override
+            public Object getTag() {
+                return SensorStatusFragment.this;
             }
         });
     }
 
-    private void showMessage(int messageTextId, int buttonTextId, boolean showButton, View.OnClickListener clickListener) {
-        messageView.setText(messageTextId);
-        if (showButton) {
-            messageButton.setText(buttonTextId);
-            messageButton.setOnClickListener(clickListener);
-            ViewUtil.fadeIn(messageButton, getActivity());
+    private void enableStateLayout(boolean enable) {
+        sensorStatusLayout.setEnabled(enable);
+        if (!enable) {
+            ViewUtil.fadeOut(sensorStatusLayout, getActivity(), 0.2f, View.VISIBLE);
+        } else {
+            ViewUtil.fadeIn(sensorStatusLayout, getActivity());
         }
-        ViewUtil.fadeIn(messageView, getActivity());
-        sensorStatusLayout.setEnabled(false);
     }
 
     private void showProgress(final boolean show) {
@@ -207,12 +195,20 @@ public class SensorStatusFragment extends Fragment {
             @Override
             public void run() {
                 if (show) {
-                    ViewUtil.fade(sensorStatusLayout, progressBar, getActivity());
+                    ViewUtil.fadeIn(progressBar, getActivity());
                 } else {
-                    ViewUtil.fade(progressBar, sensorStatusLayout, getActivity());
-                    ViewUtil.fadeOut(messageView, getActivity());
-                    ViewUtil.fadeOut(messageButton, getActivity());
-                    sensorStatusLayout.setEnabled(true);
+                    // Add delay so the animation doesn't look weird
+                    new ScheduledThreadPoolExecutor(1).schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ViewUtil.fadeOut(progressBar, getActivity(), View.INVISIBLE);
+                                }
+                            });
+                        }
+                    }, getResources().getInteger(R.integer.progress_delay), TimeUnit.MILLISECONDS);
                 }
             }
         });
@@ -221,9 +217,10 @@ public class SensorStatusFragment extends Fragment {
     public void setSensorState(BluetoothDevice sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            connectionBar.setProgress(10); // TODO: Get connection level from bluetooth device
+            connectionBar.setProgress((int) (ConfigUtil.convertBssi(sensorState.getRSSI(), getActivity()) * 100));
         }
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -249,5 +246,7 @@ public class SensorStatusFragment extends Fragment {
      * activity.
      */
     public interface OnFragmentInteractionListener {
+        public void registerForRefresh(RefreshListener listener);
+        public void unregisterForRefresh(RefreshListener listener);
     }
 }
