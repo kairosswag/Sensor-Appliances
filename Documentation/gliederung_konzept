@@ -1,0 +1,24 @@
+  DryR
+
+  - Einleitung
+  - Businessplan
+    - ...
+  - Konzepte
+    - 10 + 10
+    - User story
+    - GUI Konzepte
+  - Sprints
+    - (Burndown charts + screenshots / andere Bilder)
+    - Implementierte Features
+    - Nicht implementierte Features
+    - Sprints Fazit
+  - Architektur
+    - Gesamtarchitektur
+    - Basisstation
+      - Haskellmodul
+      - Tomcatmodul
+    - App
+  - Ausblick
+    - Wichtige (fehlende) Features für ein vollständiges Produkt)
+    - Produktion(?)
+    - ...
