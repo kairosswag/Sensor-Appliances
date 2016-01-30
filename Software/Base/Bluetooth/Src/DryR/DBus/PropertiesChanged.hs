@@ -9,6 +9,7 @@ data PropertiesChanged = PropertiesChanged  {
   pCInterfaceName :: InterfaceName,
   pCChangedProperties :: Dictionary,
   pCInvalidatedProperties :: [String]}
+  deriving (Show)
 
 parseSignalToPropertiesChanged :: Signal -> Maybe PropertiesChanged
 parseSignalToPropertiesChanged s =
