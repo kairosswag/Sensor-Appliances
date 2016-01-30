@@ -23,6 +23,7 @@ startDiscovery c oP = do
   }
 
   mr <- call (contextDBus c) mc
+  print mr
   case (mr) of
     Left _ -> return Nothing
     Right _ -> return $ Just ()
@@ -46,6 +47,7 @@ removeDevice c oP device = do
   }
 
   mr <- call (contextDBus c) mc
+  print mr
   case (mr) of
     Left e -> return Nothing
     Right s -> return $ Just ()

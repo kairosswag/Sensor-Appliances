@@ -30,7 +30,7 @@ humidityHandler pC c = do
 
       execute (contextDatabase c) (getQuery InsertHumidity $ contextQueries c) (mac, value)
 
-      simpleHTTP (getRequest $ "http://localhost:8080/basestation-tomcat/data-update?device=" ++ mac)
+      --simpleHTTP (getRequest $ "http://localhost:8080/basestation-tomcat/data-update?device=" ++ mac)
 
       return ()
     Nothing -> return ()
