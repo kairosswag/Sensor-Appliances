@@ -1,5 +1,5 @@
 INSERT INTO Device
-VALUES (?, 0, ?)
+VALUES (?, ?, ?)
 ON DUPLICATE KEY UPDATE
-status_id=0,
+status_id=?,
 rssi=?;

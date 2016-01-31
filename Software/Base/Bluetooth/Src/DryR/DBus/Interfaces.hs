@@ -33,7 +33,7 @@ handleInterfacesAdded s c = case ((parseSignalBodyIA.signalBody) s) of
       Just (mrssi) -> do
         let mac = objectPathToMac oP
         let rssi :: Int16 = (fromJust.fromVariant) mrssi
-        execute (contextDatabase c) (getQuery InsertDeviceOrUpdate $ contextQueries c) (mac, rssi, rssi)
+        execute (contextDatabase c) (getQuery InsertDeviceOrUpdate $ contextQueries c) (mac, 0 :: Integer, rssi, 0 :: Integer, rssi)
         return ()
       Nothing -> return ()
     Nothing -> return ()
