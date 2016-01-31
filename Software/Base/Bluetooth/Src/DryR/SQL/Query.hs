@@ -7,7 +7,7 @@ import Database.MySQL.Simple
 
 data QueryIdentifier =
   DeleteDevice |
-  InsertDevice |
+  InsertDeviceOrUpdate |
   InsertHumidity |
   SelectDevice |
   SelectDeviceConnected |
@@ -17,7 +17,7 @@ data QueryIdentifier =
 
 queries = [
   DeleteDevice,
-  InsertDevice,
+  InsertDeviceOrUpdate,
   InsertHumidity,
   SelectDevice,
   SelectDeviceConnected,
@@ -26,7 +26,7 @@ queries = [
 
 names = [
   "DeleteDevice.sql",
-  "InsertDevice.sql",
+  "InsertDeviceOrUpdate.sql",
   "InsertHumidity.sql",
   "SelectDevice.sql",
   "SelectDeviceConnected.sql",

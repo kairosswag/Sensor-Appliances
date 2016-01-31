@@ -4,6 +4,7 @@ import DBus
 import DBus.Client
 
 import DryR.Context
+import DryR.DBus.Interfaces
 import DryR.DBus.PropertiesChanged
 import DryR.DBus.PropertiesChangedHandler
 
@@ -11,12 +12,6 @@ handlePropertiesChanged :: Signal -> Context -> IO ()
 handlePropertiesChanged s c = case (parseSignalToPropertiesChanged s) of
   Just pC -> propertiesChangedHandler pC c
   Nothing -> return ()
-
-handleInterfacesAdded :: Signal -> Context -> IO ()
-handleInterfacesAdded s c = return ()
-
-handleInterfacesRemoved :: Signal -> Context -> IO ()
-handleInterfacesRemoved s c = return ()
 
 matchInterfaceAndMember interface member = matchAny {
   matchInterface = Just $ interfaceName_ interface,
