@@ -3,6 +3,7 @@
 module DryR.DBus.PropertiesChangedHandler.Device1.Connected (connectedHandler) where
 
 import Control.Concurrent
+import Control.Monad.Loops
 
 import Data.Maybe
 
@@ -25,15 +26,21 @@ connectedHandler pC c = do
     Just False -> connectedFalse pC c
     Nothing -> return ()
 
+tryStartNotify c oP = do
+  m_oP_sv_hum <- getGattService1 c oP sv_hum
+  case (m_oP_sv_hum) of
+    Just oP_sv_hum -> do
+      m_oP_ch_hum <- getGattCharacteristic1 c oP_sv_hum ch_hum
+      case (m_oP_ch_hum) of
+        Just oP_ch_hum -> startNotify c oP_ch_hum
+        Nothing -> return Nothing
+    Nothing -> return Nothing
+
 connectedTrue pC c = do
   let oP = pCObjectPath pC
   let mac = objectPathToMac oP
 
-  threadDelay 2000000
-
-  oP_sv_hum <- getGattService1 c oP sv_hum
-  oP_ch_hum <- getGattCharacteristic1 c (fromJust oP_sv_hum) ch_hum
-  startNotify c $ fromJust oP_ch_hum
+  untilJust (threadDelay 2000000 >> tryStartNotify c oP)
 
   execute (contextDatabase c) (getQuery UpdateDeviceStatus $ contextQueries c) (1 :: Integer, mac)
   return ()
