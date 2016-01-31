@@ -6,7 +6,7 @@ import DBus
 import DBus.Client
 
 import DryR.Context
-import DryR.DBus.Properties
+import DryR.DBus.MethodCall.Properties
 
 startNotify :: Context -> ObjectPath -> IO (Maybe ())
 startNotify c oP = do

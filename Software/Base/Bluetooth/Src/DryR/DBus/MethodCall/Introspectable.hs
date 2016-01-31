@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module DryR.DBus.Introspect where
+module DryR.DBus.MethodCall.Introspectable where
 
 import Data.Maybe
 

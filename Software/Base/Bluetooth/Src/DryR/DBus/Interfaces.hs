@@ -14,7 +14,7 @@ import DBus
 import DBus.Client
 
 import DryR.Context
-import DryR.DBus.Properties
+import DryR.DBus.MethodCall.Properties
 import DryR.DBus.Util
 import DryR.SQL.Query
 

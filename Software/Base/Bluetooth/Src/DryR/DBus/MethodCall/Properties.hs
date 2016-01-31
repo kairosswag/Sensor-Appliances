@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module DryR.DBus.Properties where
+module DryR.DBus.MethodCall.Properties where
 
 import DBus
 import DBus.Client

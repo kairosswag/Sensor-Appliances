@@ -13,7 +13,7 @@ import DBus.Client
 import DryR.Context
 import DryR.DBus.Init
 import DryR.DBus.MethodHandler
-import DryR.DBus.Properties
+import DryR.DBus.MethodCall.Properties
 import DryR.DBus.SignalHandler
 import DryR.InterruptHandler
 
