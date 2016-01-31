@@ -39,8 +39,6 @@ initialize = withContext (\c -> do
   let mDS =  union mDSF mDSN
   let mDSP = map (\(m,s,r) -> (m,s,r,s,r)) mDS
 
-  print mDSP
-
   mapM (execute (contextDatabase c) (getQuery InsertDeviceOrUpdate $ contextQueries c)) mDSP
 
   powerOn c (contextAdapter c)
