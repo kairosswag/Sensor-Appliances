@@ -8,7 +8,7 @@ import DBus
 import DBus.Client
 
 import DryR.Context
-import DryR.DBus.Properties
+import DryR.DBus.MethodCall.Properties
 
 powerOn :: Context -> ObjectPath -> IO (Maybe ())
 powerOn c oP = set c "org.bluez" oP "org.bluez.Adapter1" "Powered" True

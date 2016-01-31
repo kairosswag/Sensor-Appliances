@@ -10,8 +10,8 @@ import Data.String.Utils
 import DBus
 
 import DryR.Context
-import DryR.DBus.Introspect
-import DryR.DBus.Properties
+import DryR.DBus.MethodCall.Introspectable
+import DryR.DBus.MethodCall.Properties
 
 macToObjectPath :: ObjectPath -> String -> ObjectPath
 macToObjectPath parent mac = objectPath_ ((formatObjectPath parent) ++ "/dev_" ++ (replace ":" "_" $ map toUpper mac))

@@ -1,3 +1,3 @@
 module DryR.DBus.PropertiesChangedHandler.Adapter1 where
 
-adapter1Handler pC c = print "A1"
+adapter1Handler pC c = return ()
