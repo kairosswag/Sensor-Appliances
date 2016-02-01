@@ -89,6 +89,7 @@ public class HumidityTable {
         if (latest != null && dataPoint.getDate().compareTo(latest.getDate()) >= 0
                 && dataPoint.getHumidity() - latest.getHumidity() > ConfigUtil.getJumpThreshold(context)) {
             deleteDataPointsByMac(dataPoint.getSensor());
+            DryTable.getInstance(context).deleteEntry(dataPoint.getSensor());
         }
 
         // Insert the data point

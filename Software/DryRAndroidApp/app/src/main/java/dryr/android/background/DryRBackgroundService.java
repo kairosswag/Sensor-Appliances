@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import dryr.android.R;
 import dryr.android.communication.CommunicationFacade;
+import dryr.android.db.DryTable;
 import dryr.android.db.HumidityTable;
 import dryr.android.presenter.MainActivity;
 import dryr.android.utils.ConfigUtil;
@@ -101,10 +102,14 @@ public class DryRBackgroundService extends Service {
         CommunicationFacade.getInstance(getApplicationContext()).isDry(new CommunicationFacade.CommunicationCallback<List<Dry>>() {
             @Override
             public void onResult(List<Dry> result) {
+                DryTable dryTable = DryTable.getInstance(getApplicationContext());
                 for (Dry d : result) {
-                    if (d.getDry()) {
+                    // Only show notification if it wasn't dry beforehand
+                    Dry tableEntry = dryTable.getEntry(d.getMac());
+                    if (d.getDry() && (tableEntry == null || !tableEntry.getDry())) {
                         showDryNotification(d.getMac());
                     }
+                    dryTable.putEntry(d);
                 }
             }
 
