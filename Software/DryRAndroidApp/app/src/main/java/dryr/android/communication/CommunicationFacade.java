@@ -152,6 +152,7 @@ public class CommunicationFacade {
         }, callback.getTag());
     }
 
+    // TODO: get humidity from timestamp of latest humidity data point
     public void getHumidity(final String mac, final CommunicationCallback<HumiditySensorDataPoint> callback) {
         httpGetJSON(context.getString(R.string.servlet_latest_dataPoint_by_device) + mac, new JacksonRequestListener<List<HumiditySensorDataPoint>>() {
             @Override

@@ -77,6 +77,8 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
         }
 
         mListener.registerForRefresh(this);
+
+        messageView.hide();
     }
 
     @Override
