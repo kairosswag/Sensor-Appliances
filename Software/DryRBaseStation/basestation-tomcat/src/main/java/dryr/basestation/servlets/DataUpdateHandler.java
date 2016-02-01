@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import dryr.basestation.database.DataPointDB;
 import dryr.basestation.type.MinMax;
 
+//Performs cleanup tasks on the database
 public class DataUpdateHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
