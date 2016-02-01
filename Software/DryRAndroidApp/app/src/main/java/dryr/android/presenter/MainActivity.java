@@ -2,6 +2,7 @@ package dryr.android.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -86,6 +88,12 @@ public class MainActivity extends AppCompatActivity
 
         // Select first item and put the fragment in the container
         navigationView.getMenu().getItem(0).setChecked(true);
+
+        // Open navigation drawer if it is the first time the app is opened
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_drawer_acknowledged_key), false)) {
+            drawer.openDrawer(Gravity.LEFT);
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(getString(R.string.pref_drawer_acknowledged_key), true).apply();
+        }
     }
 
     @Override

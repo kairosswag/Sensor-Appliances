@@ -34,6 +34,8 @@
 
 
     <!-- Preferences !-->
+    <string name="pref_drawer_acknowledged_key">user_drawer_acknowledged</string>
+
     <string name="pref_baseStation_title">Basisstation</string>
 
     <string name="pref_baseStation_connect_title">Basisstation verbinden</string>
@@ -50,7 +52,7 @@
     <string name="pref_notification_push_summary">Push Benachrichtigung über trockene Wäsche ein oder ausschalten</string>
     <string name="pref_notification_push_key">notifications_push</string>
 
-    <string name="pref_notification_last_humidity_key">notification_last_humidity</string>
+    <string name="pref_notification_last_dry_state_key">notification_last_dry</string>
 
 
     <!-- ConnectBaseStationDialog !-->
