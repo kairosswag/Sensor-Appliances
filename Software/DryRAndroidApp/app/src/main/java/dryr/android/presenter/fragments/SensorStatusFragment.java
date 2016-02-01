@@ -217,7 +217,7 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
     public void setSensorState(BluetoothDevice sensorState) {
         this.sensorState = sensorState;
         if (sensorStatusLayout != null) {
-            connectionBar.setProgress((int) (ConfigUtil.convertBssi(sensorState.getRSSI(), getActivity()) * 100));
+            connectionBar.setProgress((int) (ConfigUtil.convertRssi(sensorState.getRSSI(), getActivity()) * 100));
         }
     }
 

@@ -15,12 +15,12 @@
     <!-- sensor configuration !-->
     <item name="sensor_humidity_dry_threshold" format="float" type="dimen">50</item>
     <item name="sensor_humidity_jump_threshold" format="float" type="dimen">20</item>
-    <integer name="sensor_bssi_min">0</integer>
-    <integer name="sensor_bssi_max">100</integer>
+    <integer name="sensor_rssi_min">-100</integer>
+    <integer name="sensor_rssi_max">0</integer>
 
     <!-- Base station connection config!-->
     <string name="default_server_protocol">http</string>
-    <string name="default_base_station_host_name">PI</string>
+    <string name="default_base_station_host_name">Addiss-MBP</string>
     <string name="default_server_port">8080</string>
     <string name="default_server_base_url">/basestation-tomcat/</string>
 

@@ -23,11 +23,11 @@ public class ConfigUtil {
      * (bssi range defined in configuration.xml)
      * @return reception value between 0 and 1
      */
-    public static double convertBssi(int bssi, Context context) {
-        int bssiMin = context.getResources().getInteger(R.integer.sensor_bssi_min);
-        int bssiMax = context.getResources().getInteger(R.integer.sensor_bssi_max);
+    public static double convertRssi(int rssi, Context context) {
+        int bssiMin = context.getResources().getInteger(R.integer.sensor_rssi_min);
+        int bssiMax = context.getResources().getInteger(R.integer.sensor_rssi_max);
 
-        double result = (double) (bssi - bssiMin) / (bssiMax - bssiMin);
+        double result = (double) (rssi - bssiMin) / (bssiMax - bssiMin);
 
         // prevent unexpected values to affect the ui too much
         if (result < 0) {

@@ -113,6 +113,8 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
         mListener.registerForRefresh(this);
         // Update from db
         HumidityTable.getInstance(getActivity()).registerListener(this);
+
+        messageView.hide();
     }
 
 
