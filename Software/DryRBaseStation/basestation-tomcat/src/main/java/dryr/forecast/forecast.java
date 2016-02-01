@@ -72,7 +72,7 @@ public abstract class forecast {
 
 	  }
 
-	  private void writeMetaData(ResultSet resultSet) throws SQLException {
+	  private synchronized void writeMetaData(ResultSet resultSet) throws SQLException {
 	    //   Now get some metadata from the database
 	    // Result set get the result of the SQL query
 	    
@@ -85,7 +85,7 @@ public abstract class forecast {
 	  }
 
 	  //writes Set and makes forecast
-	  private long writeResultSet(ResultSet resultSet) throws SQLException {
+	  private synchronized long writeResultSet(ResultSet resultSet) throws SQLException {
 		  int t=0;
 	      Boolean isInArray=false;
 	      long difDate = 0;
@@ -152,7 +152,7 @@ public abstract class forecast {
 	  }
 	  
 	  // You need to close the resultSet
-	  private void close() {
+	  private synchronized void close() {
 	    try {
 	      if (resultSet != null) {
 	        resultSet.close();
