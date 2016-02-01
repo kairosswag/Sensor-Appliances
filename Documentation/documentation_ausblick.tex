@@ -1,0 +1,26 @@
+\section{Ausblick}
+\subsection{Weitere Features}
+\begin{description}
+	\item [Identifikation von Sensoren] \hfill \\
+		Ist man im Besitz von mehreren Sensoren, so wird die Zuordnung der Sensoren zunehmend schwieriger. Um dem Problem entgegen zu wirken, gibt es folgende Ansätze:
+		\begin{description}
+			\item [Namensgebung] \hfill \\
+				Den Sensoren wird jeweils ein eindeutiger Personenname zugewiesen, welcher auf dem Sensor abgedruckt ist und in der App angezeigt wird. Dies ist wesentlich Benutzerfreundlicher, da dadurch die Zuweisung im Vergleich zu Mac Adressen weniger abstrakt ist, auch wenn der Informationsgehalt der gleiche ist.
+			\item [LED] \hfill \\
+				Ein Auswählen der Sensoren in der App führt zu einem Blinken der LED am Sensor. Dies hat im Vergleich zur Namensgebung den Vorteil, dass man die Sensoren nicht alle absuchen muss, um den verlangten zu finden.
+		\end{description}
+	\item [Einsatz in Umgebungen ohne direkte Netzwerkanbindung] \hfill \\
+		Die Basisstation erfordert eine direkte Anbindung an das lokale Netzwerk, ohne welche nämlich die App nicht mit der Basisstation kommunizieren kann. Ist dies nicht gegeben, z.B. in einem Keller, wo das Projekt übrigens auch ein großes Anwendungsgebiet sieht, so müssen neben Anpassungen seitens des Nutzers (Kabel verlegen, Access Point im Keller aufstellen), alternativen von unserer Seite angeboten werden:
+		\begin{description}
+			\item [Funk]  \hfill \\
+				Die Basisstation könnte über ein proprietäres Funkmodul mit einer zweiten Basisstation in der Wohnung kommunizieren. Dieses sollte explizit für solche Anwendungsfälle zugeschnitten sein und würde sich dementsprechend durch eine niedrigere Datenrate und Frequenz, aber höherer Stabilität bei großer Reichweite auszeichnen.
+			\item [Gerichtetes WLAN] \hfill \\
+				Falls die Basisstation gerade nicht mehr in Reichweite des Access Point ist, kann auch eine Richtantenne Abhilfe schaffen, allerdings müsste diese an beiden Enden installiert werden.
+		\end{description}
+	\item [Verschlüsselung] \hfill \\
+		Der gesamte Datenverkehr ist momentan noch unverschlüsselt und zudem nicht authentifiziert. Aufgrund der unkritischen Natur des Projekts ist eine Verschlüsselung und Authentifizierung nicht die größte Priorität. Zudem ist der Zugang standardmäßig auf das lokale Netz beschränkt. Nichtsdestotrotz sollte/muss ein ernsthaftes Produkt Gebrauch davon machen, wobei in unserem Fall, zumindest was die Verschlüsselung betrifft, eine Realisierung über HTTPS denkbar ist, da die Kommunikation ohnehin schon über HTTP abläuft.
+	\item
+\end{description}
+\subsection{Produktion}
+Für die Produktion der Klammer wäre eine Kooperation mit existierenden Wäscheklammerherstellern denkbar, da diese bereits das know-how besitzen, Klammern extrem kostengünstig herzustellen. \\
+Die Basisstation kann dagegen über Standardkomponenten bezogen werden.
