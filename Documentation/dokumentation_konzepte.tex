@@ -1,26 +1,21 @@
 \section{Konzepte}
 Während der Entwicklung des Prototypen wurden verschiedene Konzepte erstellt um Ideen darzustellen, zu  verdeutlichen und über diese zu entscheiden.
 \subsection{10+10}
-Zur Ideenfindung wurde die 10+10-Methode benutzt um wichtige Entwurfsentscheidungen der Entwicklung im Voraus zu entscheiden. Im Folgenden sind Konzepte die aus diesem Prozess hervorgegangen sind zu sehen. Zuerst sollte darüber entschieden werden wie festgestellt wird wann die Wäsche trocken ist. 
+Zur Ideenfindung wurde die 10+10-Methode benutzt um wichtige Entwurfsentscheidungen der Entwicklung im Voraus zu entscheiden. Im Folgenden sind einige ausgewählte Konzepte die aus diesem Prozess hervorgegangen sind zu sehen. Zuerst sollte darüber entschieden werden wie festgestellt wird wann die Wäsche trocken ist. 
 \begin{figure}[htb] 
 	\centerline{\includegraphics*[width=0.8\textwidth]{./10+10/Concept/01-klammer}}
 	\caption{Dieses Konzept zeigt eine Wäscheklammer mit einem Sensor und entsprechenden anderen Komponenten zur Feststellung und Kommunikation des Status der Wäsche} 
 	\label{10+10_klammer}
 \end{figure}
 \begin{figure}[htb] 
-	\centerline{\includegraphics*[width=0.5\textwidth]{./10+10/Concept/02-extern}}
+	\centerline{\includegraphics*[width=0.6\textwidth]{./10+10/Concept/02-extern}}
 	\caption{Das in diesem Ansatz beschriebene Gerät soll herausfinden ob die Wäsche trocken ist indem es verschiedene Umgebungsdaten des Raumes sammelt in dem sich die Wäsche befindet}
 	\label{10+10_extern}
 \end{figure}
 \begin{figure}[htb] 
-	\centerline{\includegraphics*[width=0.5\textwidth]{./10+10/Concept/03-leine}}
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Concept/03-leine}}
 	\caption{Eine Basisstation hat direkten Kontakt zu einer speziell gefertigten Wäscheleine, die dazu genutzt werden kann Feuchtigkeit über die Leitfähigkeit der Wäsche festzustellen}
 	\label{10+10_leine}
-\end{figure}
-\begin{figure}[htb] 
-	\centerline{\includegraphics*[width=0.5\textwidth]{./10+10/Concept/04-magnet}}
-	\caption{Hier wird ein ähnliches Konzept wie bei der Wäscheklammer verwendet nur, dass der Befestigungsmechanismus magnetisch ist}
-	\label{10+10_magnet}
 \end{figure}
 \begin{figure}[htb] 
 	\centerline{\includegraphics*[width=0.5\textwidth]{./10+10/Concept/05-getrennt}}
@@ -33,10 +28,56 @@ Zur Ideenfindung wurde die 10+10-Methode benutzt um wichtige Entwurfsentscheidun
 	\label{10+10_zeit}
 \end{figure}
 \begin{figure}[htb] 
-	\centerline{\includegraphics*[width=0.5\textwidth]{./10+10/Concept/07-zug}}
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Concept/07-zug}}
 	\caption{Wie viel Wasser die Wäsche noch enthält soll über das Gewicht und somit über den Zug auf die Leine festgestellt werden}
 	\label{10+10_zug}
 \end{figure}
 \FloatBarrier
-Am Ende haben wir uns für die Wäscheklammer mit Sensor entschieden. Dieser Ansatz hat den Vorteil, dass Nutzer keine zusätzlichen Leinen kaufen müssen und er auch mit z.B. einem Wäscheständer verwendbar ist. Eine genaue Messung der Feuchtigkeit soll die direkte Anbringung am Kleidungsstück ermöglichen, die Klammer erfüllt außerdem die gleiche Funktion wie eine normale Wäscheklammer.
-\\ Im Weiteren 
+Am Ende haben wir uns für einen Sensor entscheiden der direkt am Kleidungsstück angebracht wird. Dieser Ansatz hat den Vorteil, dass Nutzer keine zusätzlichen Leinen kaufen müssen und er auch mit z.B. einem Wäscheständer verwendbar ist. Eine genaue Messung der Feuchtigkeit soll durch die direkte Anbringung am Kleidungsstück auch ermöglicht werden, die Klammer erfüllt außerdem die gleiche Funktion wie eine normale Wäscheklammer und ist visuell ansprechend.
+\\ Des Weiteren sollte nun entschieden werden wie die Kommunikation der Daten an den Nutzer geschehen soll. Dazu folgen hier auch einige ausgewählte Konzeptzeichnungen.
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Detail/02_ble_app}}
+	\caption{Zum einen ist es naheliegend ein Smartphone zur Anzeige der Daten zu verwenden, dieses wird in diesem Vorschlag durch Bluetooth Low Energy mit Daten des Sensors versorgt}
+	\label{10+10_ble_app}
+\end{figure}
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Detail/03_visual_signal}}
+	\caption{Hier ist die Grundidee direkt Am Sensor etwas anzubringen um dem Nutzer über den Status der Wäsche zu informieren. In diesem Fall ein visuelles Signal (LED oder Display) es ist aber auch vorstellbar ein Audio Signal zu verwenden}
+	\label{10+10_visual_signal}
+\end{figure}
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Detail/01_ble_basisstation_wifi_app}}
+	\caption{Um an Reichweite zu gewinnen kann eine über Wlan mit dem Smartphone in Verbindung stehende Basisstation verwendet werden die mit Blueooth Low Energy mit mehreren Sensoren kommunizieren kann}
+	\label{10+10_ble_basis_wifi_app}
+\end{figure}
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./10+10/Detail/04_wifi_app}}
+	\caption{Die Basisstation des vorherigen Konzeptes kann auch direkt in einen Sensor integriert werden wie hier zu sehen ist}
+	\label{10+10_wifi_app}
+\end{figure}
+\FloatBarrier
+Um eine Nutzung auch außerhalb des relativ kleinen Radius, den Bluetooth zur Verfügung stellt, zu gestatten und die Annehmlichkeiten einer modernen Smartphone App auszunutzen wurde hier für ein Konzept wie in Abbildung \ref{10+10_ble_basis_wifi_app} entschieden. Dieses ist auch aufgrund der modularen Konzeption einfacher als Prototyp zu verwirklichen und bietet mehr Flexibilität. Der Prototyp kann dann auch einfach auf andere Konzepte übertragen werden.
+\subsection{GUI Konzepte}
+Für die GUI der Smartphone App wurden ebenfalls Konzepte erstellt um gewisse Aspekte rechtzeitig festzuhalten. So wurde für eine GUI nach den Google Material Design Richtlinien entschieden. Diese legen Nahe eine von der Seite aufklappbare Navigationsleiste zu verwenden wie in Abbildung \ref{gui_navdrawer} skizziert. Diese soll in unserem Fall Menüpunkte zu Wäschestatus, Sensorstatus und Einstellungen.
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./Designs/AppGUIConcept_navigationDrawer}}
+	\caption{Der für Material Design typische Navigation Drawer dient zur Navigation zwischen den verschiedenen Hauptbildschirmen der App}
+	\label{gui_navdrawer}
+\end{figure}
+Der Hauptbildschirm (Abbildung \ref{gui_laundry_status}) soll den Status der Wäsche beinhalten. Er soll also hauptsächlich anzeigen ob die Wäsche trocken ist. Weitere Features sind hier angedacht wie zum Beispiel mehrere Sensoren durch Tabs zu trennen sowie einen Vorhersagetext und ein Feuchtigkeitsdiagramm anzuzeigen.
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./Designs/AppGUIConcept_laundryStatus}}
+	\caption{Wäschestatus mit eventuell Diagrammen zur Visualisierung}
+	\label{gui_laundry_status}
+\end{figure}
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./Designs/AppGUIConcept_sensorStatus}}
+	\caption{Sensorstatus mit Wetter, Batteriestand und Empfang}
+	\label{gui_sensor_status}
+\end{figure}
+\begin{figure}[htb] 
+	\centerline{\includegraphics*[width=0.7\textwidth]{./Designs/AppGUIConcept_settings}}
+	\caption{Einstellungen}
+	\label{gui_settings}
+\end{figure}
+In den Einstellungen (Abbildung \ref{gui_settings}) finden sich Optionen um neue Sensoren und Basisstationen zu verbinden sowie diverse Punkte zu Benachrichtigungen, Kalibrierung und Nutzer.
