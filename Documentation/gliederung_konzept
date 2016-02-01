@@ -1,24 +1,23 @@
   DryR
 
-  - Einleitung
-  - Businessplan
-    - ...
-  - Konzepte
+  - Einleitung (Peter)
+  - Konzepte (Yannick)
     - 10 + 10
-    - User story
     - GUI Konzepte
-  - Sprints
+  - Businessplan (Peter)
+    - ...
+  - Sprints (Peter)
     - (Burndown charts + screenshots / andere Bilder)
     - Implementierte Features
     - Nicht implementierte Features
     - Sprints Fazit
-  - Architektur
+  - Architektur (Kai)
     - Gesamtarchitektur
     - Basisstation
       - Haskellmodul
       - Tomcatmodul
     - App
-  - Ausblick
+  - Ausblick (Addis)
     - Wichtige (fehlende) Features für ein vollständiges Produkt
     - Produktion(?)
     - ...
