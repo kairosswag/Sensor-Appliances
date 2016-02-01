@@ -27,7 +27,7 @@ public abstract class forecast {
 		readDataBase();
 	}
 	
-	public void readDataBase() throws Exception {
+	public synchronized void readDataBase() throws Exception {
 	    try {
 	      // TODO This will load the MySQL driver, each DB has its own driver
 	      Class.forName("com.mysql.jdbc.Driver");
