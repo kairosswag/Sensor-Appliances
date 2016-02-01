@@ -154,10 +154,17 @@ public class SensorStatusFragment extends Fragment implements RefreshListener {
                         });
 
                     case NO_SENSOR_PAIRED:
-                        // Show settings activity with PairSensorDialog open
-                        Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
-                        intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_sensor_pair_key));
-                        getActivity().startActivity(intent);
+                        // Show message informing about the fact that there are no sensors paired and
+                        // display button to pair some
+                        messageView.showMessage(R.string.laundry_status_no_sensor, R.color.light_error_text_color, R.string.pref_sensor_pair_title, true, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Show settings activity with PairSensorDialog open
+                                Intent intent = new Intent(getContext(), DryRPreferenceActivity.class);
+                                intent.putExtra(DryRPreferenceActivity.OPEN_PREFERENCE_KEY, getString(R.string.pref_sensor_pair_key));
+                                getActivity().startActivity(intent);
+                            }
+                        });
 
                         break;
 
