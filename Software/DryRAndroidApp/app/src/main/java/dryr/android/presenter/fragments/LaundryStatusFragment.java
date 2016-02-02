@@ -220,7 +220,7 @@ public class LaundryStatusFragment extends Fragment implements RefreshListener, 
             }
         });
 
-        if (data.size() <= 1) {
+        if(xValues.size() < 2) {
             showNotEnoughGraphData(true);
         }
     }
