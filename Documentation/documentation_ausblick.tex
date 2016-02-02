@@ -1,6 +1,7 @@
 \section{Ausblick}
 \subsection{Weitere Features}
 \begin{description}
+	\item[Einfache Einrichtung] Im Moment ist es nicht einfach die Basisstation einzurichten, vor allem die Versorgung der Station mit dem Wlan Schlüssel ist nicht intuitiv. Dafür gibt es verschiedene Lösungsmöglichkeiten. Ein Konzept das uns besonders benutzerfreundlich erscheint ist auf jeder ausgelieferte Basisstation einen QR-Code anzubringen der beim Scannen durch unsere App entsprechende Einrichtungsinformationen (Stations-Id, Wlan Schlüssel etc.) einfach und schnell über Bluetooth oder Wifi P2P austauscht.
 	\item [Identifikation von Sensoren] \hfill \\
 		Ist man im Besitz von mehreren Sensoren, so wird die Zuordnung der Sensoren zunehmend schwieriger. Um dem Problem entgegen zu wirken, gibt es folgende Ansätze:
 		\begin{description}
@@ -13,7 +14,7 @@
 		Die Basisstation erfordert eine direkte Anbindung an das lokale Netzwerk, ohne welche nämlich die App nicht mit der Basisstation kommunizieren kann. Ist dies nicht gegeben, z.B. in einem Keller, wo das Projekt übrigens auch ein großes Anwendungsgebiet sieht, so müssen neben Anpassungen seitens des Nutzers (Kabel verlegen, Access Point im Keller aufstellen), alternativen von unserer Seite angeboten werden:
 		\begin{description}
 			\item [Funk]  \hfill \\
-				Die Basisstation könnte über ein proprietäres Funkmodul mit einer zweiten Basisstation in der Wohnung kommunizieren. Dieses sollte explizit für solche Anwendungsfälle zugeschnitten sein und würde sich dementsprechend durch eine niedrigere Datenrate und Frequenz, aber höherer Stabilität bei großer Reichweite auszeichnen.
+				Die Basisstation könnte über ein proprietäres Funkmodul mit einer zweiten Basisstation in der Wohnung oder direkt mit den Sensoren kommunizieren. Das Funkmodul sollte explizit für solche Anwendungsfälle zugeschnitten sein und würde sich dementsprechend durch eine niedrigere Datenrate und Frequenz, aber höherer Stabilität bei großer Reichweite auszeichnen. 
 			\item [Gerichtetes WLAN] \hfill \\
 				Falls die Basisstation gerade nicht mehr in Reichweite des Access Point ist, kann auch eine Richtantenne Abhilfe schaffen, allerdings müsste diese an beiden Enden installiert werden.
 		\end{description}
