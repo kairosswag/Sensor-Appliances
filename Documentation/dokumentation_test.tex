@@ -1,0 +1,47 @@
+\section{Test}
+Im Rahmen des Proseminars wurde der Prototyp getestet. Im Folgenden ist eine Darstellung und Auswertung der jeweiligen Testergebnisse vorzufinden.
+
+\subsection{Erster Test}
+Aufgrund von Datenverlust sind die Ergebnisse des ersten Tests leider nicht mehr zugänglich, wobei der Verlauf noch auf Basis von Erinnerungen beschrieben werden kann.
+
+\subsubsection{Beobachtung}
+Auffällig ist, dass sich die Werte zu Beginn um 19 Uhr im Bereich von ca. 90\% bewegen und anschließend über die nächste Stunde hinweg auf etwa 72\% sinken. Ab da bleibt der Wert mehr oder weniger konstant, klettert über Nacht sogar wieder auf 80\% hoch und sinkt schließlich wieder auf etwa 72\%, bis der Test um 7 Uhr morgens beendet wird.
+
+\subsection{Zweiter Test}
+Bei diesem Test wurde das Wäschestück weitaus stärker ausgewrungen, wodurch der Initiale Nässegrad wesentlich geringer im Vergleich zum vorigen Test war.
+
+\subsubsection{Ergebnis}
+
+\begin{tikzpicture}[trim axis left]
+\begin{axis}[
+	title=Verlauf der gemessenen Luftfeuchtigkeit,
+	width=\textwidth,
+	height=7cm,
+	scale only axis,
+	grid=both,
+	xmin=1454608140,
+	xmax=1454652060,
+	xlabel=Zeit,
+	ylabel=Luftfeuchtigkeit,
+	scaled x ticks=false,
+	y unit=\%,
+	xtick={1454612400, 1454619600, 1454626800, 1454634000, 1454641200, 1454648400},
+	xticklabels={20:00, 22:00, 00:00, 02:00, 04:00, 06:00},
+	yshift=2cm
+]
+	\addplot+[
+		mark=no markers
+	] table[x=time,y=value,col sep=comma] {Test/Group_Humidity_Unix.csv};
+\end{axis}
+\end{tikzpicture}
+
+\newpage
+\subsubsection{Beobachtung}
+Zu beginn klettert der Wert um 19 Uhr von anfangs 50\% auf 68\% bis 19:30 Uhr hoch und bleibt dort mit Auslassung kleinerer bis mittlerer Schwankungen bis 1 Uhr etwa konstant. Ab da fällt der Wert innerhalb von einer Stunde auf 52\% zurück und klettert ab da bis 6:30 Uhr wieder auf 54\% hoch, nur um dann schließlich auf 50\% zu fallen, bis der Test um 7 Uhr beendet wird.
+
+\subsection{Folgerungen}
+Der Sensor scheint mit hohen Feuchtigkeitswerten nicht zurechtzukommen, wobei die Vermutung naheliegt, dass dieser durch Kondensation mehr oder weniger direkt mit Wasser in Kontakt kommt, wodurch der plateauartige Verlauf der jeweiligen Tests zu erklären ist. Somit sollte der Feuchtigkeitssensor von einer Schutzhülle umgeben sein, um direkte Kondensation zu vermeiden, wobei im Folgenden weiterhin von einem ungeschützten Sensor ausgegangen wird.
+
+Für die Entscheidung des Trockenheitsgrades der Wäsche scheint eine Threshold basierte Methode am sinnvollsten, auch wenn diese mit unterschiedlichen Werten für die Raumluftfeuchtigkeit schlecht zurechtkommen wird, da der Feuchtigkeitswert der Wäsche sich diesem annähert. Eine Aussage über die Änderung, also eine Threshold basierte Methode über die erste Ableitung der Feuchtigkeitswerte scheint dagegen weniger sinnvoll, was der unzureichenden Änderung zwischen 19 Uhr und 1 Uhr geschuldet ist, denn zu diesem Zeitpunkt war die Wäsche noch feucht.
+
+Was die Vorhersage betrifft, wird diese auf Grundlage der gemessenen Werte wohl vor allem bis kurz vor Ende sehr unzuverlässig sein, egal welche Methode angewendet wird, da die Werte in keinem ersichtlichen Zusammenhang zum Zeitpunkt des Trockenwerdens der Wäsche stehen.
