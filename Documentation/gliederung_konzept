@@ -4,6 +4,7 @@
   - Konzepte (Yannick)
     - 10 + 10
     - GUI Konzepte
+    - "Honorable Mentions" (?) (Andere Ideen, Schreiender Ball etc.)
   - Businessplan (Peter)
     - ...
   - Sprints (Peter)
@@ -11,13 +12,27 @@
     - Implementierte Features
     - Nicht implementierte Features
     - Sprints Fazit
-  - Architektur (Kai)
-    - Gesamtarchitektur
+  - Software
+    - Architektur (Kai)
+      - Gesamtarchitektur
+      - Basisstation
+        - Haskellmodul
+        - Tomcatmodul
+      - App
+    - Software Dokumentation (grober Überblick, für Weiterentwicklung)
+      - Basisstation Haskell
+      - Basisstation Tomcat
+      - App
+  - Hardware
     - Basisstation
-      - Haskellmodul
-      - Tomcatmodul
-    - App
+    - Sensor (+ 3d geruckte Klammer Details)
+    - Smartphone(?)
+  - Tests
+    - Feuchtigkeitsmessungen (gesammelte Daten des Prototypen, Diagramme)
+    - Reichweite BLE(?)
+    - Stresstests(?)
   - Ausblick (Addis)
     - Wichtige (fehlende) Features für ein vollständiges Produkt
-    - Produktion(?)
+    - Produktion (Nutzung eines PI zero oder andere / eigene Platine,
+                  eigene Sensorplatine, Produktion der Klammer)
     - ...
