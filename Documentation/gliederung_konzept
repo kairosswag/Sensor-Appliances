@@ -4,7 +4,7 @@
   - Konzepte (Yannick)
     - 10 + 10
     - GUI Konzepte
-    - "Honorable Mentions" (?) (Andere Ideen, Schreiender Ball etc.)
+    - "Honorable Mentions" (?) (Andere Ideen, Schreiender Ball etc.) (Yannick)
   - Businessplan (Peter)
     - ...
   - Sprints (Peter)
@@ -20,13 +20,13 @@
         - Tomcatmodul
       - App
     - Software Dokumentation (grober Überblick, für Weiterentwicklung)
-      - Basisstation Haskell
-      - Basisstation Tomcat
-      - App
+      - Basisstation Haskell (Addis)
+      - Basisstation Tomcat (Kai)
+      - App (Yannick)
   - Hardware
-    - Basisstation
-    - Sensor (+ 3d geruckte Klammer Details)
-    - Smartphone(?)
+    - Basisstation (Kai)
+    - Sensor (+ 3d geruckte Klammer Details) (Addis)
+    - Smartphone(?) (Yannick)
   - Tests
     - Feuchtigkeitsmessungen (gesammelte Daten des Prototypen, Diagramme)
     - Reichweite BLE(?)
@@ -34,5 +34,5 @@
   - Ausblick (Addis)
     - Wichtige (fehlende) Features für ein vollständiges Produkt
     - Produktion (Nutzung eines PI zero oder andere / eigene Platine,
-                  eigene Sensorplatine, Produktion der Klammer)
+                  eigene Sensorplatine, Produktion der Klammer) (Yannick)
     - ...
