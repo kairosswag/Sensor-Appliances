@@ -13,16 +13,11 @@
     - Nicht implementierte Features
     - Sprints Fazit
   - Software
-    - Architektur (Kai)
-      - Gesamtarchitektur
-      - Basisstation
-        - Haskellmodul
-        - Tomcatmodul
-      - App
-    - Software Dokumentation (grober Überblick, für Weiterentwicklung)
-      - Basisstation Haskell (Addis)
-      - Basisstation Tomcat (Kai)
-      - App (Yannick)
+    - Gesamtarchitektur
+    - Basisstation
+      - Haskellmodul (Addis)
+      - Tomcatmodul (Kai)
+    - App (Yannick)
   - Hardware
     - Basisstation (Kai)
     - Sensor (+ 3d geruckte Klammer Details) (Addis)
