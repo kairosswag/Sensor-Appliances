@@ -17,11 +17,40 @@ Das Gesamtsystem ist recht einfach gehalten, kann aber durch den modularen Aufba
 	\caption{Der Aufbau der Basisstation.}
 \end{figure}
 
-Die Basisstation verbindet Datenaggregation, -haltung und -verarbeitung. Dazu verwendet sie eine Oracle MySQL\footnote{http://www.oracle.com/de/products/mysql/overview/index.html} Datenbank, in welche die Sensordaten direkt geschrieben werden und später von den von einem Apache Tomcat\footnote{http://tomcat.apache.org/} Server bereit gestellten Servlets gelesen werden. Dadurch ist es einfach möglich, auch andere Technologien und Sensoren einzubinden, da die entsprechenden Ergebnisse einfach in die Datenbank geschrieben werden und von dort aus weiterverarbeitet werden können.\\
-Die Kommunikation zwischen Tomcat-Server und dem Haskell Bluetooth Handler erfolgt dabei über die D-Bus Schnittstelle. So können etwa Geräte auf Anfrage gepairt werden.
-\subsubsection{Haskell Modul}
- Das Haskell Modul verwendet die BlueZ API\footnote{http://www.bluez.org/} unter D-Bus, um eine Verbindung zu den Bluetooth Sensoren aufzubauen. Der Sensor sendet in regelmäßigen Abständen oder bei Änderung des Wertes eine Nachricht, welche über BlueZ und D-Bus an das Haskellprogramm übergeben wird. Dieses schreibt dann die neuen Werte in die Datenbank.
-	
+Die Basisstation verbindet Datenaggregation, -haltung und -verarbeitung. Dazu verwendet sie eine Oracle MySQL\footnote{\url{http://www.oracle.com/de/products/mysql/overview/index.html}} Datenbank, in welche die Sensordaten direkt geschrieben werden und später von den von einem Apache Tomcat\footnote{\url{http://tomcat.apache.org/}} Server bereit gestellten Servlets gelesen werden. Dadurch ist es einfach möglich, auch andere Technologien und Sensoren einzubinden, da die entsprechenden Ergebnisse einfach in die Datenbank geschrieben werden und von dort aus weiterverarbeitet werden können.\\
+Die Kommunikation zwischen Tomcat-Server und dem Bluetooth Modul erfolgt dabei über die D-Bus Schnittstelle. So können etwa Geräte auf Anfrage gepairt werden.
+
+\subsubsection{Bluetooth Modul}
+Das Bluetooth Modul bildet die Schnittstelle zwischen den Sensoren und dem Rest der Anwendung. Es kümmert sich dabei um den Verbindungsauf- und abbau zu den Sensoren und dem Einsammeln und Speichern der Messwerte in die Datenbank. Weiterhin werden Benachrichtigungen über neue Daten per HTTP an das Tomcat Modul geschickt. Realisiert ist das Modul als reiner Eventhandler, welcher von Seiten der Anwendung und der Bluetooth API Benachrichtigungen erhält. Die Kommunikation findet dabei mit Ausnahme der HTTP Benachrichtigungen ausschließlich per D-Bus statt, was der zugrunde liegenden Bluetooth API, Bluez\footnote{\url{http://www.bluez.org/}}, geschuldet ist, da diese eine D-Bus API bereitstellt.
+
+Von der Seite der Anwendung können dabei folgende Anweisungen an das Bluetooth Modul über das Interface $dryr.base.bluetooth$ geschickt werden:
+\begin{enumerate}
+	\item[$ConnectDevice$] $(mac: String) : void$ \\
+		Baut eine Verbindung zum Sensor $mac$ auf und registriert Benachrichtigungen für die Feuchtigkeitswerte. Besteht schon eine Verbindung, so wird nichts gemacht.
+	\item[$DisconnectDevice$] $(mac: String) : void$ \\
+		Baut die Verbindung zum Sensor $mac$ wieder ab. Besteht keine Verbindung, so wird nichts gemacht.
+	\item[$RemoveDevice$] $(mac: String) : void$ \\
+		Entfernt den Sensor $mac$ von der Datenbank inklusive aller gesammelten Werte. Besteht eine Verbindung, so wird diese getrennt.
+\end{enumerate}
+
+Das Bluetooth Modul bezieht seine Informationen über folgende D-Bus Interfaces:
+\begin{enumerate}
+	\item[$org.freedesktop.dbus.properties$]
+		Dieses Interface wird genutzt, um Attributänderungen über das Signal $PropertiesChanged$ in der Objekthierarchie gemeldet zu bekommen. Vor allem werden darüber die neuen Messewerte, sowie der Verbindungszustand der Sensoren bezogen.
+	\item[$org.freedesktop.DBus.ObjectManager$]
+		Dieses Interface meldet über das Signal $InterfacesAdded$ und $InterfacesRemoved$ neu hinzugefügte oder entfernte Interfaces in der Objekthierarchie. Darüber werden vor allem neu entdeckte oder verlorene Sensoren dem Modul gemeldet
+	\item[$org.bluez.Adapter1$]
+		SEntfernt den Sensor $mac$ von der Datenbank inklusive aller gesammelten Werte. Besteht eine Verbindung, so wird diese getrennt.
+	\item[$org.bluez.Device1$]
+		%TODO
+	\item[$org.bluez.GattService1$]
+		%TODO
+	\item[$org.bluez.GattDescriptor1$]
+		%TODO
+	\item[$org.bluez.GattCharacteristic1$]
+		%TODO
+\end{enumerate}
+
 \subsubsection{Tomcat Modul}
 Der Tomcat Server bietet eine Web-Schnittstelle an, welche es ermöglicht einen Sensor zu verbinden, Daten oder eine Vorhersage zu erhalten.
 Erreichbar sind die Servlets unter \texttt{http://<server\_name>:8080/basestation-tomcat/}
