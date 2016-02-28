@@ -16,6 +16,7 @@
 *.eps
 *.pdf
 !logo.pdf
+!Ein-Seiter.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
